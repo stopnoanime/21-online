@@ -1,5 +1,7 @@
 import { Injectable } from '@angular/core';
+import { GameState } from 'backend/src/rooms/schema/GameState';
 import * as Colyseus from 'colyseus.js';
+import { BehaviorSubject } from 'rxjs';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -7,19 +9,20 @@ import { environment } from '../environments/environment';
 })
 export class GameService {
   client: Colyseus.Client;
+  room?: Colyseus.Room<GameState>;
+  stateChange = new BehaviorSubject<GameState | undefined>(undefined);
 
   constructor() {
     this.client = new Colyseus.Client(environment.gameServer);
   }
 
-  public joinRoom(roomName: string) {
-    this.client
-      .joinOrCreate('my_room')
-      .then((room) => {
-        console.log(room.sessionId, 'joined', room.name);
-      })
-      .catch((e) => {
-        console.log('JOIN ERROR', e);
-      });
+  public async createRoom() {
+    this.room = await this.client.create('gameRoom');
+    this.room.onStateChange((s) => this.stateChange.next(s));
+  }
+
+  public async joinRoom(id: string) {
+    this.room = await this.client.joinById(id);
+    this.room.onStateChange((s) => this.stateChange.next(s));
   }
 }

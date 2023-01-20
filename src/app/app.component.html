@@ -1,5 +1,15 @@
 <span class="text-gray-600">Hello</span>
 
-<button mat-raised-button color="primary" (click)="game.joinRoom('room')">
+<button mat-raised-button color="primary" (click)="game.createRoom()">
+  Create room
+</button>
+
+<mat-form-field appearance="fill">
+  <mat-label>Input</mat-label>
+  <input matInput #roomId />
+</mat-form-field>
+
+<button mat-raised-button color="primary" (click)="game.joinRoom(roomId.value)">
   Join room
 </button>
+{{ game.room?.id }}
