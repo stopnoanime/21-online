@@ -12,7 +12,10 @@
 <button mat-raised-button color="primary" (click)="game.joinRoom(roomId.value)">
   Join room
 </button>
+Room id:
 {{ game.room?.id }}
+
+Player id:
 {{ game.room?.sessionId }}
 
 <button mat-raised-button color="primary" (click)="game.changeReadyState()">
@@ -22,3 +25,26 @@
 <button mat-raised-button color="primary" (click)="game.sendMove()">
   Send move
 </button>
+
+<div class="bg-gray-100 p-2" *ngIf="game.room">
+  <div>
+    Players
+
+    <div
+      *ngFor="let player of game.room.state.players"
+      class="bg-gray-400 rounded p-2 w-fit"
+      [class.bg-red-400]="!player[1].ready"
+      [class.bg-green-400]="
+        game.room.state.currentTurnPlayerId == player[1].sessionId
+      "
+    >
+      {{ player[1].sessionId }}
+    </div>
+  </div>
+
+  <div>
+    State:
+    <span *ngIf="game.room.state.roundInProgress">round in progress</span>
+    <span *ngIf="!game.room.state.roundInProgress">round not in progress</span>
+  </div>
+</div>

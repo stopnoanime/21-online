@@ -8,7 +8,7 @@ export class GameRoom extends Room<GameState> {
   private inactivityKickRef: Delayed;
 
   /** Iterator for all players that are playing in the current round */
-  private roundPlayersIterator: IterableIterator<[string, Player]>;
+  private roundPlayersIdIterator: IterableIterator<string>;
 
   public maxClients = 8;
 
@@ -50,7 +50,7 @@ export class GameRoom extends Room<GameState> {
     this.state.players.set(
       client.sessionId,
       new Player({
-        id: client.sessionId,
+        sessionId: client.sessionId,
         displayName: options.displayName,
       })
     );
@@ -73,7 +73,12 @@ export class GameRoom extends Room<GameState> {
 
     // TO DO: Deal cards
 
-    this.roundPlayersIterator = this.state.players.entries();
+    //Only include users that have the ready state
+    this.roundPlayersIdIterator = [...this.state.players]
+      .filter((v) => v[1].ready)
+      .map((v) => v[0])
+      .values();
+
     this.turn();
   }
 
@@ -82,7 +87,7 @@ export class GameRoom extends Room<GameState> {
     this.inactivityKickRef?.clear();
 
     // Get next player
-    const nextPlayer = this.roundPlayersIterator.next();
+    const nextPlayer = this.roundPlayersIdIterator.next();
 
     // If there are no more players, end current round
     if (nextPlayer.done) {
@@ -91,7 +96,7 @@ export class GameRoom extends Room<GameState> {
     }
 
     // Otherwise go to next player
-    this.state.currentTurnPlayerId = nextPlayer.value[0];
+    this.state.currentTurnPlayerId = nextPlayer.value;
 
     console.log('player turn', this.state.currentTurnPlayerId);
 
@@ -111,6 +116,7 @@ export class GameRoom extends Room<GameState> {
     console.log('ending round');
 
     this.state.roundInProgress = false;
+    this.state.currentTurnPlayerId = '';
 
     // TO DO: Calculate winner, give money
   }
