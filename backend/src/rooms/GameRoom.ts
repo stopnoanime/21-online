@@ -63,6 +63,9 @@ export class GameRoom extends Room<GameState> {
     console.log('client leave', client.sessionId);
 
     this.state.players.delete(client.sessionId);
+    //Player that left was the current player, skip them
+    if (this.state.currentTurnPlayerId == client.sessionId) this.turn();
+
     this.triggerNewRoundCheck();
   }
 
@@ -89,6 +92,24 @@ export class GameRoom extends Room<GameState> {
     }, this.delayedRoundStartTimeout);
   }
 
+  /** Iterator over players that only takes ready players into account */
+  private *makeRoundIterator() {
+    const playerIterator = this.state.players.entries();
+
+    while (true) {
+      const newPlayer = playerIterator.next();
+
+      //Finish this iterator when base iterator finishes
+      if (newPlayer.done) return;
+
+      //If grabbed player is not ready, go to next player
+      if (!newPlayer.value[1].ready) break;
+
+      //Otherwise yield the new player id
+      yield newPlayer.value[0] as string;
+    }
+  }
+
   private startRound() {
     console.log('starting round');
 
@@ -96,11 +117,7 @@ export class GameRoom extends Room<GameState> {
 
     // TO DO: Deal cards
 
-    //Only include users that have the ready state
-    this.roundPlayersIdIterator = [...this.state.players]
-      .filter((v) => v[1].ready)
-      .map((v) => v[0])
-      .values();
+    this.roundPlayersIdIterator = this.makeRoundIterator();
 
     this.turn();
   }
