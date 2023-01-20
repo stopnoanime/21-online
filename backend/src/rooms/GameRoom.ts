@@ -10,6 +10,9 @@ export class GameRoom extends Room<GameState> {
   /** Iterator for all players that are playing in the current round */
   private roundPlayersIdIterator: IterableIterator<string>;
 
+  private delayedRoundStartTimeout = 5000;
+  private delayedRoundStartRef: Delayed;
+
   public maxClients = 8;
 
   onCreate(options: any) {
@@ -39,8 +42,7 @@ export class GameRoom extends Room<GameState> {
 
       this.state.players.get(client.sessionId).ready = message;
 
-      //If all players are ready, start round
-      if ([...this.state.players].every((p) => p[1].ready)) this.startRound();
+      this.triggerNewRoundCheck();
     });
   }
 
@@ -54,16 +56,37 @@ export class GameRoom extends Room<GameState> {
         displayName: options.displayName,
       })
     );
+    this.triggerNewRoundCheck();
   }
 
   onLeave(client: Client, consented: boolean) {
     console.log('client leave', client.sessionId);
 
     this.state.players.delete(client.sessionId);
+    this.triggerNewRoundCheck();
   }
 
   onDispose() {
     console.log('room', this.roomId, 'disposing...');
+  }
+
+  /** Automatically starts round if:
+   * - There is no round currently
+   * - All players are ready
+   */
+  private triggerNewRoundCheck() {
+    if (this.state.roundInProgress) return;
+
+    console.log('clearing delayed round start');
+    this.delayedRoundStartRef?.clear();
+
+    //If not all players are ready, exit
+    if ([...this.state.players].some((p) => !p[1].ready)) return;
+
+    console.log('setting delayed round start');
+    this.delayedRoundStartRef = this.clock.setTimeout(() => {
+      this.startRound();
+    }, this.delayedRoundStartTimeout);
   }
 
   private startRound() {
@@ -119,5 +142,7 @@ export class GameRoom extends Room<GameState> {
     this.state.currentTurnPlayerId = '';
 
     // TO DO: Calculate winner, give money
+
+    this.triggerNewRoundCheck();
   }
 }
