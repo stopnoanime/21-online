@@ -13,3 +13,11 @@
   Join room
 </button>
 {{ game.room?.id }}
+
+<button mat-raised-button color="primary" (click)="game.startRound()">
+  Start round
+</button>
+
+<button mat-raised-button color="primary" (click)="game.sendMove()">
+  Send move
+</button>

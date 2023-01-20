@@ -29,12 +29,10 @@ export class Player extends Schema {
   reconnectionToken: Deferred<Client>;
 }
 
+export type roundState = 'waitingForRound' | 'dealing' | 'round' | 'endOfRound';
+
 export class GameState extends Schema {
-  @type('string') state:
-    | 'waitingForRound'
-    | 'dealing'
-    | 'round'
-    | 'endOfRound' = 'waitingForRound';
+  @type('string') state: roundState = 'waitingForRound';
 
   // Room settings:
   @type('uint8') maxPlayersAtTable: number = 8;
@@ -43,7 +41,7 @@ export class GameState extends Schema {
   // Player roles:
   @type('string') adminPlayerId: string;
   @type('string') dealerPlayerId: string;
-  @type('string') currentTurnPlayerId: string;
+  @type('string') currentPlayerId: string;
 
   /** Used to render timer in client */
   @type('number') endOfTurnTimestamp: number;
