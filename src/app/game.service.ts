@@ -15,8 +15,6 @@ export class GameService {
   constructor() {
     this.client = new Colyseus.Client(environment.gameServer);
     this.stateChange.subscribe(console.log);
-
-    this.reconnectToPreviousRoom();
   }
 
   public async createRoom() {
@@ -27,50 +25,19 @@ export class GameService {
     this.updateRoom(await this.client.joinById(id));
   }
 
-  public startRound() {
-    this.room?.send('adminEvent', 'startRound');
-  }
-
   public sendMove() {
     this.room?.send('move');
+  }
+
+  public changeReadyState() {
+    this.room?.send(
+      'ready',
+      !this.room.state.players.get(this.room.sessionId)?.ready
+    );
   }
 
   private updateRoom(room: Colyseus.Room<GameState>) {
     this.room = room;
     this.room.onStateChange((s) => this.stateChange.next(s));
-    this.saveRoomData();
-  }
-
-  private async reconnectToPreviousRoom() {
-    try {
-      const loadedData = this.loadRoomData();
-      this.updateRoom(
-        await this.client.reconnect(loadedData.roomId, loadedData.sessionId)
-      );
-    } catch {
-      //Clear invalid room data
-      this.setRoomData('', '');
-    }
-  }
-
-  private saveRoomData() {
-    this.setRoomData(this.room?.id, this.room?.sessionId);
-  }
-
-  private setRoomData(id?: string, sessionId?: string) {
-    localStorage.setItem('roomId', id || '');
-    localStorage.setItem('sessionId', sessionId || '');
-  }
-
-  private loadRoomData() {
-    const roomId = localStorage.getItem('roomId');
-    const sessionId = localStorage.getItem('sessionId');
-
-    if (!roomId || !sessionId) throw new Error('No saved room');
-
-    return {
-      roomId: roomId,
-      sessionId: sessionId,
-    };
   }
 }

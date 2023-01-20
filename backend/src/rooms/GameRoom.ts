@@ -1,102 +1,65 @@
 import { Room, Client, Delayed } from 'colyseus';
-import { GameState, Player, roundState } from './schema/GameState';
+import { GameState, Player } from './schema/GameState';
 
 export class GameRoom extends Room<GameState> {
+  /** ms after which player is kicked if inactive */
+  private inactivityTimeout = 30000;
+  /** Current timeout kick reference */
+  private inactivityKickRef: Delayed;
+
+  /** Iterator for all players that are playing in the current round */
+  private roundPlayersIterator: IterableIterator<[string, Player]>;
+
+  public maxClients = 8;
+
   onCreate(options: any) {
     this.setPrivate();
     this.setState(new GameState({}));
     this.clock.start();
 
-    this.onMessage('adminEvent', (client, message: string) => {
-      if (client.sessionId != this.state.adminPlayerId) return;
-
-      switch (message) {
-        case 'startRound':
-          console.log('starting round');
-          this.startRound();
-          break;
-      }
-    });
-
     this.onMessage('move', (client, message: string) => {
       if (
-        client.sessionId != this.state.currentPlayerId ||
-        this.state.state != 'round'
+        !this.state.roundInProgress ||
+        client.sessionId != this.state.currentTurnPlayerId
       )
         return;
 
+      console.log('recived move');
+
       // TO DO: move handling logic
 
-      this.nextTurn();
+      this.turn();
+    });
+
+    this.onMessage('ready', (client, message: boolean) => {
+      //Cant change ready state during round
+      if (this.state.roundInProgress) return;
+
+      console.log('recived state change', message);
+
+      this.state.players.get(client.sessionId).ready = message;
+
+      //If all players are ready, start round
+      if ([...this.state.players].every((p) => p[1].ready)) this.startRound();
     });
   }
 
   onJoin(client: Client, options: { displayName?: string }) {
-    const player = new Player({
-      id: client.sessionId,
-      displayName: options.displayName,
-    });
+    console.log('client join', client.sessionId);
 
-    if (
-      this.state.state == 'waitingForRound' &&
-      this.state.playerTable.size <= this.state.maxPlayersAtTable
-    ) {
-      //Add player directly to table
-      this.state.playerTable.set(client.sessionId, player);
-    } else {
-      //add player to queue
-      this.state.playerQueue.push(player);
-    }
-
-    if (this.state.playerQueue.length + this.state.playerTable.size == 1) {
-      // Joined player is the only player; Set them as admin
-      this.state.adminPlayerId = client.sessionId;
-    }
-
-    console.log(client.sessionId, 'joined!');
+    this.state.players.set(
+      client.sessionId,
+      new Player({
+        id: client.sessionId,
+        displayName: options.displayName,
+      })
+    );
   }
 
-  async onLeave(client: Client, consented: boolean) {
-    console.log(client.sessionId, 'leave');
+  onLeave(client: Client, consented: boolean) {
+    console.log('client leave', client.sessionId);
 
-    //Player is at the table
-    if (this.state.playerTable.has(client.sessionId)) {
-      try {
-        //If game is not in progress
-        if (this.state.state == 'waitingForRound') throw new Error('leave');
-
-        // get player instance
-        const player = this.state.playerTable.get(client.sessionId);
-
-        // mark player as inactive
-        player.connected = false;
-
-        // get and store the reconnection token
-        const reconnection = this.allowReconnection(client);
-        player.reconnectionToken = reconnection;
-
-        // allow disconnected client to reconnect
-        await reconnection;
-
-        // client returned! let's re-activate it.
-        console.log(client.sessionId, 'recconected');
-        this.state.playerTable.get(client.sessionId).connected = true;
-        return;
-      } catch (e) {
-        // Kick the player from the table
-        this.state.playerTable.delete(client.sessionId);
-      }
-    } else {
-      //If player is in queue, kick them
-      const foundQueueIndex = this.state.playerQueue.findIndex(
-        (p) => p.sessionId == client.sessionId
-      );
-      if (foundQueueIndex != -1)
-        this.state.playerQueue.deleteAt(foundQueueIndex);
-    }
-
-    //After removing player, check if they were admin
-    this.setNewAdmin(client.sessionId);
+    this.state.players.delete(client.sessionId);
   }
 
   onDispose() {
@@ -104,92 +67,51 @@ export class GameRoom extends Room<GameState> {
   }
 
   private startRound() {
-    if (this.state.state != 'waitingForRound') return;
-    this.changeRoundState('dealing');
+    console.log('starting round');
+
+    this.state.roundInProgress = true;
 
     // TO DO: Deal cards
 
-    // Set dealer and current player to the first player at the table
-    this.state.dealerPlayerId = this.state.currentPlayerId =
-      this.state.playerTable.entries().next().value[0];
-
-    // Wait 5 seconds for dealing animations to play, then start the round
-    this.clock.setTimeout(() => {
-      this.changeRoundState('round');
-      this.nextTurn();
-    }, 5000);
+    this.roundPlayersIterator = this.state.players.entries();
+    this.turn();
   }
 
-  private inactivityKickTimeout: Delayed;
-  private nextTurn() {
-    if (this.state.state != 'round') return;
-    console.log('new turn');
-
+  private turn() {
     // New turn, do not kick player from previous turn
-    this.inactivityKickTimeout?.clear();
+    this.inactivityKickRef?.clear();
 
-    // TO DO: Check if there are any players left, Go to next player at table
-    //this.state.currentPlayerId = '';
+    // Get next player
+    const nextPlayer = this.roundPlayersIterator.next();
 
-    // Set timeout after which a player will be kicked;
-    this.inactivityKickTimeout = this.clock.setTimeout(() => {
-      console.log('inactivty timeout');
+    // If there are no more players, end current round
+    if (nextPlayer.done) {
+      this.endRound();
+      return;
+    }
 
-      const player = this.state.playerTable.get(this.state.currentPlayerId);
+    // Otherwise go to next player
+    this.state.currentTurnPlayerId = nextPlayer.value[0];
 
-      if (!player.connected) {
-        //Player is not connected, rejects its reconnection token after timeout
-        player.reconnectionToken.reject();
-      } else {
-        //Player is connected, kick it
-        this.state.playerTable.delete(this.state.currentPlayerId);
-        this.clients
-          .find((c) => c.sessionId == this.state.currentPlayerId)
-          .leave();
-      }
+    console.log('player turn', this.state.currentTurnPlayerId);
 
-      //Move to next player
-      this.nextTurn();
-    }, this.state.inactivityTimeout * 1000);
+    // And set inactivity timeout after which they will be kicked;
+    this.inactivityKickRef = this.clock.setTimeout(() => {
+      console.log('inactivity timeout');
 
-    // TO DO: add logic to trigger end of round
-    // this.endRound();
+      this.clients
+        .find((c) => c.sessionId == this.state.currentTurnPlayerId)
+        .leave();
+
+      this.turn();
+    }, this.inactivityTimeout);
   }
 
   private endRound() {
-    if (this.state.state != 'round') return;
-    this.changeRoundState('endOfRound');
+    console.log('ending round');
+
+    this.state.roundInProgress = false;
 
     // TO DO: Calculate winner, give money
-
-    // Wait 5 seconds for dealing animations to play, then end the round
-    this.clock.setTimeout(() => {
-      this.changeRoundState('waitingForRound');
-    }, 5000);
-  }
-
-  private changeRoundState(newState: roundState) {
-    this.state.state = newState;
-    this.broadcast('state-change', newState);
-  }
-
-  private getRandomArrayItem(arr: any[]) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
-
-  private getRandomPlayerId() {
-    const tableIds = [
-      ...[...this.state.playerTable].map((v) => v[0]),
-      ...this.state.playerQueue.map((v) => v.sessionId),
-    ];
-    if (tableIds.length == 0) return '';
-
-    return this.getRandomArrayItem(tableIds);
-  }
-
-  private setNewAdmin(disconnectedId: string) {
-    if (this.state.adminPlayerId != disconnectedId) return;
-
-    this.state.adminPlayerId = this.getRandomPlayerId();
   }
 }

@@ -1,4 +1,4 @@
-<span class="text-gray-600">Hello</span>
+<span class="text-gray-600"></span>
 
 <button mat-raised-button color="primary" (click)="game.createRoom()">
   Create room
@@ -13,9 +13,10 @@
   Join room
 </button>
 {{ game.room?.id }}
+{{ game.room?.sessionId }}
 
-<button mat-raised-button color="primary" (click)="game.startRound()">
-  Start round
+<button mat-raised-button color="primary" (click)="game.changeReadyState()">
+  Change ready state
 </button>
 
 <button mat-raised-button color="primary" (click)="game.sendMove()">
