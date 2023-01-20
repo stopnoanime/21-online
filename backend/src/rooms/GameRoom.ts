@@ -81,18 +81,22 @@ export class GameRoom extends Room<GameState> {
         // client returned! let's re-activate it.
         console.log(client.sessionId, 'recconected');
         this.state.playerTable.get(client.sessionId).connected = true;
+        return;
       } catch (e) {
         // Kick the player from the table
         this.state.playerTable.delete(client.sessionId);
-        this.setNewAdmin(client.sessionId);
       }
     } else {
-      //If player is in queue, kick it instantly
-      this.state.playerQueue.deleteAt(
-        this.state.playerQueue.findIndex((p) => p.sessionId == client.sessionId)
+      //If player is in queue, kick them
+      const foundQueueIndex = this.state.playerQueue.findIndex(
+        (p) => p.sessionId == client.sessionId
       );
-      this.setNewAdmin(client.sessionId);
+      if (foundQueueIndex != -1)
+        this.state.playerQueue.deleteAt(foundQueueIndex);
     }
+
+    //After removing player, check if they were admin
+    this.setNewAdmin(client.sessionId);
   }
 
   onDispose() {
@@ -169,10 +173,23 @@ export class GameRoom extends Room<GameState> {
     this.broadcast('state-change', newState);
   }
 
+  private getRandomArrayItem(arr: any[]) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  private getRandomPlayerId() {
+    const tableIds = [
+      ...[...this.state.playerTable].map((v) => v[0]),
+      ...this.state.playerQueue.map((v) => v.sessionId),
+    ];
+    if (tableIds.length == 0) return '';
+
+    return this.getRandomArrayItem(tableIds);
+  }
+
   private setNewAdmin(disconnectedId: string) {
     if (this.state.adminPlayerId != disconnectedId) return;
 
-    console.log('new admin');
-    // TO DO: set new admin
+    this.state.adminPlayerId = this.getRandomPlayerId();
   }
 }
