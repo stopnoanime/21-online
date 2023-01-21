@@ -27,9 +27,9 @@ Player id:
 </button>
 
 <div class="bg-gray-100 p-2" *ngIf="game.room">
-  <div>
-    Players
+  Players:
 
+  <div class="flex gap-2">
     <div
       *ngFor="let player of game.room.state.players"
       class="bg-gray-400 rounded p-2 w-fit"
@@ -39,6 +39,22 @@ Player id:
       "
     >
       {{ player[1].sessionId }}
+
+      <div class="p-2 rounded bg-gray-200">
+        Cards:
+
+        <div *ngFor="let card of player[1].cards">
+          {{ card.suit }} {{ card.value }}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="p-2 rounded bg-blue-400">
+    Dealer Cards:
+
+    <div *ngFor="let card of game.room.state.dealerCards">
+      {{ card.suit }} {{ card.value }}
     </div>
   </div>
 

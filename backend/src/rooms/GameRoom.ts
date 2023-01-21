@@ -1,5 +1,5 @@
 import { Room, Client, Delayed } from 'colyseus';
-import { GameState, Player } from './schema/GameState';
+import { Card, GameState, Player } from './schema/GameState';
 
 export class GameRoom extends Room<GameState> {
   /** ms after which player is kicked if inactive */
@@ -10,7 +10,7 @@ export class GameRoom extends Room<GameState> {
   /** Iterator for all players that are playing in the current round */
   private roundPlayersIdIterator: IterableIterator<string>;
 
-  private delayedRoundStartTimeout = 5000;
+  private delayedRoundStartTimeout = 2000;
   private delayedRoundStartRef: Delayed;
 
   public maxClients = 8;
@@ -115,8 +115,21 @@ export class GameRoom extends Room<GameState> {
 
     this.state.roundInProgress = true;
 
-    // TO DO: Deal cards
+    //Deal player cards
+    for (const playerId of this.makeRoundIterator()) {
+      const player = this.state.players.get(playerId);
 
+      player.cards.clear();
+      player.cards.push(new Card());
+      player.cards.push(new Card());
+    }
+
+    //Deal dealer cards
+    this.state.dealerCards.clear();
+    this.state.dealerCards.push(new Card());
+    this.state.dealerCards.push(new Card());
+
+    //Setup iterator for turns
     this.roundPlayersIdIterator = this.makeRoundIterator();
 
     this.turn();

@@ -1,8 +1,35 @@
 import { Schema, MapSchema, type, ArraySchema } from '@colyseus/schema';
 
 export class Card extends Schema {
-  @type('string') color: string;
-  @type('uint8') value: number;
+  private availableSuits = ['Hearts', 'Diamonds', 'Spades', 'Clubs'];
+  private availableValues = [
+    'A',
+    '2',
+    '3',
+    '4',
+    '5',
+    '6',
+    '7',
+    '8',
+    '9',
+    '10',
+    'J',
+    'Q',
+    'K',
+  ];
+  private getRandomArrayItem<Type>(arr: Type[]) {
+    return arr[Math.floor(Math.random() * arr.length)];
+  }
+
+  constructor() {
+    super();
+
+    this.suit = this.getRandomArrayItem(this.availableSuits);
+    this.value = this.getRandomArrayItem(this.availableValues);
+  }
+
+  @type('string') suit: string;
+  @type('string') value: string;
 }
 
 export class Player extends Schema {
