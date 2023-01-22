@@ -44,6 +44,7 @@ export class Player extends Schema {
 export class GameState extends Schema {
   @type('boolean') roundInProgress = false;
   @type('string') currentTurnPlayerId: string;
+  @type('uint64') currentTurnTimeoutTimestamp: number = 0;
 
   @type([Card]) dealerCards = new ArraySchema<Card>();
   @type({ map: Player }) players = new MapSchema<Player>();

@@ -137,6 +137,7 @@ export class GameRoom extends Room<GameState> {
 
   private turn() {
     // New turn, do not kick player from previous turn
+    this.state.currentTurnTimeoutTimestamp = 0;
     this.inactivityKickRef?.clear();
 
     // Get next player
@@ -154,6 +155,8 @@ export class GameRoom extends Room<GameState> {
     console.log('player turn', this.state.currentTurnPlayerId);
 
     // And set inactivity timeout after which they will be kicked;
+    this.state.currentTurnTimeoutTimestamp =
+      Date.now() + this.inactivityTimeout;
     this.inactivityKickRef = this.clock.setTimeout(() => {
       console.log('inactivity timeout');
 

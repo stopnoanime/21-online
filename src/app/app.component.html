@@ -40,6 +40,11 @@ Player id:
     >
       {{ player[1].sessionId }}
 
+      <app-timestamp-progress-spinner
+        *ngIf="game.room.state.currentTurnPlayerId == player[1].sessionId"
+        [endTimestamp]="game.room.state.currentTurnTimeoutTimestamp"
+      ></app-timestamp-progress-spinner>
+
       <div class="p-2 rounded bg-gray-200 flex gap-2">
         Cards:
 

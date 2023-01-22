@@ -8,9 +8,15 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CardComponent } from './card/card.component';
+import { TimestampProgressSpinnerComponent } from './timestamp-progress-spinner/timestamp-progress-spinner.component';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
-  declarations: [AppComponent, CardComponent],
+  declarations: [
+    AppComponent,
+    CardComponent,
+    TimestampProgressSpinnerComponent,
+  ],
   imports: [
     BrowserModule,
     AppRoutingModule,
@@ -18,6 +24,7 @@ import { CardComponent } from './card/card.component';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
+    MatProgressSpinnerModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
