@@ -6,6 +6,9 @@ import {
   style,
   animate,
   transition,
+  group,
+  query,
+  animateChild,
 } from '@angular/animations';
 
 @Component({
@@ -16,11 +19,35 @@ import {
     trigger('enterLeaveAnimation', [
       transition(':enter', [
         style({ transform: 'translateY(-100%)', opacity: 0 }),
-        animate('400ms', style({ transform: 'translateY(0)', opacity: 1 })),
+        group([
+          query('@hiddenVisible', animateChild()),
+          animate('400ms', style({ transform: 'translateY(0)', opacity: 1 })),
+        ]),
       ]),
       transition(':leave', [
-        animate('400ms', style({ transform: 'translateY(100%)', opacity: 0 })),
+        group([
+          query('@hiddenVisible', animateChild()),
+          animate(
+            '400ms',
+            style({ transform: 'translateY(100%)', opacity: 0 })
+          ),
+        ]),
       ]),
+    ]),
+    trigger('hiddenVisible', [
+      state(
+        'true',
+        style({
+          transform: 'rotateY(180deg)',
+        })
+      ),
+      state(
+        'false',
+        style({
+          transform: 'rotateY(0deg)',
+        })
+      ),
+      transition('* => *', [animate('700ms')]),
     ]),
   ],
 })

@@ -10,11 +10,11 @@ export class GameRoom extends Room<GameState> {
   /** Iterator for all players that are playing in the current round */
   private roundPlayersIdIterator: IterableIterator<string>;
 
-  private delayedRoundStartTime = 4000;
+  private delayedRoundStartTime = 3000;
   private delayedRoundStartRef: Delayed;
 
-  private roundStateDealingTime = 2000;
-  private roundStateEndTime = 3000;
+  private roundStateDealingTime = 1000;
+  private roundStateEndTime = 2000;
 
   public maxClients = 8;
 
@@ -126,7 +126,7 @@ export class GameRoom extends Room<GameState> {
     //Deal dealer cards
     this.state.dealerCards.clear();
     this.state.dealerCards.push(new Card());
-    this.state.dealerCards.push(new Card());
+    this.state.dealerCards.push(new Card(false));
 
     //Delay starting next phase
     this.clock.setTimeout(() => {
@@ -176,6 +176,9 @@ export class GameRoom extends Room<GameState> {
     console.log('starting end phase');
 
     this.state.roundState = 'end';
+
+    //Show dealers hidden card
+    this.state.dealerCards.at(1).visible = true;
 
     // TO DO: Calculate winner, give money
 

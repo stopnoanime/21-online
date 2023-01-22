@@ -1,3 +1,8 @@
-<div class="w-24 bg-green-600 rounded p-2 text-white" style="aspect-ratio: 2/3">
-  {{ card.suit }} {{ card.value }}
+<div class="card-container">
+  <div class="card text-white" [@hiddenVisible]="card.visible">
+    <div class="card-face">?</div>
+    <div class="card-face-back">
+      {{ card.value?.suit }} {{ card.value?.value }}
+    </div>
+  </div>
 </div>

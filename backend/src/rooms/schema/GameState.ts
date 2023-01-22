@@ -1,4 +1,9 @@
-import { Schema, MapSchema, type, ArraySchema } from '@colyseus/schema';
+import { Schema, MapSchema, type, ArraySchema, filter } from '@colyseus/schema';
+
+export class CardValue extends Schema {
+  @type('string') suit: string;
+  @type('string') value: string;
+}
 
 export class Card extends Schema {
   private availableSuits = ['Hearts', 'Diamonds', 'Spades', 'Clubs'];
@@ -17,19 +22,29 @@ export class Card extends Schema {
     'Q',
     'K',
   ];
+
   private getRandomArrayItem<Type>(arr: Type[]) {
     return arr[Math.floor(Math.random() * arr.length)];
   }
 
-  constructor() {
+  constructor(visible = true) {
     super();
 
-    this.suit = this.getRandomArrayItem(this.availableSuits);
-    this.value = this.getRandomArrayItem(this.availableValues);
+    this.visible = visible;
+
+    this.value = new CardValue({
+      suit: this.getRandomArrayItem(this.availableSuits),
+      value: this.getRandomArrayItem(this.availableValues),
+    });
   }
 
-  @type('string') suit: string;
-  @type('string') value: string;
+  @type('boolean') visible: boolean;
+
+  @filter(function (this: Card) {
+    return this.visible;
+  })
+  @type(CardValue)
+  value?: CardValue;
 }
 
 export class Player extends Schema {
