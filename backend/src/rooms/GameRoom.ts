@@ -10,8 +10,11 @@ export class GameRoom extends Room<GameState> {
   /** Iterator for all players that are playing in the current round */
   private roundPlayersIdIterator: IterableIterator<string>;
 
-  private delayedRoundStartTimeout = 2000;
+  private delayedRoundStartTime = 4000;
   private delayedRoundStartRef: Delayed;
+
+  private roundStateDealingTime = 2000;
+  private roundStateEndTime = 3000;
 
   public maxClients = 8;
 
@@ -21,11 +24,7 @@ export class GameRoom extends Room<GameState> {
     this.clock.start();
 
     this.onMessage('move', (client, message: string) => {
-      if (
-        !this.state.roundInProgress ||
-        client.sessionId != this.state.currentTurnPlayerId
-      )
-        return;
+      if (client.sessionId != this.state.currentTurnPlayerId) return;
 
       console.log('recived move');
 
@@ -36,7 +35,7 @@ export class GameRoom extends Room<GameState> {
 
     this.onMessage('ready', (client, message: boolean) => {
       //Cant change ready state during round
-      if (this.state.roundInProgress) return;
+      if (this.state.roundState != 'idle') return;
 
       console.log('recived state change', message);
 
@@ -78,7 +77,7 @@ export class GameRoom extends Room<GameState> {
    * - All players are ready
    */
   private triggerNewRoundCheck() {
-    if (this.state.roundInProgress) return;
+    if (this.state.roundState != 'idle') return;
 
     console.log('clearing delayed round start');
     this.delayedRoundStartRef?.clear();
@@ -89,7 +88,7 @@ export class GameRoom extends Room<GameState> {
     console.log('setting delayed round start');
     this.delayedRoundStartRef = this.clock.setTimeout(() => {
       this.startRound();
-    }, this.delayedRoundStartTimeout);
+    }, this.delayedRoundStartTime);
   }
 
   /** Iterator over players that only takes ready players into account */
@@ -111,9 +110,9 @@ export class GameRoom extends Room<GameState> {
   }
 
   private startRound() {
-    console.log('starting round');
+    console.log('starting dealing phase');
 
-    this.state.roundInProgress = true;
+    this.state.roundState = 'dealing';
 
     //Deal player cards
     for (const playerId of this.makeRoundIterator()) {
@@ -129,10 +128,17 @@ export class GameRoom extends Room<GameState> {
     this.state.dealerCards.push(new Card());
     this.state.dealerCards.push(new Card());
 
-    //Setup iterator for turns
-    this.roundPlayersIdIterator = this.makeRoundIterator();
+    //Delay starting next phase
+    this.clock.setTimeout(() => {
+      console.log('starting turns phase');
 
-    this.turn();
+      this.state.roundState = 'turns';
+
+      //Setup iterator for turns
+      this.roundPlayersIdIterator = this.makeRoundIterator();
+
+      this.turn();
+    }, this.roundStateDealingTime);
   }
 
   private turn() {
@@ -142,6 +148,7 @@ export class GameRoom extends Room<GameState> {
 
     // Get next player
     const nextPlayer = this.roundPlayersIdIterator.next();
+    this.state.currentTurnPlayerId = nextPlayer.value || '';
 
     // If there are no more players, end current round
     if (nextPlayer.done) {
@@ -149,12 +156,9 @@ export class GameRoom extends Room<GameState> {
       return;
     }
 
-    // Otherwise go to next player
-    this.state.currentTurnPlayerId = nextPlayer.value;
-
     console.log('player turn', this.state.currentTurnPlayerId);
 
-    // And set inactivity timeout after which they will be kicked;
+    // Set inactivity timeout after which player will be kicked;
     this.state.currentTurnTimeoutTimestamp =
       Date.now() + this.inactivityTimeout;
     this.inactivityKickRef = this.clock.setTimeout(() => {
@@ -169,21 +173,27 @@ export class GameRoom extends Room<GameState> {
   }
 
   private endRound() {
-    console.log('ending round');
+    console.log('starting end phase');
 
-    //Remove player cards
-    for (const playerId of this.makeRoundIterator()) {
-      this.state.players.get(playerId).cards.clear();
-    }
-
-    //Remove dealer cards
-    this.state.dealerCards.clear();
+    this.state.roundState = 'end';
 
     // TO DO: Calculate winner, give money
 
-    this.state.roundInProgress = false;
-    this.state.currentTurnPlayerId = '';
+    //Delay starting next phase
+    this.clock.setTimeout(() => {
+      console.log('starting idle phase');
 
-    this.triggerNewRoundCheck();
+      this.state.roundState = 'idle';
+
+      //Remove player cards
+      for (const playerId of this.makeRoundIterator()) {
+        this.state.players.get(playerId).cards.clear();
+      }
+
+      //Remove dealer cards
+      this.state.dealerCards.clear();
+
+      this.triggerNewRoundCheck();
+    }, this.roundStateEndTime);
   }
 }

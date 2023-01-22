@@ -62,9 +62,5 @@ Player id:
     ></app-card>
   </div>
 
-  <div>
-    State:
-    <span *ngIf="game.room.state.roundInProgress">round in progress</span>
-    <span *ngIf="!game.room.state.roundInProgress">round not in progress</span>
-  </div>
+  <div>State: {{ game.room.state.roundState }}</div>
 </div>

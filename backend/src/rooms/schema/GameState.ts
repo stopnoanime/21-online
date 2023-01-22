@@ -42,7 +42,7 @@ export class Player extends Schema {
 }
 
 export class GameState extends Schema {
-  @type('boolean') roundInProgress = false;
+  @type('string') roundState: 'idle' | 'dealing' | 'turns' | 'end' = 'idle';
   @type('string') currentTurnPlayerId: string;
   @type('uint64') currentTurnTimeoutTimestamp: number = 0;
 
