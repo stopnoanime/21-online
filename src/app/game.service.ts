@@ -39,5 +39,6 @@ export class GameService {
   private updateRoom(room: Colyseus.Room<GameState>) {
     this.room = room;
     this.room.onStateChange((s) => this.stateChange.next(s));
+    this.room.onLeave((_) => (this.room = undefined));
   }
 }
