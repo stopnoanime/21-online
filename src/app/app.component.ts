@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { Player } from 'backend/src/rooms/schema/GameState';
 import { GameService } from './game.service';
 
 @Component({
@@ -8,4 +9,8 @@ import { GameService } from './game.service';
 })
 export class AppComponent {
   constructor(public game: GameService) {}
+
+  public trackByPlayerId(index: number, obj: [string, Player]) {
+    return obj[1].sessionId;
+  }
 }

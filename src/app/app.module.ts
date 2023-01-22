@@ -7,9 +7,10 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { CardComponent } from './card/card.component';
 
 @NgModule({
-  declarations: [AppComponent],
+  declarations: [AppComponent, CardComponent],
   imports: [
     BrowserModule,
     AppRoutingModule,

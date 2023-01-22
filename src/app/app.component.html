@@ -31,7 +31,7 @@ Player id:
 
   <div class="flex gap-2">
     <div
-      *ngFor="let player of game.room.state.players"
+      *ngFor="let player of game.room.state.players; trackBy: trackByPlayerId"
       class="bg-gray-400 rounded p-2 w-fit"
       [class.bg-red-400]="!player[1].ready"
       [class.bg-green-400]="
@@ -40,22 +40,21 @@ Player id:
     >
       {{ player[1].sessionId }}
 
-      <div class="p-2 rounded bg-gray-200">
+      <div class="p-2 rounded bg-gray-200 flex gap-2">
         Cards:
 
-        <div *ngFor="let card of player[1].cards">
-          {{ card.suit }} {{ card.value }}
-        </div>
+        <app-card *ngFor="let card of player[1].cards" [card]="card"></app-card>
       </div>
     </div>
   </div>
 
-  <div class="p-2 rounded bg-blue-400">
+  <div class="p-2 rounded bg-blue-400 flex gap-2">
     Dealer Cards:
 
-    <div *ngFor="let card of game.room.state.dealerCards">
-      {{ card.suit }} {{ card.value }}
-    </div>
+    <app-card
+      *ngFor="let card of game.room.state.dealerCards"
+      [card]="card"
+    ></app-card>
   </div>
 
   <div>

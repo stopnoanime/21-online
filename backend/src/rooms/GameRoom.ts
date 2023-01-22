@@ -168,10 +168,18 @@ export class GameRoom extends Room<GameState> {
   private endRound() {
     console.log('ending round');
 
-    this.state.roundInProgress = false;
-    this.state.currentTurnPlayerId = '';
+    //Remove player cards
+    for (const playerId of this.makeRoundIterator()) {
+      this.state.players.get(playerId).cards.clear();
+    }
+
+    //Remove dealer cards
+    this.state.dealerCards.clear();
 
     // TO DO: Calculate winner, give money
+
+    this.state.roundInProgress = false;
+    this.state.currentTurnPlayerId = '';
 
     this.triggerNewRoundCheck();
   }

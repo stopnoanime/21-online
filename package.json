@@ -4,6 +4,7 @@
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
+    "backend-start": "cd backend && npm start",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
     "test": "ng test",
