@@ -49,18 +49,21 @@
       ></app-timestamp-progress-spinner>
 
       <div class="p-2 rounded bg-gray-200 flex gap-2">
-        Cards:
+        Cards value: {{ player[1].hand.score }}
 
-        <app-card *ngFor="let card of player[1].cards" [card]="card"></app-card>
+        <app-card
+          *ngFor="let card of player[1].hand.cards"
+          [card]="card"
+        ></app-card>
       </div>
     </div>
   </div>
 
   <div class="p-2 rounded bg-blue-400 flex gap-2">
-    Dealer Cards:
+    Dealer Cards value: {{ game.room.state.dealerHand.score }}
 
     <app-card
-      *ngFor="let card of game.room.state.dealerCards"
+      *ngFor="let card of game.room.state.dealerHand.cards"
       [card]="card"
     ></app-card>
   </div>

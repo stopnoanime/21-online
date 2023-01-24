@@ -3,6 +3,12 @@ import { Schema, MapSchema, type, ArraySchema, filter } from '@colyseus/schema';
 export class CardValue extends Schema {
   @type('string') suit: string;
   @type('string') value: string;
+
+  public get numericValue() {
+    if (this.value == 'A') return 11;
+    if (isNaN(Number(this.value))) return 10;
+    return Number(this.value);
+  }
 }
 
 export class Card extends Schema {
@@ -47,14 +53,47 @@ export class Card extends Schema {
   value?: CardValue;
 }
 
+export class Hand extends Schema {
+  @type('string') score: string;
+  @type([Card]) cards = new ArraySchema<Card>();
+
+  public addCard(visible?: boolean) {
+    this.cards.push(new Card(visible));
+    this.score = this.calculatePoints().toString();
+  }
+
+  public clear() {
+    this.cards.clear();
+    this.score = '';
+  }
+
+  public calculatePoints() {
+    let tmpValue = this.cards
+      .map((c) => c.value!.numericValue)
+      .reduce((a, b) => a + b);
+
+    let numberOfAces = this.cards.filter((c) => c.value!.value === 'A').length;
+    while (numberOfAces > 0) {
+      if (tmpValue > 21) {
+        numberOfAces--;
+        tmpValue -= 10;
+      } else break;
+    }
+
+    if (tmpValue > 21) return 'bust';
+    if (tmpValue == 21 && this.cards.length == 2) return 'blackjack';
+
+    return tmpValue;
+  }
+}
+
 export class Player extends Schema {
   @type('string') sessionId: string;
   @type('string') displayName: string;
   @type('number') money: number = 0;
   @type('number') bet: number = 10;
   @type('boolean') ready = false;
-
-  @type([Card]) cards = new ArraySchema<Card>();
+  @type(Hand) hand = new Hand();
 }
 
 export class GameState extends Schema {
@@ -62,6 +101,6 @@ export class GameState extends Schema {
   @type('string') currentTurnPlayerId: string;
   @type('uint64') currentTurnTimeoutTimestamp: number = 0;
 
-  @type([Card]) dealerCards = new ArraySchema<Card>();
+  @type(Hand) dealerHand = new Hand();
   @type({ map: Player }) players = new MapSchema<Player>();
 }

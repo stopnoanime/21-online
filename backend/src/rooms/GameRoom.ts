@@ -57,10 +57,21 @@ export class GameRoom extends Room<GameState> {
 
       console.log('received hit');
 
-      this.state.players.get(client.sessionId).cards.push(new Card());
+      const player = this.state.players.get(client.sessionId);
 
-      //Reset kick timer
-      this.setInactivityKickTimeout();
+      player.hand.addCard();
+
+      if (player.hand.score == 'bust') {
+        //Making player not ready basically kicks them from the current round
+        player.ready = false;
+        this.turn();
+      } else if (player.hand.score == '21') {
+        //Player can't hit anymore, go to next player
+        this.turn();
+      } else {
+        //Player can still hit, Reset kick timer
+        this.setInactivityKickTimeout();
+      }
     });
 
     this.onMessage('stay', (client) => {
@@ -145,15 +156,15 @@ export class GameRoom extends Room<GameState> {
     for (const playerId of this.makeRoundIterator()) {
       const player = this.state.players.get(playerId);
 
-      player.cards.clear();
-      player.cards.push(new Card());
-      player.cards.push(new Card());
+      player.hand.clear();
+      player.hand.addCard();
+      player.hand.addCard();
     }
 
     //Deal dealer cards
-    this.state.dealerCards.clear();
-    this.state.dealerCards.push(new Card());
-    this.state.dealerCards.push(new Card(false));
+    this.state.dealerHand.clear();
+    this.state.dealerHand.addCard();
+    this.state.dealerHand.addCard(false);
 
     //Delay starting next phase
     this.clock.setTimeout(() => {
@@ -185,7 +196,13 @@ export class GameRoom extends Room<GameState> {
 
     console.log('player turn', this.state.currentTurnPlayerId);
 
-    this.setInactivityKickTimeout();
+    //Skip round if player has blackjack
+    if (
+      this.state.players.get(this.state.currentTurnPlayerId).hand.score ==
+      'blackjack'
+    )
+      this.turn();
+    else this.setInactivityKickTimeout();
   }
 
   private setInactivityKickTimeout() {
@@ -211,7 +228,7 @@ export class GameRoom extends Room<GameState> {
     this.state.roundState = 'end';
 
     //Show dealers hidden card
-    this.state.dealerCards.at(1).visible = true;
+    this.state.dealerHand.cards.at(1).visible = true;
 
     // TO DO: Calculate winner, give money
 
@@ -221,15 +238,14 @@ export class GameRoom extends Room<GameState> {
 
       this.state.roundState = 'idle';
 
-      //Remove player cards, and make players not ready
-      for (const playerId of this.makeRoundIterator()) {
-        const player = this.state.players.get(playerId);
-        player.cards.clear();
+      //Remove all players cards, and make players not ready
+      for (const player of this.state.players.values()) {
+        player.hand.clear();
         player.ready = false;
       }
 
       //Remove dealer cards
-      this.state.dealerCards.clear();
+      this.state.dealerHand.clear();
     }, this.roundStateEndTime);
   }
 }
