@@ -50,7 +50,8 @@ export class Card extends Schema {
 export class Player extends Schema {
   @type('string') sessionId: string;
   @type('string') displayName: string;
-  @type('uint32') money: number = 0;
+  @type('number') money: number = 0;
+  @type('number') bet: number = 10;
   @type('boolean') ready = false;
 
   @type([Card]) cards = new ArraySchema<Card>();

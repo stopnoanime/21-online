@@ -10,12 +10,14 @@ import { MatInputModule } from '@angular/material/input';
 import { CardComponent } from './card/card.component';
 import { TimestampProgressSpinnerComponent } from './timestamp-progress-spinner/timestamp-progress-spinner.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { PlayerActionComponent } from './player-action/player-action.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     CardComponent,
     TimestampProgressSpinnerComponent,
+    PlayerActionComponent,
   ],
   imports: [
     BrowserModule,

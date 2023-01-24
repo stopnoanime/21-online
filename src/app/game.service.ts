@@ -1,20 +1,36 @@
 import { Injectable } from '@angular/core';
 import { GameState } from 'backend/src/rooms/schema/GameState';
 import * as Colyseus from 'colyseus.js';
-import { BehaviorSubject } from 'rxjs';
 import { environment } from '../environments/environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
-  client: Colyseus.Client;
-  room?: Colyseus.Room<GameState>;
-  stateChange = new BehaviorSubject<GameState | undefined>(undefined);
+  public get room() {
+    return this._room;
+  }
+
+  public get roundInProgress() {
+    return !!this._room && this._room.state.roundState != 'idle';
+  }
+
+  public get player() {
+    return this._room?.state.players.get(this._room.sessionId);
+  }
+
+  public get playersTurn() {
+    return (
+      !!this._room &&
+      this._room.state.currentTurnPlayerId == this._room.sessionId
+    );
+  }
+
+  private _room?: Colyseus.Room<GameState>;
+  private client: Colyseus.Client;
 
   constructor() {
     this.client = new Colyseus.Client(environment.gameServer);
-    this.stateChange.subscribe(console.log);
   }
 
   public async createRoom() {
@@ -25,20 +41,24 @@ export class GameService {
     this.updateRoom(await this.client.joinById(id));
   }
 
-  public sendMove() {
-    this.room?.send('move');
+  public setReadyState(newState: boolean) {
+    this.room?.send('ready', newState);
   }
 
-  public changeReadyState() {
-    this.room?.send(
-      'ready',
-      !this.room.state.players.get(this.room.sessionId)?.ready
-    );
+  public setBet(newBet: number) {
+    this.room?.send('bet', newBet);
+  }
+
+  public hit() {
+    this.room?.send('hit');
+  }
+
+  public stay() {
+    this.room?.send('stay');
   }
 
   private updateRoom(room: Colyseus.Room<GameState>) {
-    this.room = room;
-    this.room.onStateChange((s) => this.stateChange.next(s));
-    this.room.onLeave((_) => (this.room = undefined));
+    this._room = room;
+    this._room.onLeave((_) => (this._room = undefined));
   }
 }

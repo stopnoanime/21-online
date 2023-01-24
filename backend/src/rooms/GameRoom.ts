@@ -16,6 +16,9 @@ export class GameRoom extends Room<GameState> {
   private roundStateDealingTime = 1000;
   private roundStateEndTime = 2000;
 
+  private minBet = 1;
+  private maxBet = 100;
+
   public maxClients = 8;
 
   onCreate(options: any) {
@@ -23,25 +26,49 @@ export class GameRoom extends Room<GameState> {
     this.setState(new GameState({}));
     this.clock.start();
 
-    this.onMessage('move', (client, message: string) => {
-      if (client.sessionId != this.state.currentTurnPlayerId) return;
-
-      console.log('recived move');
-
-      // TO DO: move handling logic
-
-      this.turn();
-    });
-
-    this.onMessage('ready', (client, message: boolean) => {
+    this.onMessage('ready', (client, state: boolean) => {
       //Cant change ready state during round
       if (this.state.roundState != 'idle') return;
 
-      console.log('recived state change', message);
+      console.log('received state change', state);
 
-      this.state.players.get(client.sessionId).ready = message;
+      this.state.players.get(client.sessionId).ready = state;
 
       this.triggerNewRoundCheck();
+    });
+
+    this.onMessage('bet', (client, newBet: number) => {
+      if (
+        this.state.roundState != 'idle' || //Cant change bet during round
+        this.state.players.get(client.sessionId).ready || //Cant change bet when ready
+        !Number.isInteger(newBet) || // new bet is invalid
+        newBet < this.minBet ||
+        newBet > this.maxBet // new bet is out of range
+      )
+        return;
+
+      console.log('received bet change');
+
+      this.state.players.get(client.sessionId).bet = newBet;
+    });
+
+    this.onMessage('hit', (client) => {
+      if (client.sessionId != this.state.currentTurnPlayerId) return;
+
+      console.log('received hit');
+
+      this.state.players.get(client.sessionId).cards.push(new Card());
+
+      //Reset kick timer
+      this.setInactivityKickTimeout();
+    });
+
+    this.onMessage('stay', (client) => {
+      if (client.sessionId != this.state.currentTurnPlayerId) return;
+
+      console.log('received stay');
+
+      this.turn();
     });
   }
 
@@ -158,9 +185,15 @@ export class GameRoom extends Room<GameState> {
 
     console.log('player turn', this.state.currentTurnPlayerId);
 
-    // Set inactivity timeout after which player will be kicked;
+    this.setInactivityKickTimeout();
+  }
+
+  private setInactivityKickTimeout() {
     this.state.currentTurnTimeoutTimestamp =
       Date.now() + this.inactivityTimeout;
+
+    this.inactivityKickRef?.clear();
+
     this.inactivityKickRef = this.clock.setTimeout(() => {
       console.log('inactivity timeout');
 
@@ -188,15 +221,15 @@ export class GameRoom extends Room<GameState> {
 
       this.state.roundState = 'idle';
 
-      //Remove player cards
+      //Remove player cards, and make players not ready
       for (const playerId of this.makeRoundIterator()) {
-        this.state.players.get(playerId).cards.clear();
+        const player = this.state.players.get(playerId);
+        player.cards.clear();
+        player.ready = false;
       }
 
       //Remove dealer cards
       this.state.dealerCards.clear();
-
-      this.triggerNewRoundCheck();
     }, this.roundStateEndTime);
   }
 }

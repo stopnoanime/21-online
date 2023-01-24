@@ -12,23 +12,26 @@
 <button mat-raised-button color="primary" (click)="game.joinRoom(roomId.value)">
   Join room
 </button>
-Room id:
-{{ game.room?.id }}
-
-Player id:
-{{ game.room?.sessionId }}
-
-<button mat-raised-button color="primary" (click)="game.changeReadyState()">
-  Change ready state
-</button>
-
-<button mat-raised-button color="primary" (click)="game.sendMove()">
-  Send move
-</button>
 
 <div class="bg-gray-100 p-2" *ngIf="game.room">
-  Players:
+  Room id:
+  {{ game.room.id }}
 
+  Player id:
+  {{ game.room.sessionId }}
+
+  <app-player-action
+    [roundInProgress]="game.roundInProgress"
+    [playersTurn]="game.playersTurn"
+    [ready]="game.player?.ready!"
+    (readyChange)="game.setReadyState($event)"
+    [bet]="game.player?.bet!"
+    (betChange)="game.setBet($event)"
+    (hit)="game.hit()"
+    (stay)="game.stay()"
+  ></app-player-action>
+
+  Players:
   <div class="flex gap-2">
     <div
       *ngFor="let player of game.room.state.players; trackBy: trackByPlayerId"
