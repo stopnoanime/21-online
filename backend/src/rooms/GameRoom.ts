@@ -14,7 +14,7 @@ export class GameRoom extends Room<GameState> {
   private delayedRoundStartRef: Delayed;
 
   private roundStateDealingTime = 1000;
-  private roundStateEndTime = 2000;
+  private roundStateEndTime = 5000;
 
   private minBet = 1;
   private maxBet = 100;
@@ -61,11 +61,12 @@ export class GameRoom extends Room<GameState> {
 
       player.hand.addCard();
 
-      if (player.hand.score == 'bust') {
+      if (player.hand.score > 21) {
+        //Bust
         //Making player not ready basically kicks them from the current round
         player.ready = false;
         this.turn();
-      } else if (player.hand.score == '21') {
+      } else if (player.hand.score == 21) {
         //Player can't hit anymore, go to next player
         this.turn();
       } else {
@@ -152,10 +153,13 @@ export class GameRoom extends Room<GameState> {
 
     this.state.roundState = 'dealing';
 
-    //Deal player cards
     for (const playerId of this.makeRoundIterator()) {
       const player = this.state.players.get(playerId);
 
+      //Take money for bet from player account
+      player.money -= player.bet;
+
+      //Deal player cards
       player.hand.clear();
       player.hand.addCard();
       player.hand.addCard();
@@ -197,10 +201,7 @@ export class GameRoom extends Room<GameState> {
     console.log('player turn', this.state.currentTurnPlayerId);
 
     //Skip round if player has blackjack
-    if (
-      this.state.players.get(this.state.currentTurnPlayerId).hand.score ==
-      'blackjack'
-    )
+    if (this.state.players.get(this.state.currentTurnPlayerId).hand.score == 21)
       this.turn();
     else this.setInactivityKickTimeout();
   }
@@ -230,7 +231,37 @@ export class GameRoom extends Room<GameState> {
     //Show dealers hidden card
     this.state.dealerHand.cards.at(1).visible = true;
 
-    // TO DO: Calculate winner, give money
+    //Calculate hand value after showing hidden card
+    this.state.dealerHand.calculateScore();
+
+    //Do not deal dealer cards if all players are busted
+    if (!this.makeRoundIterator().next().done) {
+      //Dealer draws cards until total is at least 17
+      while (this.state.dealerHand.score < 17) {
+        this.state.dealerHand.addCard();
+      }
+
+      //Settle score between each player that's not busted, and dealer
+      for (const playerId of this.makeRoundIterator()) {
+        const player = this.state.players.get(playerId);
+
+        if (player.hand.isBlackjack && !this.state.dealerHand.isBlackjack) {
+          // Player wins 3:2
+          player.money += (5 / 2) * player.bet;
+        } else if (
+          this.state.dealerHand.score > 21 || //dealer busted, player wins
+          player.hand.score > this.state.dealerHand.score // player has higher score than dealer, player wins
+        ) {
+          player.money += player.bet * 2;
+        } else if (
+          player.hand.score == this.state.dealerHand.score && //Score is the same
+          !(!player.hand.isBlackjack && this.state.dealerHand.isBlackjack) //And dealer does not have blackjack if player also doesn't have it
+        ) {
+          //Tie
+          player.money += player.bet;
+        }
+      }
+    }
 
     //Delay starting next phase
     this.clock.setTimeout(() => {

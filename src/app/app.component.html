@@ -1,17 +1,21 @@
-<span class="text-gray-600"></span>
+<div *ngIf="!game.room">
+  <button mat-raised-button color="primary" (click)="game.createRoom()">
+    Create room
+  </button>
 
-<button mat-raised-button color="primary" (click)="game.createRoom()">
-  Create room
-</button>
+  <mat-form-field appearance="fill">
+    <mat-label>Input</mat-label>
+    <input matInput #roomId />
+  </mat-form-field>
 
-<mat-form-field appearance="fill">
-  <mat-label>Input</mat-label>
-  <input matInput #roomId />
-</mat-form-field>
-
-<button mat-raised-button color="primary" (click)="game.joinRoom(roomId.value)">
-  Join room
-</button>
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="game.joinRoom(roomId.value)"
+  >
+    Join room
+  </button>
+</div>
 
 <div class="bg-gray-100 p-2" *ngIf="game.room">
   Room id:
@@ -42,6 +46,7 @@
       "
     >
       {{ player[1].sessionId }}
+      Player money: {{ player[1].money }}
 
       <app-timestamp-progress-spinner
         *ngIf="game.room.state.currentTurnPlayerId == player[1].sessionId"

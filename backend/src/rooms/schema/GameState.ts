@@ -54,43 +54,48 @@ export class Card extends Schema {
 }
 
 export class Hand extends Schema {
-  @type('string') score: string;
+  @type('number') score: number;
+  @type('boolean') isBlackjack: boolean = false;
   @type([Card]) cards = new ArraySchema<Card>();
 
   public addCard(visible?: boolean) {
     this.cards.push(new Card(visible));
-    this.score = this.calculatePoints().toString();
+    if (visible === false) this.clearScore();
+    else this.calculateScore();
   }
 
   public clear() {
     this.cards.clear();
-    this.score = '';
+    this.clearScore();
   }
 
-  public calculatePoints() {
-    let tmpValue = this.cards
+  public clearScore() {
+    this.score = 0;
+    this.isBlackjack = false;
+  }
+
+  public calculateScore() {
+    let tmpScore = this.cards
       .map((c) => c.value!.numericValue)
       .reduce((a, b) => a + b);
 
     let numberOfAces = this.cards.filter((c) => c.value!.value === 'A').length;
     while (numberOfAces > 0) {
-      if (tmpValue > 21) {
+      if (tmpScore > 21) {
         numberOfAces--;
-        tmpValue -= 10;
+        tmpScore -= 10;
       } else break;
     }
 
-    if (tmpValue > 21) return 'bust';
-    if (tmpValue == 21 && this.cards.length == 2) return 'blackjack';
-
-    return tmpValue;
+    this.score = tmpScore;
+    this.isBlackjack = tmpScore == 21 && this.cards.length == 2;
   }
 }
 
 export class Player extends Schema {
   @type('string') sessionId: string;
   @type('string') displayName: string;
-  @type('number') money: number = 0;
+  @type('number') money: number = 1000;
   @type('number') bet: number = 10;
   @type('boolean') ready = false;
   @type(Hand) hand = new Hand();
