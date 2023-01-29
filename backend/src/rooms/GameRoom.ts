@@ -1,5 +1,6 @@
 import { Room, Client, Delayed } from 'colyseus';
-import { Card, GameState, Player } from './schema/GameState';
+import { GameState, Player } from './schema/GameState';
+import { uniqueNamesGenerator, colors, animals } from 'unique-names-generator';
 
 export class GameRoom extends Room<GameState> {
   /** ms after which player is kicked if inactive */
@@ -42,7 +43,7 @@ export class GameRoom extends Room<GameState> {
     return id;
   }
 
-  async onCreate(options: any) {
+  async onCreate() {
     this.roomId = await this.generateRoomId();
     this.setPrivate();
     this.setState(new GameState({}));
@@ -106,14 +107,18 @@ export class GameRoom extends Room<GameState> {
     });
   }
 
-  onJoin(client: Client, options: { displayName?: string }) {
+  onJoin(client: Client) {
     console.log('client join', client.sessionId);
 
     this.state.players.set(
       client.sessionId,
       new Player({
         sessionId: client.sessionId,
-        displayName: options.displayName,
+        displayName: uniqueNamesGenerator({
+          dictionaries: [colors, animals],
+          separator: ' ',
+          style: 'capital',
+        }),
       })
     );
     this.triggerNewRoundCheck();
