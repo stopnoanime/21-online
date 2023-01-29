@@ -21,7 +21,29 @@ export class GameRoom extends Room<GameState> {
 
   public maxClients = 8;
 
-  onCreate(options: any) {
+  private LOBBY_CHANNEL = 'GameRoom';
+
+  private generateRoomIdString(): string {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+    let result = '';
+    for (let i = 0; i < 4; i++)
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    return result;
+  }
+
+  private async generateRoomId(): Promise<string> {
+    const currentIds = await this.presence.smembers(this.LOBBY_CHANNEL);
+    let id;
+
+    do id = this.generateRoomIdString();
+    while (currentIds.includes(id));
+
+    await this.presence.sadd(this.LOBBY_CHANNEL, id);
+    return id;
+  }
+
+  async onCreate(options: any) {
+    this.roomId = await this.generateRoomId();
     this.setPrivate();
     this.setState(new GameState({}));
     this.clock.start();
@@ -108,6 +130,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   onDispose() {
+    this.presence.srem(this.LOBBY_CHANNEL, this.roomId);
     console.log('room', this.roomId, 'disposing...');
   }
 
