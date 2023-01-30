@@ -1,0 +1,13 @@
+.strike-block {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+}
+
+.strike-block:before,
+.strike-block:after {
+  content: "";
+  flex: 1 1;
+  border-bottom: 1px solid;
+  margin: auto;
+}

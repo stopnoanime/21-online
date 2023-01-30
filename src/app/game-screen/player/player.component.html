@@ -1,0 +1,24 @@
+<div
+  class="rounded p-2 w-fit"
+  [ngClass]="
+    !player.ready
+      ? 'bg-red-600'
+      : game.room!.state.currentTurnPlayerId == player.sessionId
+      ? 'bg-green-500'
+      : 'bg-neutral-700'
+  "
+>
+  {{ player.displayName }}
+  Player money: {{ player.money }}
+
+  <app-timestamp-progress-spinner
+    *ngIf="game.room!.state.currentTurnPlayerId == player.sessionId"
+    [endTimestamp]="game.room!.state.currentTurnTimeoutTimestamp"
+  ></app-timestamp-progress-spinner>
+
+  <div class="p-2 rounded bg-neutral-500 flex gap-2">
+    Cards value: {{ player.hand.score }}
+
+    <app-card *ngFor="let card of player.hand.cards" [card]="card"></app-card>
+  </div>
+</div>

@@ -1,0 +1,27 @@
+<div
+  class="grid place-items-center min-h-screen bg-neutral-800 p-12 text-neutral-200"
+  style="grid-template-rows: auto 1fr"
+>
+  <span class="mat-headline-1">21 Online</span>
+
+  <div class="flex flex-col gap-8">
+    <button mat-raised-button color="primary" (click)="game.createRoom()">
+      Create room
+    </button>
+
+    <span class="strike-block"> or </span>
+
+    <mat-form-field appearance="fill" class="-mb-4">
+      <mat-label>Room ID</mat-label>
+      <input matInput #roomId />
+    </mat-form-field>
+
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="game.joinRoom(roomId.value)"
+    >
+      Join room
+    </button>
+  </div>
+</div>

@@ -13,8 +13,8 @@ import {
 
 @Component({
   selector: 'app-card',
-  templateUrl: './card.component.html',
-  styleUrls: ['./card.component.scss'],
+  templateUrl: './playing-card.component.html',
+  styleUrls: ['./playing-card.component.scss'],
   animations: [
     trigger('enterLeaveAnimation', [
       transition(':enter', [
@@ -51,7 +51,7 @@ import {
     ]),
   ],
 })
-export class CardComponent {
+export class PlayingCardComponent {
   @HostBinding('@enterLeaveAnimation') enterLeaveAnimation = true;
   @Input() card: Card;
 }

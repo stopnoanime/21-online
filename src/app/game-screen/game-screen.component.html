@@ -1,0 +1,23 @@
+<div
+  class="grid place-items-center min-h-screen bg-neutral-800 p-12 text-neutral-200"
+>
+  <div>
+    <div class="flex gap-2">
+      <app-player
+        *ngFor="let player of room.state.players; trackBy: trackByPlayerId"
+        [player]="player[1]"
+      ></app-player>
+    </div>
+
+    <div class="p-2 rounded bg-blue-400 flex gap-2">
+      Dealer Cards value: {{ room.state.dealerHand.score }}
+
+      <app-card
+        *ngFor="let card of room.state.dealerHand.cards"
+        [card]="card"
+      ></app-card>
+    </div>
+
+    <app-player-actions></app-player-actions>
+  </div>
+</div>

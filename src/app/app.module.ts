@@ -7,17 +7,23 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { CardComponent } from './card/card.component';
-import { TimestampProgressSpinnerComponent } from './timestamp-progress-spinner/timestamp-progress-spinner.component';
+import { PlayingCardComponent } from './game-screen/playing-card/playing-card.component';
+import { TimestampProgressSpinnerComponent } from './game-screen/player//timestamp-progress-spinner/timestamp-progress-spinner.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { PlayerActionComponent } from './player-action/player-action.component';
+import { PlayerActionsComponent } from './game-screen/player-action/player-action.component';
+import { GameScreenComponent } from './game-screen/game-screen.component';
+import { JoinScreenComponent } from './join-screen/join-screen.component';
+import { PlayerComponent } from './game-screen/player/player.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    CardComponent,
+    PlayingCardComponent,
     TimestampProgressSpinnerComponent,
-    PlayerActionComponent,
+    PlayerActionsComponent,
+    GameScreenComponent,
+    JoinScreenComponent,
+    PlayerComponent,
   ],
   imports: [
     BrowserModule,
