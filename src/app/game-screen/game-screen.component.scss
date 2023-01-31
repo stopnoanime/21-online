@@ -1,0 +1,38 @@
+@use "sass:math";
+
+/// Modified from https://css-tricks.com/snippets/sass/placing-items-circle/
+/// Mixin to place items on a ellipse
+/// @author Kitty Giraudel
+/// @author Ana Tudor
+/// @author stopnoanime
+/// @param {Integer} $item-count - Number of items on the ellipse
+/// @param {Length} $ellipse-x - Ellipse width
+/// @param {Length} $ellipse-y - Ellipse height
+@mixin on-ellipse($item-count, $ellipse-x, $ellipse-y) {
+  display: grid;
+  place-items: center;
+  width: $ellipse-x;
+  height: $ellipse-y;
+
+  > * {
+    grid-column: 1;
+    grid-row: 1;
+
+    $angleStep: calc(360 / $item-count);
+    $angle: 270;
+
+    @for $i from 1 through $item-count {
+      &:nth-child(#{$i}) {
+        transform: translate(
+          calc($ellipse-x / 2 * math.cos($angle * 1deg)),
+          calc($ellipse-y / 2 * math.sin($angle * 1deg))
+        );
+      }
+      $angle: $angle + $angleStep;
+    }
+  }
+}
+
+.player-holder {
+  @include on-ellipse(8, 1000px, 500px);
+}

@@ -8,7 +8,7 @@ import { GameService } from 'src/app/game.service';
   styleUrls: ['./player.component.scss'],
 })
 export class PlayerComponent {
-  @Input() player: Player;
+  @Input() player?: Player;
 
   constructor(public game: GameService) {}
 }

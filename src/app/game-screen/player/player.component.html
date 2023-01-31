@@ -1,5 +1,7 @@
+<div *ngIf="!player">No player</div>
 <div
   class="rounded p-2 w-fit"
+  *ngIf="player"
   [ngClass]="
     !player.ready
       ? 'bg-red-600'

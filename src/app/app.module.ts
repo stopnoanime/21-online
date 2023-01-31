@@ -7,7 +7,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { PlayingCardComponent } from './game-screen/playing-card/playing-card.component';
+import { PlayingCardComponent } from './game-screen/player/playing-card/playing-card.component';
 import { TimestampProgressSpinnerComponent } from './game-screen/player//timestamp-progress-spinner/timestamp-progress-spinner.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PlayerActionsComponent } from './game-screen/player-action/player-action.component';

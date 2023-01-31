@@ -20,7 +20,7 @@ export class GameRoom extends Room<GameState> {
   private minBet = 1;
   private maxBet = 100;
 
-  public maxClients = 8;
+  public maxClients = 7;
 
   private LOBBY_CHANNEL = 'GameRoom';
 
