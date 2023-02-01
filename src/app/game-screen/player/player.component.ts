@@ -1,7 +1,6 @@
 import { Component, Input } from '@angular/core';
-import { Player } from 'backend/src/rooms/schema/GameState';
+import { Card, Hand, Player } from 'backend/src/rooms/schema/GameState';
 import { GameService } from 'src/app/game.service';
-
 @Component({
   selector: 'app-player',
   templateUrl: './player.component.html',
@@ -9,6 +8,21 @@ import { GameService } from 'src/app/game.service';
 })
 export class PlayerComponent {
   @Input() player?: Player;
+  @Input() hand?: Hand;
+
+  @Input() type: 'dealer' | 'player' = 'player';
+
+  get cards() {
+    return this.player?.hand.cards || this.hand?.cards!;
+  }
+
+  get cardsValue() {
+    return this.player?.hand.score || this.hand?.score;
+  }
+
+  get isPlayerTurn() {
+    return this.game.room!.state.currentTurnPlayerId == this.player?.sessionId;
+  }
 
   constructor(public game: GameService) {}
 }

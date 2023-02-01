@@ -36,7 +36,7 @@ export class GameScreenComponent {
       );
     }
 
-    //Make player index equal 3
+    //Make player index equal 3 to position it at bottom of table
     players = this.rotateArray(players, 4);
 
     return players;

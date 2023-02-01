@@ -1,38 +1,38 @@
 @use "sass:math";
 
 /// Modified from https://css-tricks.com/snippets/sass/placing-items-circle/
-/// Mixin to place items on a ellipse
-/// @author Kitty Giraudel
-/// @author Ana Tudor
-/// @author stopnoanime
-/// @param {Integer} $item-count - Number of items on the ellipse
-/// @param {Length} $ellipse-x - Ellipse width
-/// @param {Length} $ellipse-y - Ellipse height
-@mixin on-ellipse($item-count, $ellipse-x, $ellipse-y) {
-  display: grid;
-  place-items: center;
-  width: $ellipse-x;
-  height: $ellipse-y;
+@mixin playingTable($players-count, $card-position) {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 2/1;
 
   > * {
-    grid-column: 1;
-    grid-row: 1;
+    position: absolute;
 
-    $angleStep: calc(360 / $item-count);
+    $angleStep: calc(360 / $players-count);
     $angle: 270;
 
-    @for $i from 1 through $item-count {
+    @for $i from 1 through $players-count {
       &:nth-child(#{$i}) {
-        transform: translate(
-          calc($ellipse-x / 2 * math.cos($angle * 1deg)),
-          calc($ellipse-y / 2 * math.sin($angle * 1deg))
-        );
+        left: calc(50% * math.cos($angle * 1deg) + 50%);
+        top: calc(50% * math.sin($angle * 1deg) + 50%);
+        transform: translate(-50%, -50%);
+
+        ::ng-deep .card-holder {
+          transform: translate(
+            calc(-100% * math.cos($angle * 1deg)),
+            calc(-100% * math.sin($angle * 1deg))
+          );
+        }
       }
+
       $angle: $angle + $angleStep;
     }
   }
 }
 
 .player-holder {
-  @include on-ellipse(8, 1000px, 500px);
+  @include playingTable(8, 0.5);
+  border-radius: 100%;
+  @apply bg-green-600;
 }

@@ -1,17 +1,17 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { TimestampProgressSpinnerComponent } from './timestamp-progress-spinner.component';
+import { TimestampProgressSpinnerBar } from './timestamp-progress-bar.component';
 
 describe('TimestampProgressSpinnerComponent', () => {
-  let component: TimestampProgressSpinnerComponent;
-  let fixture: ComponentFixture<TimestampProgressSpinnerComponent>;
+  let component: TimestampProgressSpinnerBar;
+  let fixture: ComponentFixture<TimestampProgressSpinnerBar>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [TimestampProgressSpinnerComponent],
+      declarations: [TimestampProgressSpinnerBar],
     }).compileComponents();
 
-    fixture = TestBed.createComponent(TimestampProgressSpinnerComponent);
+    fixture = TestBed.createComponent(TimestampProgressSpinnerBar);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

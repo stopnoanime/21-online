@@ -2,11 +2,11 @@ import { Component, Input, OnChanges } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 
 @Component({
-  selector: 'app-timestamp-progress-spinner',
-  templateUrl: './timestamp-progress-spinner.component.html',
-  styleUrls: ['./timestamp-progress-spinner.component.scss'],
+  selector: 'app-timestamp-progress-bar',
+  templateUrl: './timestamp-progress-bar.component.html',
+  styleUrls: ['./timestamp-progress-bar.component.scss'],
 })
-export class TimestampProgressSpinnerComponent implements OnChanges {
+export class TimestampProgressSpinnerBar implements OnChanges {
   @Input() endTimestamp: number;
   value: number = 0;
 
@@ -14,8 +14,6 @@ export class TimestampProgressSpinnerComponent implements OnChanges {
 
   ngOnChanges() {
     this.timerSubscription?.unsubscribe();
-
-    if (!this.endTimestamp) return;
     this.setTimer(this.endTimestamp);
   }
 

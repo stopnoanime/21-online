@@ -8,18 +8,19 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { PlayingCardComponent } from './game-screen/player/playing-card/playing-card.component';
-import { TimestampProgressSpinnerComponent } from './game-screen/player//timestamp-progress-spinner/timestamp-progress-spinner.component';
+import { TimestampProgressSpinnerBar } from './game-screen/player/timestamp-progress-bar/timestamp-progress-bar.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PlayerActionsComponent } from './game-screen/player-action/player-action.component';
 import { GameScreenComponent } from './game-screen/game-screen.component';
 import { JoinScreenComponent } from './join-screen/join-screen.component';
 import { PlayerComponent } from './game-screen/player/player.component';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
 
 @NgModule({
   declarations: [
     AppComponent,
     PlayingCardComponent,
-    TimestampProgressSpinnerComponent,
+    TimestampProgressSpinnerBar,
     PlayerActionsComponent,
     GameScreenComponent,
     JoinScreenComponent,
@@ -32,7 +33,7 @@ import { PlayerComponent } from './game-screen/player/player.component';
     MatButtonModule,
     MatFormFieldModule,
     MatInputModule,
-    MatProgressSpinnerModule,
+    MatProgressBarModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

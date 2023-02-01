@@ -1,6 +1,6 @@
 .card-container {
-  width: 200px;
-  height: 260px;
+  width: 100px;
+  height: 130px;
   perspective: 600px;
 }
 
@@ -18,7 +18,7 @@
   backface-visibility: hidden;
   display: grid;
   place-items: center;
-  @apply bg-green-600;
+  @apply bg-neutral-300 rounded-xl text-neutral-800 text-lg;
 }
 
 .card-face-back {

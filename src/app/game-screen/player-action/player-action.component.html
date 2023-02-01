@@ -1,28 +1,24 @@
-<div class="w-64">
-  <!-- Bet input -->
-  <div class="flex gap-2 p-2" [class.opacity-30]="game.roundInProgress">
-    Bet: {{ game.player?.bet }}
-    <button (click)="game.setBet(5)">5</button>
-    <button (click)="game.setBet(10)">10</button>
-    <button (click)="game.setBet(50)">50</button>
-  </div>
+<!-- Bet input -->
+<div class="flex gap-2 p-2" [class.opacity-30]="game.roundInProgress">
+  Bet: {{ game.player?.bet }}
+  <button (click)="game.setBet(5)">5</button>
+  <button (click)="game.setBet(10)">10</button>
+  <button (click)="game.setBet(50)">50</button>
+</div>
 
-  <!-- Ready input -->
-  <div *ngIf="!game.roundInProgress">
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="game.setReadyState(!game.player?.ready)"
-    >
-      {{ game.player?.ready ? "Not ready" : "Ready" }}
-    </button>
-  </div>
+<!-- Ready input -->
+<div *ngIf="!game.roundInProgress">
+  <button
+    mat-raised-button
+    color="primary"
+    (click)="game.setReadyState(!game.player?.ready)"
+  >
+    {{ game.player?.ready ? "Not ready" : "Ready" }}
+  </button>
+</div>
 
-  <!-- Action input-->
-  <div *ngIf="game.roundInProgress" [class.opacity-30]="!game.playersTurn">
-    <button mat-raised-button color="primary" (click)="game.stay()">
-      Stay
-    </button>
-    <button mat-raised-button color="primary" (click)="game.hit()">Hit</button>
-  </div>
+<!-- Action input-->
+<div *ngIf="game.roundInProgress" [class.opacity-30]="!game.playersTurn">
+  <button mat-raised-button color="primary" (click)="game.stay()">Stay</button>
+  <button mat-raised-button color="primary" (click)="game.hit()">Hit</button>
 </div>

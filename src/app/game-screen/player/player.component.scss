@@ -1,0 +1,9 @@
+:host {
+  display: grid;
+  place-items: center;
+}
+
+:host > * {
+  grid-column: 1;
+  grid-row: 1;
+}

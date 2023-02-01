@@ -1,26 +1,25 @@
-<div *ngIf="!player">No player</div>
 <div
-  class="rounded p-2 w-fit"
-  *ngIf="player"
-  [ngClass]="
-    !player.ready
-      ? 'bg-red-600'
-      : game.room!.state.currentTurnPlayerId == player.sessionId
-      ? 'bg-green-500'
-      : 'bg-neutral-700'
-  "
+  class="rounded p-2 bg-neutral-600 flex flex-col gap-2"
+  [class.opacity-70]="type == 'player' && !player?.ready"
 >
-  {{ player.displayName }}
-  Player money: {{ player.money }}
+  <span class="text-lg">{{
+    type == "dealer" ? "Dealer" : player?.displayName || "No Player"
+  }}</span>
+  <span class="text-sm" *ngIf="player">Player money: {{ player.money }}</span>
 
-  <app-timestamp-progress-spinner
-    *ngIf="game.room!.state.currentTurnPlayerId == player.sessionId"
-    [endTimestamp]="game.room!.state.currentTurnTimeoutTimestamp"
-  ></app-timestamp-progress-spinner>
+  <app-timestamp-progress-bar
+    *ngIf="player"
+    class="scale-y-150"
+    [endTimestamp]="
+      isPlayerTurn ? game.room!.state.currentTurnTimeoutTimestamp : 0
+    "
+  ></app-timestamp-progress-bar>
+</div>
 
-  <div class="p-2 rounded bg-neutral-500 flex gap-2">
-    Cards value: {{ player.hand.score }}
-
-    <app-card *ngFor="let card of player.hand.cards" [card]="card"></app-card>
+<div class="card-holder">
+  <div class="flex gap-2">
+    <app-card *ngFor="let card of cards" [card]="card"></app-card>
   </div>
+
+  <span *ngIf="cardsValue"> Cards value: {{ cardsValue }}</span>
 </div>
