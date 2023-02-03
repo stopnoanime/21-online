@@ -1,6 +1,6 @@
 .card-container {
   width: 100px;
-  height: 130px;
+  height: 140px;
   perspective: 600px;
 }
 
@@ -9,6 +9,7 @@
   height: 100%;
   position: relative;
   transform-style: preserve-3d;
+  @apply text-neutral-800;
 }
 
 .card-face {
@@ -16,12 +17,33 @@
   height: 100%;
   width: 100%;
   backface-visibility: hidden;
-  display: grid;
-  place-items: center;
-  @apply bg-neutral-300 rounded-xl text-neutral-800 text-lg;
+  box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.4);
+  font-size: 1.5rem;
+  line-height: 1.6rem;
+  @apply bg-neutral-100 rounded-xl;
 }
 
 .card-face-back {
   @extend .card-face;
   transform: rotateY(180deg);
+}
+
+.top-left {
+  position: absolute;
+  top: 0.3em;
+  left: 0.8em;
+}
+
+.bottom-right {
+  position: absolute;
+  bottom: 0.3em;
+  right: 0.8em;
+  rotate: 180deg;
+}
+
+.card-suit,
+.card-value {
+  width: 1em;
+  text-align: center;
+  transform: translate(-50%, 0);
 }

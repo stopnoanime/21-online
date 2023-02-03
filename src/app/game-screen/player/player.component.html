@@ -17,9 +17,14 @@
 </div>
 
 <div class="card-holder">
-  <div class="flex gap-2">
-    <app-card *ngFor="let card of cards" [card]="card"></app-card>
+  <div class="flex">
+    <div class="hand mb-4">
+      <app-card *ngFor="let card of cards" [card]="card"></app-card>
+    </div>
+    <div style="width: 60px"></div>
   </div>
 
-  <span *ngIf="cardsValue"> Cards value: {{ cardsValue }}</span>
+  <div *ngIf="cardsValue" class="text-center">
+    Cards value: {{ cardsValue }}
+  </div>
 </div>

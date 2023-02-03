@@ -12,7 +12,7 @@ export class CardValue extends Schema {
 }
 
 export class Card extends Schema {
-  private availableSuits = ['Hearts', 'Diamonds', 'Spades', 'Clubs'];
+  private availableSuits = ['♠︎', '♥︎', '♣︎', '♦︎'];
   private availableValues = [
     'A',
     '2',

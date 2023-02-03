@@ -1,8 +1,32 @@
 <div class="card-container">
-  <div class="card text-white" [@hiddenVisible]="card.visible">
-    <div class="card-face">?</div>
-    <div class="card-face-back">
-      {{ card.value?.suit }} {{ card.value?.value }}
+  <div class="card" [@hiddenVisible]="card.visible">
+    <div class="card-face">
+      <div class="grid items-center text-8xl font-thin text-center h-full">
+        ?
+      </div>
+    </div>
+    <div
+      class="card-face-back"
+      [class.text-red-600]="
+        card.value?.suit == '♥︎' || card.value?.suit == '♦︎'
+      "
+    >
+      <div class="top-left">
+        <div class="card-suit">
+          {{ card.value?.suit }}
+        </div>
+        <div class="card-value">
+          {{ card.value?.value }}
+        </div>
+      </div>
+      <div class="bottom-right">
+        <div class="card-suit">
+          {{ card.value?.suit }}
+        </div>
+        <div class="card-value">
+          {{ card.value?.value }}
+        </div>
+      </div>
     </div>
   </div>
 </div>

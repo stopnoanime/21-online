@@ -7,3 +7,9 @@
   grid-column: 1;
   grid-row: 1;
 }
+
+.hand {
+  display: grid;
+  grid-auto-columns: 40px;
+  grid-auto-flow: column;
+}
