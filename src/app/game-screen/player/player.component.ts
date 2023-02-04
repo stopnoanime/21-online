@@ -20,6 +20,10 @@ export class PlayerComponent {
     return this.player?.hand.score || this.hand?.score;
   }
 
+  get busted() {
+    return this.cardsValue! > 21;
+  }
+
   get isBlackjack() {
     return this.player?.hand.isBlackjack || this.hand?.isBlackjack;
   }

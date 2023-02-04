@@ -17,20 +17,26 @@
 </div>
 
 <div class="card-holder">
-  <div class="flex">
-    <div class="hand mb-4">
-      <app-card *ngFor="let card of cards" [card]="card"></app-card>
+  <div class="grid mb-4 place-items-center">
+    <div
+      class="bg-black z-10 rounded-xl p-3 text-xl transition-opacity duration-1000 col-start-1 row-start-1"
+      [ngClass]="busted ? 'opacity-80' : 'opacity-0'"
+    >
+      Busted
     </div>
-    <div style="width: 60px"></div>
+
+    <div
+      class="flex col-start-1 row-start-1 transition-opacity duration-1000"
+      [class.opacity-80]="busted"
+    >
+      <div class="hand">
+        <app-card *ngFor="let card of cards" [card]="card"></app-card>
+      </div>
+      <div style="width: 60px"></div>
+    </div>
   </div>
 
-  <div *ngIf="cardsValue" class="text-center">
-    {{
-      cardsValue > 21
-        ? "Busted"
-        : isBlackjack
-        ? "Blackjack"
-        : "Cards value: " + cardsValue
-    }}
+  <div *ngIf="cardsValue && !busted" class="text-center">
+    {{ isBlackjack ? "Blackjack" : "Cards value: " + cardsValue }}
   </div>
 </div>
