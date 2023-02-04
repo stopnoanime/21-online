@@ -20,6 +20,10 @@ export class PlayerComponent {
     return this.player?.hand.score || this.hand?.score;
   }
 
+  get isBlackjack() {
+    return this.player?.hand.isBlackjack || this.hand?.isBlackjack;
+  }
+
   get isPlayerTurn() {
     return this.game.room!.state.currentTurnPlayerId == this.player?.sessionId;
   }

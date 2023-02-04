@@ -18,18 +18,26 @@ import {
   animations: [
     trigger('enterLeaveAnimation', [
       transition(':enter', [
-        style({ transform: 'translateY(-100%)', opacity: 0 }),
+        style({
+          transform:
+            'translate(var(--card-translation-x),var(--card-translation-y))',
+          opacity: 0,
+        }),
         group([
           query('@hiddenVisible', animateChild()),
-          animate('400ms', style({ transform: 'translateY(0)', opacity: 1 })),
+          animate('500ms', style({ transform: 'translate(0,0)', opacity: 1 })),
         ]),
       ]),
       transition(':leave', [
         group([
           query('@hiddenVisible', animateChild()),
           animate(
-            '400ms',
-            style({ transform: 'translateY(100%)', opacity: 0 })
+            '700ms',
+            style({
+              transform:
+                'translate(var(--card-translation-x),var(--card-translation-y))',
+              opacity: 0,
+            })
           ),
         ]),
       ]),

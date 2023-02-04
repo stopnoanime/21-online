@@ -18,6 +18,11 @@
         top: calc(50% * math.sin($angle * 1deg) + 50%);
         transform: translate(-50%, -50%);
 
+        //Used for card enter/leave animations
+        --card-translation-x: #{calc(-100% * math.cos($angle * 1deg))};
+        --card-translation-y: #{calc(-100% * math.sin($angle * 1deg))};
+
+        //Sets the initial cards position
         ::ng-deep .card-holder {
           transform: translate(
             calc(-100% * math.cos($angle * 1deg)),

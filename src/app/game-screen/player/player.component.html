@@ -25,6 +25,12 @@
   </div>
 
   <div *ngIf="cardsValue" class="text-center">
-    Cards value: {{ cardsValue }}
+    {{
+      cardsValue > 21
+        ? "Busted"
+        : isBlackjack
+        ? "Blackjack"
+        : "Cards value: " + cardsValue
+    }}
   </div>
 </div>
