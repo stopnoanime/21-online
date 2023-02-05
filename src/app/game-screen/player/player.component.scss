@@ -28,3 +28,8 @@
     opacity: 0.7;
   }
 }
+
+.primary-border {
+  border-color: var(--theme-primary-color);
+  border-width: 2px;
+}

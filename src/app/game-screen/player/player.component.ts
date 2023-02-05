@@ -16,10 +16,12 @@ export class PlayerComponent {
   }
 
   get isPlayerTurn() {
-    return this.game.room!.state.currentTurnPlayerId == this.player?.sessionId;
+    return (
+      this.player &&
+      this.game.room!.state.currentTurnPlayerId == this.player?.sessionId
+    );
   }
 
-  //'bust' | 'win' | 'lose' | 'draw' | '';
   public roundOutcomeToDisplayMessage = {
     bust: 'Busted',
     win: 'You Won',

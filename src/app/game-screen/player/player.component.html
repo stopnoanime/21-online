@@ -1,6 +1,7 @@
 <div
   class="rounded p-2 bg-neutral-600 flex flex-col gap-2"
   [class.opacity-70]="type == 'player' && !player?.ready"
+  [class.primary-border]="isPlayerTurn"
 >
   <span class="text-lg">{{
     type == "dealer" ? "Dealer" : player?.displayName || "No Player"
