@@ -84,10 +84,10 @@ export class GameRoom extends Room<GameState> {
 
       player.hand.addCard();
 
-      if (player.hand.score > 21) {
-        //Bust
+      if (player.hand.isBusted) {
         //Making player not ready basically kicks them from the current round
         player.ready = false;
+        player.roundOutcome = 'bust';
         this.turn();
       } else if (player.hand.score == 21) {
         //Player can't hit anymore, go to next player
@@ -276,17 +276,21 @@ export class GameRoom extends Room<GameState> {
         if (player.hand.isBlackjack && !this.state.dealerHand.isBlackjack) {
           // Player wins 3:2
           player.money += (5 / 2) * player.bet;
+          player.roundOutcome = 'win';
         } else if (
-          this.state.dealerHand.score > 21 || //dealer busted, player wins
+          this.state.dealerHand.isBusted || //dealer busted, player wins
           player.hand.score > this.state.dealerHand.score // player has higher score than dealer, player wins
         ) {
           player.money += player.bet * 2;
+          player.roundOutcome = 'win';
         } else if (
           player.hand.score == this.state.dealerHand.score && //Score is the same
           !(!player.hand.isBlackjack && this.state.dealerHand.isBlackjack) //And dealer does not have blackjack if player also doesn't have it
         ) {
-          //Tie
           player.money += player.bet;
+          player.roundOutcome = 'draw';
+        } else {
+          player.roundOutcome = 'lose';
         }
       }
     }
@@ -301,6 +305,7 @@ export class GameRoom extends Room<GameState> {
       for (const player of this.state.players.values()) {
         player.hand.clear();
         player.ready = false;
+        player.roundOutcome = '';
       }
 
       //Remove dealer cards

@@ -56,6 +56,7 @@ export class Card extends Schema {
 export class Hand extends Schema {
   @type('number') score: number;
   @type('boolean') isBlackjack: boolean = false;
+  @type('boolean') isBusted: boolean = false;
   @type([Card]) cards = new ArraySchema<Card>();
 
   public addCard(visible?: boolean) {
@@ -69,9 +70,10 @@ export class Hand extends Schema {
     this.clearScore();
   }
 
-  public clearScore() {
+  private clearScore() {
     this.score = 0;
     this.isBlackjack = false;
+    this.isBusted = false;
   }
 
   public calculateScore() {
@@ -89,6 +91,7 @@ export class Hand extends Schema {
 
     this.score = tmpScore;
     this.isBlackjack = tmpScore == 21 && this.cards.length == 2;
+    this.isBusted = tmpScore > 21;
   }
 }
 
@@ -98,6 +101,7 @@ export class Player extends Schema {
   @type('number') money: number = 1000;
   @type('number') bet: number = 10;
   @type('boolean') ready = false;
+  @type('string') roundOutcome: 'bust' | 'win' | 'lose' | 'draw' | '';
   @type(Hand) hand = new Hand();
 }
 

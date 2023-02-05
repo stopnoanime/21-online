@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { Card, Hand, Player } from 'backend/src/rooms/schema/GameState';
 import { GameService } from 'src/app/game.service';
 @Component({
@@ -8,29 +8,25 @@ import { GameService } from 'src/app/game.service';
 })
 export class PlayerComponent {
   @Input() player?: Player;
-  @Input() hand?: Hand;
-
+  @Input() dealerHand?: Hand;
   @Input() type: 'dealer' | 'player' = 'player';
 
-  get cards() {
-    return this.player?.hand.cards || this.hand?.cards!;
-  }
-
-  get cardsValue() {
-    return this.player?.hand.score || this.hand?.score;
-  }
-
-  get busted() {
-    return this.cardsValue! > 21;
-  }
-
-  get isBlackjack() {
-    return this.player?.hand.isBlackjack || this.hand?.isBlackjack;
+  get hand() {
+    return this.player?.hand || this.dealerHand;
   }
 
   get isPlayerTurn() {
     return this.game.room!.state.currentTurnPlayerId == this.player?.sessionId;
   }
+
+  //'bust' | 'win' | 'lose' | 'draw' | '';
+  public roundOutcomeToDisplayMessage = {
+    bust: 'Busted',
+    win: 'You Won',
+    lose: ' You lost',
+    draw: 'Draw',
+    '': '',
+  };
 
   constructor(public game: GameService) {}
 }

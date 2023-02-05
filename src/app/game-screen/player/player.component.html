@@ -17,26 +17,32 @@
 </div>
 
 <div class="card-holder">
-  <div class="grid mb-4 place-items-center">
+  <div class="grid place-items-center">
     <div
-      class="bg-black z-10 rounded-xl p-3 text-xl transition-opacity duration-1000 col-start-1 row-start-1"
-      [ngClass]="busted ? 'opacity-80' : 'opacity-0'"
+      *ngIf="player?.roundOutcome"
+      class="bg-black z-10 rounded-xl p-3 text-xl enter-animation col-start-1 row-start-1"
     >
-      Busted
+      {{ player && roundOutcomeToDisplayMessage[player.roundOutcome] }}
     </div>
 
     <div
       class="flex col-start-1 row-start-1 transition-opacity duration-1000"
-      [class.opacity-80]="busted"
+      [class.opacity-80]="player?.roundOutcome"
     >
       <div class="hand">
-        <app-card *ngFor="let card of cards" [card]="card"></app-card>
+        <app-card *ngFor="let card of hand?.cards" [card]="card"></app-card>
       </div>
       <div style="width: 60px"></div>
     </div>
   </div>
 
-  <div *ngIf="cardsValue && !busted" class="text-center">
-    {{ isBlackjack ? "Blackjack" : "Cards value: " + cardsValue }}
+  <div class="text-center mt-4" style="height: 1em">
+    {{
+      !hand?.score
+        ? ""
+        : hand?.isBlackjack
+        ? "Blackjack"
+        : "Cards value: " + hand?.score
+    }}
   </div>
 </div>

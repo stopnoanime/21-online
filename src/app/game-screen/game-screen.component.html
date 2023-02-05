@@ -3,7 +3,10 @@
 >
   <div class="flex flex-col items-center gap-12 w-full max-w-screen-2xl">
     <div class="player-holder">
-      <app-player [type]="'dealer'" [hand]="room.state.dealerHand"></app-player>
+      <app-player
+        [type]="'dealer'"
+        [dealerHand]="room.state.dealerHand"
+      ></app-player>
 
       <app-player
         *ngFor="let player of getAllPlayers()"
