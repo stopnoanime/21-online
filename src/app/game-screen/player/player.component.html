@@ -6,7 +6,8 @@
   <span class="text-lg">{{
     type == "dealer" ? "Dealer" : player?.displayName || "No Player"
   }}</span>
-  <span class="text-sm" *ngIf="player">Player money: {{ player.money }}</span>
+
+  <app-money-counter *ngIf="player" [money]="player.money"></app-money-counter>
 
   <app-timestamp-progress-bar
     *ngIf="player"

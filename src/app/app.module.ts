@@ -15,6 +15,7 @@ import { GameScreenComponent } from './game-screen/game-screen.component';
 import { JoinScreenComponent } from './join-screen/join-screen.component';
 import { PlayerComponent } from './game-screen/player/player.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MoneyCounterComponent } from './game-screen/player/money-counter/money-counter.component';
 
 @NgModule({
   declarations: [
@@ -25,6 +26,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
     GameScreenComponent,
     JoinScreenComponent,
     PlayerComponent,
+    MoneyCounterComponent,
   ],
   imports: [
     BrowserModule,
