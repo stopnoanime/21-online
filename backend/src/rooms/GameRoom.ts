@@ -245,7 +245,7 @@ export class GameRoom extends Room<GameState> {
 
       this.clients
         .find((c) => c.sessionId == this.state.currentTurnPlayerId)
-        .leave();
+        .leave(4000);
 
       this.turn();
     }, this.inactivityTimeout);

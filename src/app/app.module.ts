@@ -9,14 +9,14 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { PlayingCardComponent } from './game-screen/player/playing-card/playing-card.component';
 import { TimestampProgressSpinnerBar } from './game-screen/player/timestamp-progress-bar/timestamp-progress-bar.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { PlayerActionsComponent } from './game-screen/player-action/player-action.component';
 import { GameScreenComponent } from './game-screen/game-screen.component';
 import { JoinScreenComponent } from './join-screen/join-screen.component';
 import { PlayerComponent } from './game-screen/player/player.component';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MoneyCounterComponent } from './game-screen/player/money-counter/money-counter.component';
-
+import { KickDialogComponent } from './kick-dialog/kick-dialog.component';
+import { MatDialogModule } from '@angular/material/dialog';
 @NgModule({
   declarations: [
     AppComponent,
@@ -27,6 +27,7 @@ import { MoneyCounterComponent } from './game-screen/player/money-counter/money-
     JoinScreenComponent,
     PlayerComponent,
     MoneyCounterComponent,
+    KickDialogComponent,
   ],
   imports: [
     BrowserModule,
@@ -36,6 +37,7 @@ import { MoneyCounterComponent } from './game-screen/player/money-counter/money-
     MatFormFieldModule,
     MatInputModule,
     MatProgressBarModule,
+    MatDialogModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { GameState } from 'backend/src/rooms/schema/GameState';
 import * as Colyseus from 'colyseus.js';
+import { Subject } from 'rxjs';
 import { environment } from '../environments/environment';
 
 @Injectable({
@@ -28,6 +29,7 @@ export class GameService {
 
   private _room?: Colyseus.Room<GameState>;
   private client: Colyseus.Client;
+  public kickEvent = new Subject<void>();
 
   constructor() {
     this.client = new Colyseus.Client(environment.gameServer);
@@ -59,6 +61,11 @@ export class GameService {
 
   private updateRoom(room: Colyseus.Room<GameState>) {
     this._room = room;
-    this._room.onLeave((_) => (this._room = undefined));
+    this._room.onLeave((code) => {
+      this._room = undefined;
+
+      //Send kicked event
+      if (code == 4000) this.kickEvent.next();
+    });
   }
 }
