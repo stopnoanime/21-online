@@ -1,0 +1,27 @@
+.pill-menu {
+  @apply flex justify-center m-4;
+  gap: 2px;
+
+  &[disabled] {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+
+  > * {
+    @apply p-2 font-medium px-3 flex-grow;
+    background-color: var(--theme-primary-color);
+    min-width: 40px;
+  }
+
+  > *:last-child {
+    @apply rounded-r-full;
+  }
+
+  > *:first-child {
+    @apply rounded-l-full;
+  }
+}
+
+:host {
+  @apply m-3;
+}

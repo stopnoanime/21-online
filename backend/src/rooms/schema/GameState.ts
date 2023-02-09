@@ -98,7 +98,7 @@ export class Hand extends Schema {
 export class Player extends Schema {
   @type('string') sessionId: string;
   @type('string') displayName: string;
-  @type('number') money: number = 1000;
+  @type('number') money: number = 10000;
   @type('number') bet: number = 10;
   @type('boolean') ready = false;
   @type('string') roundOutcome: 'bust' | 'win' | 'lose' | 'draw' | '';

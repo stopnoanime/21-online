@@ -48,6 +48,7 @@ export class GameService {
   }
 
   public setBet(newBet: number) {
+    if (!newBet) return;
     this.room?.send('bet', newBet);
   }
 

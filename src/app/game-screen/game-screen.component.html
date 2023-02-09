@@ -1,5 +1,6 @@
 <div
   class="grid place-items-center min-h-screen bg-neutral-800 p-24 text-neutral-200"
+  style="grid-template-rows: 1fr auto"
 >
   <div class="flex flex-col items-center gap-12 w-full max-w-screen-2xl">
     <div class="player-holder">
@@ -17,5 +18,5 @@
     <app-player-actions></app-player-actions>
   </div>
 
-  {{ room.id }}
+  <span class="text-neutral-400"> Room Id: {{ room.id }} </span>
 </div>

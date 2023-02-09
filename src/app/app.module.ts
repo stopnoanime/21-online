@@ -17,6 +17,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MoneyCounterComponent } from './game-screen/player/money-counter/money-counter.component';
 import { KickDialogComponent } from './kick-dialog/kick-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
+import { InputConstrainDirective } from './game-screen/player-action/input-constrain.directive';
 @NgModule({
   declarations: [
     AppComponent,
@@ -28,6 +29,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     PlayerComponent,
     MoneyCounterComponent,
     KickDialogComponent,
+    InputConstrainDirective,
   ],
   imports: [
     BrowserModule,

@@ -18,7 +18,7 @@ export class GameRoom extends Room<GameState> {
   private roundStateEndTime = 5000;
 
   private minBet = 1;
-  private maxBet = 100;
+  private maxBet = 1000;
 
   public maxClients = 7;
 
