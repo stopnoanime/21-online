@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import gameConfig from 'backend/src/game.config';
 import { GameState } from 'backend/src/rooms/schema/GameState';
 import * as Colyseus from 'colyseus.js';
 import { Subject } from 'rxjs';
@@ -66,7 +67,7 @@ export class GameService {
       this._room = undefined;
 
       //Send kicked event
-      if (code == 4000) this.kickEvent.next();
+      if (code == gameConfig.inactivityTimeoutKickCode) this.kickEvent.next();
     });
   }
 }

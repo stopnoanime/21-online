@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import gameConfig from 'backend/src/game.config';
 import { GameState, Player } from 'backend/src/rooms/schema/GameState';
 import { Room } from 'colyseus.js';
 
@@ -26,9 +27,9 @@ export class GameScreenComponent {
     //Rotate array so it starts at player
     players = this.rotateArray(players, playerIndex);
 
-    //Fill array with undefined up to length of 7
+    //Fill array with undefined up to length of maxClients
     const initialLength = players.length;
-    for (let i = initialLength; i < 7; i++) {
+    for (let i = initialLength; i < gameConfig.maxClients; i++) {
       players.splice(
         initialLength - Math.ceil(initialLength / 2) + 1,
         0,
@@ -36,8 +37,8 @@ export class GameScreenComponent {
       );
     }
 
-    //Make player index equal 3 to position it at bottom of table
-    players = this.rotateArray(players, 4);
+    //Position player at bottom of table
+    players = this.rotateArray(players, (gameConfig.maxClients + 1) / 2);
 
     return players;
   }

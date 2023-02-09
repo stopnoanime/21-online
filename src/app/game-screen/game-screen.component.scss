@@ -37,6 +37,7 @@
 }
 
 .player-holder {
+  //First argument should be gameConfig.maxClients + 1
   @include playingTable(8, 0.5);
   border-radius: 100%;
   @apply bg-green-600;

@@ -1,26 +1,18 @@
 import { Room, Client, Delayed } from 'colyseus';
 import { GameState, Player } from './schema/GameState';
 import { uniqueNamesGenerator, colors, animals } from 'unique-names-generator';
+import gameConfig from '../game.config';
 
 export class GameRoom extends Room<GameState> {
-  /** ms after which player is kicked if inactive */
-  private inactivityTimeout = 30000;
   /** Current timeout kick reference */
   private inactivityKickRef: Delayed;
 
   /** Iterator for all players that are playing in the current round */
   private roundPlayersIdIterator: IterableIterator<string>;
 
-  private delayedRoundStartTime = 3000;
   private delayedRoundStartRef: Delayed;
 
-  private roundStateDealingTime = 1000;
-  private roundStateEndTime = 5000;
-
-  private minBet = 1;
-  private maxBet = 1000;
-
-  public maxClients = 7;
+  public maxClients = gameConfig.maxClients;
 
   private LOBBY_CHANNEL = 'GameRoom';
 
@@ -65,8 +57,8 @@ export class GameRoom extends Room<GameState> {
         this.state.roundState != 'idle' || //Cant change bet during round
         this.state.players.get(client.sessionId).ready || //Cant change bet when ready
         !Number.isInteger(newBet) || // new bet is invalid
-        newBet < this.minBet ||
-        newBet > this.maxBet // new bet is out of range
+        newBet < gameConfig.minBet ||
+        newBet > gameConfig.maxBet // new bet is out of range
       )
         return;
 
@@ -155,7 +147,7 @@ export class GameRoom extends Room<GameState> {
     console.log('setting delayed round start');
     this.delayedRoundStartRef = this.clock.setTimeout(() => {
       this.startRound();
-    }, this.delayedRoundStartTime);
+    }, gameConfig.delayedRoundStartTime);
   }
 
   /** Iterator over players that only takes ready players into account */
@@ -208,7 +200,7 @@ export class GameRoom extends Room<GameState> {
       this.roundPlayersIdIterator = this.makeRoundIterator();
 
       this.turn();
-    }, this.roundStateDealingTime);
+    }, gameConfig.roundStateDealingTime);
   }
 
   private turn() {
@@ -236,7 +228,7 @@ export class GameRoom extends Room<GameState> {
 
   private setInactivityKickTimeout() {
     this.state.currentTurnTimeoutTimestamp =
-      Date.now() + this.inactivityTimeout;
+      Date.now() + gameConfig.inactivityTimeout;
 
     this.inactivityKickRef?.clear();
 
@@ -245,10 +237,10 @@ export class GameRoom extends Room<GameState> {
 
       this.clients
         .find((c) => c.sessionId == this.state.currentTurnPlayerId)
-        .leave(4000);
+        .leave(gameConfig.inactivityTimeoutKickCode);
 
       this.turn();
-    }, this.inactivityTimeout);
+    }, gameConfig.inactivityTimeout);
   }
 
   private endRound() {
@@ -310,6 +302,6 @@ export class GameRoom extends Room<GameState> {
 
       //Remove dealer cards
       this.state.dealerHand.clear();
-    }, this.roundStateEndTime);
+    }, gameConfig.roundStateEndTime);
   }
 }

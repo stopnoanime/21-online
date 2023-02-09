@@ -1,4 +1,10 @@
 import { Schema, MapSchema, type, ArraySchema, filter } from '@colyseus/schema';
+import gameConfig from '../../game.config';
+import {
+  availableSuits,
+  availableValues,
+  getRandomArrayItem,
+} from './cardValues';
 
 export class CardValue extends Schema {
   @type('string') suit: string;
@@ -12,38 +18,6 @@ export class CardValue extends Schema {
 }
 
 export class Card extends Schema {
-  private availableSuits = ['♠︎', '♥︎', '♣︎', '♦︎'];
-  private availableValues = [
-    'A',
-    '2',
-    '3',
-    '4',
-    '5',
-    '6',
-    '7',
-    '8',
-    '9',
-    '10',
-    'J',
-    'Q',
-    'K',
-  ];
-
-  private getRandomArrayItem<Type>(arr: Type[]) {
-    return arr[Math.floor(Math.random() * arr.length)];
-  }
-
-  constructor(visible = true) {
-    super();
-
-    this.visible = visible;
-
-    this.value = new CardValue({
-      suit: this.getRandomArrayItem(this.availableSuits),
-      value: this.getRandomArrayItem(this.availableValues),
-    });
-  }
-
   @type('boolean') visible: boolean;
 
   @filter(function (this: Card) {
@@ -51,6 +25,17 @@ export class Card extends Schema {
   })
   @type(CardValue)
   value?: CardValue;
+
+  constructor(visible = true) {
+    super();
+
+    this.visible = visible;
+
+    this.value = new CardValue({
+      suit: getRandomArrayItem(availableSuits),
+      value: getRandomArrayItem(availableValues),
+    });
+  }
 }
 
 export class Hand extends Schema {
@@ -98,7 +83,7 @@ export class Hand extends Schema {
 export class Player extends Schema {
   @type('string') sessionId: string;
   @type('string') displayName: string;
-  @type('number') money: number = 10000;
+  @type('number') money: number = gameConfig.initialPlayerMoney;
   @type('number') bet: number = 10;
   @type('boolean') ready = false;
   @type('string') roundOutcome: 'bust' | 'win' | 'lose' | 'draw' | '';

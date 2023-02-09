@@ -14,8 +14,8 @@
   <input
     #betInput
     type="number"
-    min="1"
-    max="1000"
+    [min]="gameConfig.minBet"
+    [max]="gameConfig.maxBet"
     value="100"
     appInputConstrain
   />
