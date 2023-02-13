@@ -4,8 +4,8 @@ import { uniqueNamesGenerator, colors, animals } from 'unique-names-generator';
 import gameConfig from '../game.config';
 
 export class GameRoom extends Room<GameState> {
-  /** Current timeout kick reference */
-  private inactivityKickRef: Delayed;
+  /** Current timeout skip reference */
+  private inactivityTimeoutRef: Delayed;
 
   /** Iterator for all players that are playing in the current round */
   private roundPlayersIdIterator: IterableIterator<string>;
@@ -48,7 +48,6 @@ export class GameRoom extends Room<GameState> {
       console.log('received state change', state);
 
       this.state.players.get(client.sessionId).ready = state;
-
       this.triggerNewRoundCheck();
     });
 
@@ -116,13 +115,23 @@ export class GameRoom extends Room<GameState> {
     this.triggerNewRoundCheck();
   }
 
-  onLeave(client: Client, consented: boolean) {
+  async onLeave(client: Client, consented: boolean) {
     console.log('client leave', client.sessionId);
 
+    //Remove player
+    const player = this.state.players.get(client.sessionId);
     this.state.players.delete(client.sessionId);
-    //Player that left was the current player, skip them
-    if (this.state.currentTurnPlayerId == client.sessionId) this.turn();
 
+    //Dispose room if there are no players left
+    if (this.clients.length == 0) {
+      return;
+    }
+
+    this.triggerNewRoundCheck();
+
+    //Add player back if they rejoin
+    await this.allowReconnection(client);
+    this.state.players.set(client.sessionId, player.clone());
     this.triggerNewRoundCheck();
   }
 
@@ -138,7 +147,6 @@ export class GameRoom extends Room<GameState> {
   private triggerNewRoundCheck() {
     if (this.state.roundState != 'idle') return;
 
-    console.log('clearing delayed round start');
     this.delayedRoundStartRef?.clear();
 
     //If not all players are ready, exit
@@ -206,7 +214,7 @@ export class GameRoom extends Room<GameState> {
   private turn() {
     // New turn, do not kick player from previous turn
     this.state.currentTurnTimeoutTimestamp = 0;
-    this.inactivityKickRef?.clear();
+    this.inactivityTimeoutRef?.clear();
 
     // Get next player
     const nextPlayer = this.roundPlayersIdIterator.next();
@@ -230,15 +238,10 @@ export class GameRoom extends Room<GameState> {
     this.state.currentTurnTimeoutTimestamp =
       Date.now() + gameConfig.inactivityTimeout;
 
-    this.inactivityKickRef?.clear();
+    this.inactivityTimeoutRef?.clear();
 
-    this.inactivityKickRef = this.clock.setTimeout(() => {
+    this.inactivityTimeoutRef = this.clock.setTimeout(() => {
       console.log('inactivity timeout');
-
-      this.clients
-        .find((c) => c.sessionId == this.state.currentTurnPlayerId)
-        .leave(gameConfig.inactivityTimeoutKickCode);
-
       this.turn();
     }, gameConfig.inactivityTimeout);
   }

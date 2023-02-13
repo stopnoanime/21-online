@@ -34,6 +34,7 @@ export class GameService {
 
   constructor() {
     this.client = new Colyseus.Client(environment.gameServer);
+    this.reconnectRoom();
   }
 
   public async createRoom() {
@@ -42,6 +43,24 @@ export class GameService {
 
   public async joinRoom(id: string) {
     this.updateRoom(await this.client.joinById(id));
+  }
+
+  public async reconnectRoom() {
+    const previousRoomData = this.getRoomData();
+
+    if (!previousRoomData) return;
+
+    try {
+      this.updateRoom(
+        await this.client.reconnect(
+          previousRoomData.roomId,
+          previousRoomData.sessionId
+        )
+      );
+    } catch {
+      //Previous room data is invalid, clear it
+      this.clearRoomData();
+    }
   }
 
   public setReadyState(newState: boolean) {
@@ -63,11 +82,32 @@ export class GameService {
 
   private updateRoom(room: Colyseus.Room<GameState>) {
     this._room = room;
+
+    this.saveRoomData(room);
     this._room.onLeave((code) => {
       this._room = undefined;
 
       //Send kicked event
       if (code == gameConfig.inactivityTimeoutKickCode) this.kickEvent.next();
     });
+  }
+
+  private saveRoomData(room: Colyseus.Room<GameState>) {
+    localStorage.setItem('roomId', room.id);
+    localStorage.setItem('sessionId', room.sessionId);
+  }
+
+  private getRoomData() {
+    const roomId = localStorage.getItem('roomId');
+    const sessionId = localStorage.getItem('sessionId');
+
+    if (roomId && sessionId) return { roomId: roomId, sessionId: sessionId };
+
+    return null;
+  }
+
+  private clearRoomData() {
+    localStorage.removeItem('roomId');
+    localStorage.removeItem('sessionId');
   }
 }
