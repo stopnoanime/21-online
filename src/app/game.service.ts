@@ -42,7 +42,7 @@ export class GameService {
   }
 
   public async joinRoom(id: string) {
-    this.updateRoom(await this.client.joinById(id));
+    this.updateRoom(await this.client.joinById(id.toUpperCase()));
   }
 
   public async reconnectRoom() {
