@@ -18,6 +18,9 @@ import { MoneyCounterComponent } from './game-screen/player/money-counter/money-
 import { KickDialogComponent } from './kick-dialog/kick-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { InputConstrainDirective } from './game-screen/player-action/input-constrain.directive';
+import { MatIconModule } from '@angular/material/icon';
+import { MatTooltipModule } from '@angular/material/tooltip';
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -40,6 +43,8 @@ import { InputConstrainDirective } from './game-screen/player-action/input-const
     MatInputModule,
     MatProgressBarModule,
     MatDialogModule,
+    MatIconModule,
+    MatTooltipModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

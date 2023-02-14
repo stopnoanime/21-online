@@ -42,6 +42,8 @@ export class GameRoom extends Room<GameState> {
     this.setState(new GameState({}));
     this.clock.start();
 
+    log.info(`room ${this.roomId}`, `Created`);
+
     this.onMessage('ready', (client, state: boolean) => {
       //Cant change ready state during round
       if (this.state.roundState != 'idle') return;
@@ -122,13 +124,12 @@ export class GameRoom extends Room<GameState> {
     //Remove player
     const player = this.state.players.get(client.sessionId);
     this.state.players.delete(client.sessionId);
+    this.triggerNewRoundCheck();
 
-    //Dispose room if there are no players left
-    if (this.clients.length == 0) {
+    //Do not allow for rejoin if leave was consented or there are no other players left room
+    if (this.clients.length == 0 || consented) {
       return;
     }
-
-    this.triggerNewRoundCheck();
 
     //Add player back if they rejoin
     await this.allowReconnection(client);
@@ -153,8 +154,9 @@ export class GameRoom extends Room<GameState> {
 
     this.delayedRoundStartRef?.clear();
 
-    //If not all players are ready, exit
-    if ([...this.state.players].some((p) => !p[1].ready)) return;
+    const playerArr = [...this.state.players];
+    //If there are no players left or not all players are ready, exit
+    if (playerArr.length == 0 || playerArr.some((p) => !p[1].ready)) return;
 
     log.info(`room ${this.roomId}`, `Setting delayed round start`);
 
