@@ -176,7 +176,7 @@ export class GameRoom extends Room<GameState> {
       if (newPlayer.done) return;
 
       //If grabbed player is not ready, go to next player
-      if (!newPlayer.value[1].ready) break;
+      if (!newPlayer.value[1].ready) continue;
 
       //Otherwise yield the new player id
       yield newPlayer.value[0] as string;

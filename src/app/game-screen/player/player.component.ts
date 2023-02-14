@@ -6,7 +6,7 @@ import { GameService } from 'src/app/game.service';
   templateUrl: './player.component.html',
   styleUrls: ['./player.component.scss'],
 })
-export class PlayerComponent implements OnInit {
+export class PlayerComponent {
   @Input() player?: Player;
   @Input() dealerHand?: Hand;
   @Input() type: 'dealer' | 'player' = 'player';
@@ -26,17 +26,21 @@ export class PlayerComponent implements OnInit {
     return this.player && this.game.room!.sessionId == this.player?.sessionId;
   }
 
-  public roundOutcomeToDisplayMessage: { [key: string]: string };
+  public roundOutcomeToDisplayMessage = {
+    bust: 'Busted',
+    win: 'Win',
+    lose: 'Lose',
+    draw: 'Draw',
+    '': '',
+  };
 
-  ngOnInit(): void {
-    this.roundOutcomeToDisplayMessage = {
-      bust: 'Busted',
-      win: this.isCurrentPlayer ? 'You Won!' : 'Win',
-      lose: this.isCurrentPlayer ? 'You Lost!' : 'Lose',
-      draw: 'Draw',
-      '': '',
-    };
-  }
+  public roundOutcomeToDisplayMessageCurrentPlayer = {
+    bust: 'Busted',
+    win: 'You Won!',
+    lose: 'You Lost!',
+    draw: 'Draw',
+    '': '',
+  };
 
   constructor(public game: GameService) {}
 }

@@ -25,8 +25,11 @@
       class="bg-black z-10 rounded-xl p-3 text-xl enter-animation col-start-1 row-start-1"
     >
       {{
-        (player && roundOutcomeToDisplayMessage[player.roundOutcome]) ||
-          (dealerHand?.isBusted && "Busted")
+        player
+          ? isCurrentPlayer
+            ? roundOutcomeToDisplayMessageCurrentPlayer[player.roundOutcome]
+            : roundOutcomeToDisplayMessage[player.roundOutcome]
+          : "Busted"
       }}
     </div>
 
