@@ -21,15 +21,18 @@
 <div class="card-holder">
   <div class="grid place-items-center">
     <div
-      *ngIf="player?.roundOutcome"
+      *ngIf="player?.roundOutcome || dealerHand?.isBusted"
       class="bg-black z-10 rounded-xl p-3 text-xl enter-animation col-start-1 row-start-1"
     >
-      {{ player && roundOutcomeToDisplayMessage[player.roundOutcome] }}
+      {{
+        (player && roundOutcomeToDisplayMessage[player.roundOutcome]) ||
+          (dealerHand?.isBusted && "Busted")
+      }}
     </div>
 
     <div
       class="flex col-start-1 row-start-1 transition-opacity duration-1000"
-      [class.opacity-80]="player?.roundOutcome"
+      [class.opacity-80]="player?.roundOutcome || dealerHand?.isBusted"
     >
       <div class="hand">
         <app-card *ngFor="let card of hand?.cards" [card]="card"></app-card>
