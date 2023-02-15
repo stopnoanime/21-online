@@ -2,7 +2,7 @@ import { Component, Input } from '@angular/core';
 import gameConfig from 'backend/src/game.config';
 import { GameState, Player } from 'backend/src/rooms/schema/GameState';
 import { Room } from 'colyseus.js';
-import { sortPlayers } from './sortPlayers';
+import { placePlayersAtTable } from './placePlayersAtTable';
 
 @Component({
   selector: 'app-game-screen',
@@ -13,7 +13,7 @@ export class GameScreenComponent {
   @Input() room: Room<GameState>;
 
   getAllPlayers() {
-    return sortPlayers(
+    return placePlayersAtTable(
       [...this.room.state.players.values()],
       this.room.sessionId,
       gameConfig.maxClients
