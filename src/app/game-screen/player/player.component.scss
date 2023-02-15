@@ -14,21 +14,6 @@
   grid-auto-flow: column;
 }
 
-.enter-animation {
-  animation-duration: 1s;
-  animation-name: enter-animation;
-  animation-fill-mode: forwards;
-}
-
-@keyframes enter-animation {
-  0% {
-    opacity: 0;
-  }
-  100% {
-    opacity: 0.7;
-  }
-}
-
 .primary-border {
   border-color: var(--theme-primary-color);
   border-width: 2px;

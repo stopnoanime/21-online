@@ -14,3 +14,18 @@ body {
 :root {
   --theme-primary-color: #c2185b;
 }
+
+.enter-animation {
+  animation-duration: 1s;
+  animation-name: enter-animation;
+  animation-fill-mode: forwards;
+}
+
+@keyframes enter-animation {
+  0% {
+    opacity: 0.3;
+  }
+  100% {
+    opacity: 0.8;
+  }
+}

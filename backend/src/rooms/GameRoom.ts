@@ -161,6 +161,8 @@ export class GameRoom extends Room<GameState> {
   private triggerNewRoundCheck() {
     if (this.state.roundState != 'idle') return;
 
+    //Clear previous start
+    this.state.nextRoundStartTimestamp = 0;
     this.delayedRoundStartRef?.clear();
 
     const playerArr = [...this.state.players];
@@ -169,7 +171,10 @@ export class GameRoom extends Room<GameState> {
 
     log.info(`room ${this.roomId}`, `Setting delayed round start`);
 
+    this.state.nextRoundStartTimestamp =
+      Date.now() + gameConfig.delayedRoundStartTime;
     this.delayedRoundStartRef = this.clock.setTimeout(() => {
+      this.state.nextRoundStartTimestamp = 0;
       this.startRound();
     }, gameConfig.delayedRoundStartTime);
   }

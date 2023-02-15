@@ -95,6 +95,7 @@ export class GameState extends Schema {
   @type('string') roundState: 'idle' | 'dealing' | 'turns' | 'end' = 'idle';
   @type('string') currentTurnPlayerId: string;
   @type('uint64') currentTurnTimeoutTimestamp: number = 0;
+  @type('uint64') nextRoundStartTimestamp: number = 0;
 
   @type(Hand) dealerHand = new Hand();
   @type({ map: Player }) players = new MapSchema<Player>();
