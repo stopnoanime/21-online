@@ -165,9 +165,15 @@ export class GameRoom extends Room<GameState> {
     this.state.nextRoundStartTimestamp = 0;
     this.delayedRoundStartRef?.clear();
 
-    const playerArr = [...this.state.players];
-    //If there are no players left or not all players are ready, exit
-    if (playerArr.length == 0 || playerArr.some((p) => !p[1].ready)) return;
+    const playerArr = [...this.state.players.values()];
+
+    //Do not start round if there are no players left
+    if (playerArr.length == 0) return;
+
+    const readyPlayers = playerArr.filter((p) => p.ready).length;
+
+    //Do not start round if less than 2/3 players are ready
+    if (readyPlayers / playerArr.length < 2 / 3) return;
 
     log.info(`room ${this.roomId}`, `Setting delayed round start`);
 
