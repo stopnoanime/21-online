@@ -1,21 +1,33 @@
 <div
-  class="rounded p-2 bg-neutral-600 flex flex-col"
+  class="rounded p-2 bg-neutral-600 grid place-items-center"
   [class.opacity-70]="type == 'player' && !player?.ready"
   [class.primary-border]="isPlayerTurn"
 >
-  <span class="text-lg">{{
-    type == "dealer" ? "Dealer" : player?.displayName || "No Player"
-  }}</span>
+  <div class="flex flex-col col-start-1 row-start-1">
+    <span class="text-lg">{{
+      type == "dealer" ? "Dealer" : player?.displayName || "No Player"
+    }}</span>
 
-  <app-money-counter *ngIf="player" [money]="player.money"></app-money-counter>
+    <app-money-counter
+      *ngIf="player"
+      [money]="player.money"
+    ></app-money-counter>
 
-  <app-timestamp-progress-bar
-    *ngIf="player"
-    class="scale-y-150"
-    [endTimestamp]="
-      isPlayerTurn ? game.room!.state.currentTurnTimeoutTimestamp : 0
-    "
-  ></app-timestamp-progress-bar>
+    <app-timestamp-progress-bar
+      *ngIf="player"
+      class="scale-y-150"
+      [endTimestamp]="
+        isPlayerTurn ? game.room!.state.currentTurnTimeoutTimestamp : 0
+      "
+    ></app-timestamp-progress-bar>
+  </div>
+
+  <div
+    *ngIf="player?.disconnected"
+    class="col-start-1 row-start-1 px-1 bg-neutral-800 opacity-90 rounded"
+  >
+    <mat-icon matTooltip="Player is disconnected">warning</mat-icon>
+  </div>
 </div>
 
 <div class="card-holder">

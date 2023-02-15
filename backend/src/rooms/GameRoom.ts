@@ -121,13 +121,17 @@ export class GameRoom extends Room<GameState> {
   async onLeave(client: Client, consented: boolean) {
     log.info(`client ${client.sessionId}`, `Leave`);
 
-    //Remove player
     const player = this.state.players.get(client.sessionId);
-    this.state.players.delete(client.sessionId);
-    this.triggerNewRoundCheck();
+    player.disconnected = true;
 
-    //Do not allow for rejoin if leave was consented or there are no other players left room
-    if (this.clients.length == 0 || consented) {
+    //Remove player if leave was consented or if they are not in round
+    if (consented || !(this.state.roundState != 'idle' && player.ready)) {
+      this.state.players.delete(client.sessionId);
+      this.triggerNewRoundCheck();
+    }
+
+    //Do not allow for rejoin if leave was consented or there are no other players left in room
+    if (consented || this.state.players.size == 0) {
       return;
     }
 
@@ -136,8 +140,13 @@ export class GameRoom extends Room<GameState> {
 
     log.info(`client ${client.sessionId}`, `Reconnect`);
 
-    this.state.players.set(client.sessionId, player.clone());
-    this.triggerNewRoundCheck();
+    player.disconnected = false;
+
+    //Add player back if they were removed earlier
+    if (!this.state.players.has(client.sessionId)) {
+      this.state.players.set(client.sessionId, player.clone());
+      this.triggerNewRoundCheck();
+    }
   }
 
   onDispose() {
@@ -293,7 +302,7 @@ export class GameRoom extends Room<GameState> {
           player.roundOutcome = 'win';
         } else if (
           player.hand.score == this.state.dealerHand.score && //Score is the same
-          !(!player.hand.isBlackjack && this.state.dealerHand.isBlackjack) //And dealer does not have blackjack if player also doesn't have it
+          player.hand.isBlackjack == this.state.dealerHand.isBlackjack //And dealer does not have blackjack if player also doesn't have it
         ) {
           player.money += player.bet;
           player.roundOutcome = 'draw';
@@ -314,6 +323,11 @@ export class GameRoom extends Room<GameState> {
         player.hand.clear();
         player.ready = false;
         player.roundOutcome = '';
+
+        //Remove players that are still disconnected
+        if (player.disconnected) {
+          this.state.players.delete(player.sessionId);
+        }
       }
 
       //Remove dealer cards

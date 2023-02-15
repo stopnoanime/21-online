@@ -86,6 +86,7 @@ export class Player extends Schema {
   @type('number') money: number = gameConfig.initialPlayerMoney;
   @type('number') bet: number = 10;
   @type('boolean') ready = false;
+  @type('boolean') disconnected = false;
   @type('string') roundOutcome: 'bust' | 'win' | 'lose' | 'draw' | '';
   @type(Hand) hand = new Hand();
 }
