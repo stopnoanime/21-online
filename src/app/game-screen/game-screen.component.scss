@@ -3,8 +3,6 @@
 /// Modified from https://css-tricks.com/snippets/sass/placing-items-circle/
 @mixin playingTable($players-count, $card-position) {
   position: relative;
-  width: 100%;
-  aspect-ratio: 2/1;
 
   > * {
     position: absolute;
@@ -39,6 +37,12 @@
 .player-holder {
   //First argument should be gameConfig.maxClients + 1
   @include playingTable(8, 0.5);
+
   border-radius: 100%;
   @apply bg-green-600;
+
+  width: 70vw;
+  height: 35vw;
+  max-height: 70vh;
+  max-width: 140vh;
 }

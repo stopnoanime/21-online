@@ -9,6 +9,7 @@ body {
 body {
   margin: 0;
   font-family: Roboto, "Helvetica Neue", sans-serif;
+  @apply bg-neutral-800  text-neutral-200;
 }
 
 :root {

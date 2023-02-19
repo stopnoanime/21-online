@@ -1,7 +1,4 @@
-<div
-  class="grid place-items-center min-h-screen bg-neutral-800 p-24 text-neutral-200"
-  style="grid-template-rows: auto 1fr auto"
->
+<div class="grid place-items-center min-h-screen p-4 lg:p-8">
   <div class="mr-auto">
     <button
       mat-mini-fab
@@ -12,32 +9,31 @@
       <mat-icon>logout</mat-icon>
     </button>
   </div>
-  <div class="flex flex-col items-center gap-12 w-full max-w-screen-2xl">
-    <div class="grid place-items-center w-full">
-      <div class="player-holder row-start-1 col-start-1">
-        <app-player
-          [type]="'dealer'"
-          [dealerHand]="room.state.dealerHand"
-        ></app-player>
 
-        <app-player
-          *ngFor="let player of getAllPlayers()"
-          [player]="player"
-        ></app-player>
-      </div>
+  <div class="grid place-items-center w-full p-8">
+    <div class="player-holder row-start-1 col-start-1">
+      <app-player
+        [type]="'dealer'"
+        [dealerHand]="room.state.dealerHand"
+      ></app-player>
 
-      <div
-        *ngIf="
-          room.state.roundState == 'idle' && room.state.nextRoundStartTimestamp
-        "
-        class="row-start-1 col-start-1 z-10 p-1 px-3 rounded-full bg-neutral-800 enter-animation text-lg font-medium"
-      >
-        Starting round
-      </div>
+      <app-player
+        *ngFor="let player of getAllPlayers()"
+        [player]="player"
+      ></app-player>
     </div>
 
-    <app-player-actions></app-player-actions>
+    <div
+      *ngIf="
+        room.state.roundState == 'idle' && room.state.nextRoundStartTimestamp
+      "
+      class="row-start-1 col-start-1 z-10 p-1 px-3 rounded-full bg-neutral-800 enter-animation text-lg font-medium"
+    >
+      Starting round
+    </div>
   </div>
+
+  <app-player-actions class="mt-12"></app-player-actions>
 
   <span class="text-neutral-400"> Room ID: {{ room.id }} </span>
 </div>
