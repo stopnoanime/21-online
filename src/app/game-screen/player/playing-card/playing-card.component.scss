@@ -1,7 +1,10 @@
 .card-container {
-  width: 100px;
-  height: 140px;
-  perspective: 600px;
+  width: 5vw;
+  perspective: 25vw;
+  aspect-ratio: 10/14;
+
+  font-size: 1.5vw;
+  line-height: 1.5vw;
 }
 
 .card {
@@ -18,9 +21,8 @@
   width: 100%;
   backface-visibility: hidden;
   box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.2);
-  font-size: 1.5rem;
-  line-height: 1.6rem;
-  @apply bg-neutral-100 rounded-xl;
+  border-radius: 0.75vw;
+  @apply bg-neutral-100;
 }
 
 .card-face-back {
@@ -43,7 +45,6 @@
 
 .card-suit,
 .card-value {
-  width: 1em;
   text-align: center;
   transform: translate(-50%, 0);
 }
