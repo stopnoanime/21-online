@@ -36,6 +36,10 @@ export class GameRoom extends Room<GameState> {
     return id;
   }
 
+  private delay(ms: number) {
+    return new Promise((resolve) => this.clock.setTimeout(resolve, ms));
+  }
+
   async onCreate() {
     this.roomId = await this.generateRoomId();
     this.setPrivate();
@@ -87,8 +91,8 @@ export class GameRoom extends Room<GameState> {
         //Player can't hit anymore, go to next player
         this.turn();
       } else {
-        //Player can still hit, Reset kick timer
-        this.setInactivityKickTimeout();
+        //Player can still hit, Reset skip timer
+        this.setInactivitySkipTimeout();
       }
     });
 
@@ -203,7 +207,7 @@ export class GameRoom extends Room<GameState> {
     }
   }
 
-  private startRound() {
+  private async startRound() {
     log.info(`room ${this.roomId}`, `Starting dealing phase`);
 
     this.state.roundState = 'dealing';
@@ -226,20 +230,20 @@ export class GameRoom extends Room<GameState> {
     this.state.dealerHand.addCard(false);
 
     //Delay starting next phase
-    this.clock.setTimeout(() => {
-      log.info(`room ${this.roomId}`, `Starting turns phase`);
+    await this.delay(gameConfig.roundStateDealingTime);
 
-      this.state.roundState = 'turns';
+    log.info(`room ${this.roomId}`, `Starting turns phase`);
 
-      //Setup iterator for turns
-      this.roundPlayersIdIterator = this.makeRoundIterator();
+    this.state.roundState = 'turns';
 
-      this.turn();
-    }, gameConfig.roundStateDealingTime);
+    //Setup iterator for turns
+    this.roundPlayersIdIterator = this.makeRoundIterator();
+
+    this.turn();
   }
 
   private turn() {
-    // New turn, do not kick player from previous turn
+    // New turn, do not skip player from previous turn
     this.state.currentTurnTimeoutTimestamp = 0;
     this.inactivityTimeoutRef?.clear();
 
@@ -261,10 +265,10 @@ export class GameRoom extends Room<GameState> {
     //Skip round if player has blackjack
     if (this.state.players.get(this.state.currentTurnPlayerId).hand.score == 21)
       this.turn();
-    else this.setInactivityKickTimeout();
+    else this.setInactivitySkipTimeout();
   }
 
-  private setInactivityKickTimeout() {
+  private setInactivitySkipTimeout() {
     this.state.currentTurnTimeoutTimestamp =
       Date.now() + gameConfig.inactivityTimeout;
 
@@ -279,7 +283,7 @@ export class GameRoom extends Room<GameState> {
     }, gameConfig.inactivityTimeout);
   }
 
-  private endRound() {
+  private async endRound() {
     log.info(`room ${this.roomId}`, `Starting end phase`);
 
     this.state.roundState = 'end';
@@ -294,8 +298,12 @@ export class GameRoom extends Room<GameState> {
     if (!this.makeRoundIterator().next().done) {
       //Dealer draws cards until total is at least 17
       while (this.state.dealerHand.score < 17) {
+        await this.delay(gameConfig.dealerCardDelay);
         this.state.dealerHand.addCard();
       }
+
+      //Delay showing round outcome to players
+      await this.delay(gameConfig.roundOutcomeDelay);
 
       //Settle score between each player that's not busted, and dealer
       for (const playerId of this.makeRoundIterator()) {
@@ -324,25 +332,25 @@ export class GameRoom extends Room<GameState> {
     }
 
     //Delay starting next phase
-    this.clock.setTimeout(() => {
-      log.info(`room ${this.roomId}`, `Starting idle phase`);
+    await this.delay(gameConfig.roundStateEndTime);
 
-      this.state.roundState = 'idle';
+    log.info(`room ${this.roomId}`, `Starting idle phase`);
 
-      //Remove all players cards, and make players not ready
-      for (const player of this.state.players.values()) {
-        player.hand.clear();
-        player.ready = false;
-        player.roundOutcome = '';
+    this.state.roundState = 'idle';
 
-        //Remove players that are still disconnected
-        if (player.disconnected) {
-          this.state.players.delete(player.sessionId);
-        }
+    //Remove dealer cards
+    this.state.dealerHand.clear();
+
+    //Remove all players cards, and make players not ready
+    for (const player of this.state.players.values()) {
+      player.hand.clear();
+      player.ready = false;
+      player.roundOutcome = '';
+
+      //Remove players that are still disconnected
+      if (player.disconnected) {
+        this.state.players.delete(player.sessionId);
       }
-
-      //Remove dealer cards
-      this.state.dealerHand.clear();
-    }, gameConfig.roundStateEndTime);
+    }
   }
 }
