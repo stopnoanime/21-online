@@ -24,10 +24,17 @@
     </div>
 
     <div
+      class="row-start-1 col-start-1 z-10 text-amber-50 font-serif"
+      style="font-size: 2vw"
+    >
+      Blackjack pays 3 to 2
+    </div>
+
+    <div
       *ngIf="
         room.state.roundState == 'idle' && room.state.nextRoundStartTimestamp
       "
-      class="row-start-1 col-start-1 z-10 p-1 px-3 rounded-full bg-neutral-800 enter-animation text-lg font-medium"
+      class="row-start-1 col-start-1 z-10 p-1 px-3 rounded-full bg-neutral-800 enter-animation text-3xl font-medium"
     >
       Starting round
     </div>
