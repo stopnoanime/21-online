@@ -87,6 +87,7 @@ export class Player extends Schema {
   @type('number') bet: number = 10;
   @type('boolean') ready = false;
   @type('boolean') disconnected = false;
+  @type('boolean') admin: boolean;
   @type('string') roundOutcome: 'bust' | 'win' | 'lose' | 'draw' | '';
   @type(Hand) hand = new Hand();
 }

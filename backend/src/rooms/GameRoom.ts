@@ -1,4 +1,4 @@
-import { Room, Client, Delayed } from 'colyseus';
+import { Room, Client, Delayed, Protocol } from 'colyseus';
 import { GameState, Player } from './schema/GameState';
 import { uniqueNamesGenerator, colors, animals } from 'unique-names-generator';
 import gameConfig from '../game.config';
@@ -14,6 +14,7 @@ export class GameRoom extends Room<GameState> {
   private delayedRoundStartRef: Delayed;
 
   public maxClients = gameConfig.maxClients;
+  public autoDispose = false;
 
   private LOBBY_CHANNEL = 'GameRoom';
 
@@ -103,6 +104,16 @@ export class GameRoom extends Room<GameState> {
 
       this.turn();
     });
+
+    this.onMessage('kick', (client, id: string) => {
+      if (!this.state.players.get(client.sessionId)?.admin || !id) return;
+
+      log.info(`client ${id}`, `kick`);
+
+      this.clients
+        .find((c) => c.sessionId == id)
+        .leave(Protocol.WS_CLOSE_CONSENTED);
+    });
   }
 
   onJoin(client: Client) {
@@ -117,6 +128,7 @@ export class GameRoom extends Room<GameState> {
           separator: ' ',
           style: 'capital',
         }),
+        admin: this.state.players.size == 0,
       })
     );
     this.triggerNewRoundCheck();
@@ -130,27 +142,26 @@ export class GameRoom extends Room<GameState> {
 
     //Remove player if leave was consented or if they are not in round
     if (consented || !(this.state.roundState != 'idle' && player.ready)) {
-      this.state.players.delete(client.sessionId);
-      this.triggerNewRoundCheck();
+      this.deletePlayer(client.sessionId);
     }
 
-    //Do not allow for rejoin if leave was consented or there are no other players left in room
-    if (consented || this.state.players.size == 0) {
-      return;
-    }
+    //Do not allow for rejoin if leave was consented
+    if (consented) return;
 
     //Add player back if they rejoin
-    await this.allowReconnection(client);
+    try {
+      await this.allowReconnection(client);
 
-    log.info(`client ${client.sessionId}`, `Reconnect`);
+      log.info(`client ${client.sessionId}`, `Reconnect`);
 
-    player.disconnected = false;
+      player.disconnected = false;
 
-    //Add player back if they were removed earlier
-    if (!this.state.players.has(client.sessionId)) {
-      this.state.players.set(client.sessionId, player.clone());
-      this.triggerNewRoundCheck();
-    }
+      //Add player back if they were removed earlier
+      if (!this.state.players.has(client.sessionId)) {
+        this.state.players.set(client.sessionId, player.clone());
+        this.triggerNewRoundCheck();
+      }
+    } catch (error) {}
   }
 
   onDispose() {
@@ -171,13 +182,8 @@ export class GameRoom extends Room<GameState> {
 
     const playerArr = [...this.state.players.values()];
 
-    //Do not start round if there are no players left
-    if (playerArr.length == 0) return;
-
-    const readyPlayers = playerArr.filter((p) => p.ready).length;
-
-    //Do not start round if less than 2/3 players are ready
-    if (readyPlayers / playerArr.length < 2 / 3) return;
+    //If there are no players left or not all players are ready, do not start round
+    if (playerArr.length == 0 || playerArr.some((p) => !p.ready)) return;
 
     log.info(`room ${this.roomId}`, `Setting delayed round start`);
 
@@ -187,6 +193,30 @@ export class GameRoom extends Room<GameState> {
       this.state.nextRoundStartTimestamp = 0;
       this.startRound();
     }, gameConfig.delayedRoundStartTime);
+  }
+
+  private deletePlayer(id: string) {
+    const player = this.state.players.get(id);
+    this.state.players.delete(id);
+
+    // Dispose room if there are no more players left
+    if (this.state.players.size == 0) {
+      this.disconnect();
+      return;
+    }
+
+    //If deleted player was admin, assign random other player as admin
+    if (player.admin) {
+      player.admin = false;
+
+      const a = [...this.state.players.values()];
+      a[Math.floor(Math.random() * a.length)].admin = true;
+    }
+
+    this.triggerNewRoundCheck();
+
+    //If player that was removed was the currently playing player, skip them
+    if (id == this.state.currentTurnPlayerId) this.turn();
   }
 
   /** Iterator over players that only takes ready players into account */
@@ -334,10 +364,6 @@ export class GameRoom extends Room<GameState> {
     //Delay starting next phase
     await this.delay(gameConfig.roundStateEndTime);
 
-    log.info(`room ${this.roomId}`, `Starting idle phase`);
-
-    this.state.roundState = 'idle';
-
     //Remove dealer cards
     this.state.dealerHand.clear();
 
@@ -348,9 +374,10 @@ export class GameRoom extends Room<GameState> {
       player.roundOutcome = '';
 
       //Remove players that are still disconnected
-      if (player.disconnected) {
-        this.state.players.delete(player.sessionId);
-      }
+      if (player.disconnected) this.deletePlayer(player.sessionId);
     }
+
+    log.info(`room ${this.roomId}`, `Starting idle phase`);
+    this.state.roundState = 'idle';
   }
 }

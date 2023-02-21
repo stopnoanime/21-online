@@ -1,5 +1,5 @@
 <div class="grid place-items-center min-h-screen p-4 lg:p-8">
-  <div class="mr-auto">
+  <div class="mr-auto flex gap-2">
     <button
       mat-mini-fab
       color="primary"
@@ -7,6 +7,15 @@
       (click)="room.leave()"
     >
       <mat-icon>logout</mat-icon>
+    </button>
+
+    <button
+      *ngIf="game.player?.admin"
+      mat-mini-fab
+      color="primary"
+      matTooltip="You are the room's admin."
+    >
+      <mat-icon>star</mat-icon>
     </button>
   </div>
 

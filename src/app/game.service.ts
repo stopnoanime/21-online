@@ -80,6 +80,10 @@ export class GameService {
     this.room?.send('stay');
   }
 
+  public kick(id: string) {
+    this.room?.send('kick', id);
+  }
+
   private updateRoom(room: Colyseus.Room<GameState>) {
     this._room = room;
 
@@ -87,8 +91,7 @@ export class GameService {
     this._room.onLeave((code) => {
       this._room = undefined;
 
-      //Send kicked event
-      if (code == gameConfig.inactivityTimeoutKickCode) this.kickEvent.next();
+      if (code == gameConfig.kickCode) this.kickEvent.next();
     });
   }
 

@@ -1,6 +1,7 @@
 export default {
   inactivityTimeout: 30000,
-  inactivityTimeoutKickCode: 4000,
+
+  kickCode: 4000,
 
   delayedRoundStartTime: 3000,
   roundStateDealingTime: 1000,
