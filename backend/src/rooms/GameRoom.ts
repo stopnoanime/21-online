@@ -18,6 +18,15 @@ export class GameRoom extends Room<GameState> {
 
   private LOBBY_CHANNEL = 'GameRoom';
 
+  private log(msg: string, client?: Client | string) {
+    log.info(
+      `Room ${this.roomId} ${
+        client ? 'Client ' + ((<any>client).sessionId || client) : ''
+      }`,
+      msg
+    );
+  }
+
   private generateRoomIdString(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let result = '';
@@ -47,13 +56,13 @@ export class GameRoom extends Room<GameState> {
     this.setState(new GameState({}));
     this.clock.start();
 
-    log.info(`room ${this.roomId}`, `Created`);
+    this.log('Created');
 
     this.onMessage('ready', (client, state: boolean) => {
       //Cant change ready state during round
       if (this.state.roundState != 'idle') return;
 
-      log.info(`client ${client.sessionId}`, `Ready state change: ${state}`);
+      this.log(`Ready state change: ${state}`, client);
 
       this.state.players.get(client.sessionId).ready = state;
       this.triggerNewRoundCheck();
@@ -69,7 +78,7 @@ export class GameRoom extends Room<GameState> {
       )
         return;
 
-      log.info(`client ${client.sessionId}`, `Bet change: ${newBet}`);
+      this.log(`Bet change: ${newBet}`, client);
 
       this.state.players.get(client.sessionId).bet = newBet;
     });
@@ -77,7 +86,7 @@ export class GameRoom extends Room<GameState> {
     this.onMessage('hit', (client) => {
       if (client.sessionId != this.state.currentTurnPlayerId) return;
 
-      log.info(`client ${client.sessionId}`, `Hit`);
+      this.log(`Hit`, client);
 
       const player = this.state.players.get(client.sessionId);
 
@@ -100,7 +109,7 @@ export class GameRoom extends Room<GameState> {
     this.onMessage('stay', (client) => {
       if (client.sessionId != this.state.currentTurnPlayerId) return;
 
-      log.info(`client ${client.sessionId}`, `Stay`);
+      this.log(`Stay`, client);
 
       this.turn();
     });
@@ -108,7 +117,7 @@ export class GameRoom extends Room<GameState> {
     this.onMessage('kick', (client, id: string) => {
       if (!this.state.players.get(client.sessionId)?.admin || !id) return;
 
-      log.info(`client ${id}`, `kick`);
+      this.log(`Kick client ${id}`, client);
 
       this.clients
         .find((c) => c.sessionId == id)
@@ -117,7 +126,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   onJoin(client: Client) {
-    log.info(`client ${client.sessionId}`, `Join`);
+    this.log(`Join`, client);
 
     this.state.players.set(
       client.sessionId,
@@ -135,7 +144,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   async onLeave(client: Client, consented: boolean) {
-    log.info(`client ${client.sessionId}`, `Leave`);
+    this.log(`Leave`, client);
 
     const player = this.state.players.get(client.sessionId);
     player.disconnected = true;
@@ -150,9 +159,11 @@ export class GameRoom extends Room<GameState> {
 
     //Add player back if they rejoin
     try {
+      this.log(`Allow reconnection`, client);
+
       await this.allowReconnection(client);
 
-      log.info(`client ${client.sessionId}`, `Reconnect`);
+      this.log(`Reconnect`, client);
 
       player.disconnected = false;
 
@@ -166,7 +177,7 @@ export class GameRoom extends Room<GameState> {
 
   onDispose() {
     this.presence.srem(this.LOBBY_CHANNEL, this.roomId);
-    log.info(`room ${this.roomId}`, `Disposing`);
+    this.log(`Disposing`);
   }
 
   /** Automatically starts round if:
@@ -185,7 +196,7 @@ export class GameRoom extends Room<GameState> {
     //If there are no players left or not all players are ready, do not start round
     if (playerArr.length == 0 || playerArr.some((p) => !p.ready)) return;
 
-    log.info(`room ${this.roomId}`, `Setting delayed round start`);
+    this.log(`Setting delayed round start`);
 
     this.state.nextRoundStartTimestamp =
       Date.now() + gameConfig.delayedRoundStartTime;
@@ -238,7 +249,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   private async startRound() {
-    log.info(`room ${this.roomId}`, `Starting dealing phase`);
+    this.log(`Starting dealing phase`);
 
     this.state.roundState = 'dealing';
 
@@ -262,7 +273,7 @@ export class GameRoom extends Room<GameState> {
     //Delay starting next phase
     await this.delay(gameConfig.roundStateDealingTime);
 
-    log.info(`room ${this.roomId}`, `Starting turns phase`);
+    this.log(`Starting turns phase`);
 
     this.state.roundState = 'turns';
 
@@ -287,10 +298,7 @@ export class GameRoom extends Room<GameState> {
       return;
     }
 
-    log.info(
-      `room ${this.roomId}`,
-      `Client ${this.state.currentTurnPlayerId} turn`
-    );
+    this.log('Turn', this.state.currentTurnPlayerId);
 
     //Skip round if player has blackjack
     if (this.state.players.get(this.state.currentTurnPlayerId).hand.score == 21)
@@ -305,16 +313,13 @@ export class GameRoom extends Room<GameState> {
     this.inactivityTimeoutRef?.clear();
 
     this.inactivityTimeoutRef = this.clock.setTimeout(() => {
-      log.info(
-        `client ${this.state.currentTurnPlayerId}`,
-        `Inactivity timeout`
-      );
+      this.log('Inactivity timeout', this.state.currentTurnPlayerId);
       this.turn();
     }, gameConfig.inactivityTimeout);
   }
 
   private async endRound() {
-    log.info(`room ${this.roomId}`, `Starting end phase`);
+    this.log(`Starting end phase`);
 
     this.state.roundState = 'end';
 
@@ -377,7 +382,7 @@ export class GameRoom extends Room<GameState> {
       if (player.disconnected) this.deletePlayer(player.sessionId);
     }
 
-    log.info(`room ${this.roomId}`, `Starting idle phase`);
+    this.log(`Starting idle phase`);
     this.state.roundState = 'idle';
   }
 }
