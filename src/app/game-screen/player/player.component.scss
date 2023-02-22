@@ -10,7 +10,7 @@
 
 .hand {
   display: grid;
-  grid-auto-columns: 2.5vw;
+  grid-auto-columns: calc(var(--playing-card-width) * 0.5);
   grid-auto-flow: column;
 }
 

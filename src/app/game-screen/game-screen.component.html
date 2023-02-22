@@ -28,7 +28,7 @@
     </button>
   </div>
 
-  <div class="grid place-items-center w-full p-8">
+  <div class="grid place-items-center w-full py-8">
     <div class="player-holder row-start-1 col-start-1">
       <app-player
         [type]="'dealer'"
@@ -43,7 +43,7 @@
 
     <div
       class="row-start-1 col-start-1 z-10 text-amber-50 font-serif"
-      style="font-size: 2vw"
+      style="font-size: calc(var(--playing-table-height) * 0.1)"
     >
       Blackjack pays 3 to 2
     </div>

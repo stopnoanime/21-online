@@ -46,7 +46,7 @@
   </button>
 </div>
 
-<div class="card-holder absolute">
+<div class="card-holder absolute z-10">
   <div class="grid place-items-center">
     <div
       *ngIf="player?.roundOutcome || dealerHand?.isBusted"
@@ -68,8 +68,7 @@
       <div class="hand">
         <app-card *ngFor="let card of hand?.cards" [card]="card"></app-card>
       </div>
-      <!-- Half of card width -->
-      <div style="width: 2.5vw"></div>
+      <div style="width: calc(var(--playing-card-width) * 0.5)"></div>
     </div>
   </div>
 

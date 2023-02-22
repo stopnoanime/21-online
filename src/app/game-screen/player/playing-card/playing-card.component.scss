@@ -1,10 +1,14 @@
+::ng-deep :root {
+  --playing-card-width: calc(var(--playing-table-height) * 0.15);
+}
+
 .card-container {
-  width: 5vw;
-  perspective: 25vw;
+  width: var(--playing-card-width);
+  perspective: calc(var(--playing-card-width) * 5);
   aspect-ratio: 10/14;
 
-  font-size: 1.5vw;
-  line-height: 1.5vw;
+  font-size: calc(var(--playing-card-width) * 0.26);
+  line-height: calc(var(--playing-card-width) * 0.26);
 }
 
 .card {
@@ -21,7 +25,7 @@
   width: 100%;
   backface-visibility: hidden;
   box-shadow: 2px 2px 4px 2px rgba(0, 0, 0, 0.2);
-  border-radius: 0.75vw;
+  border-radius: calc(var(--playing-card-width) * 0.1);
   @apply bg-neutral-100;
 }
 

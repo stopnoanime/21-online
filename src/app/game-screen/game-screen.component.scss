@@ -34,6 +34,15 @@
   }
 }
 
+::ng-deep :root {
+  --playing-table-aspect-ratio: 2/1;
+  --playing-table-height: clamp(
+    250px,
+    100vh - 340px,
+    80vw / var(--playing-table-aspect-ratio)
+  );
+}
+
 .player-holder {
   //First argument should be gameConfig.maxClients + 1
   @include playingTable(8, 0.5);
@@ -41,6 +50,6 @@
   border-radius: 100%;
   @apply bg-green-600;
 
-  aspect-ratio: 2/1;
-  width: 75%;
+  aspect-ratio: var(--playing-table-aspect-ratio);
+  height: var(--playing-table-height);
 }
