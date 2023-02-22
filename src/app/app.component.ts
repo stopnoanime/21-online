@@ -13,5 +13,6 @@ export class AppComponent implements OnInit {
 
   ngOnInit(): void {
     this.game.kickEvent.subscribe(() => this.dialog.open(KickDialogComponent));
+    this.game.roomErrorEvent.subscribe((s) => window.alert(s));
   }
 }

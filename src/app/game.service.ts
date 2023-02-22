@@ -32,17 +32,24 @@ export class GameService {
   private _room?: Colyseus.Room<GameState>;
   private client: Colyseus.Client;
   public kickEvent = new Subject<void>();
+  public roomErrorEvent = new Subject<string>();
 
   constructor(private router: Router) {
     this.client = new Colyseus.Client(environment.gameServer);
   }
 
   public async createRoom() {
-    return await this.updateRoom(this.client.create('gameRoom'));
+    return await this.updateRoom(
+      this.client.create('gameRoom'),
+      'Unable to create room'
+    );
   }
 
   public async joinRoom(id: string) {
-    return await this.updateRoom(this.client.joinById(id.toUpperCase()));
+    return await this.updateRoom(
+      this.client.joinById(id.toUpperCase()),
+      `Unable to join room ${id}`
+    );
   }
 
   public async reconnectRoom(roomId?: string, sessionId?: string) {
@@ -58,7 +65,7 @@ export class GameService {
     }
 
     //Reconnecting was not successful, try to connect, and return if it was successful
-    return await this.joinRoom(roomId);
+    return await this.updateRoom(this.client.joinById(roomId));
   }
 
   public setReadyState(newState: boolean) {
@@ -82,12 +89,15 @@ export class GameService {
     this.room?.send('kick', id);
   }
 
-  private async updateRoom(room: Promise<Colyseus.Room<GameState>>) {
+  private async updateRoom(
+    room: Promise<Colyseus.Room<GameState>>,
+    errorMessage?: string
+  ) {
     try {
       this._room = await room;
     } catch (error) {
       //Was not able to connect
-      console.log(error);
+      if (errorMessage) this.roomErrorEvent.next(errorMessage);
       return false;
     }
 
