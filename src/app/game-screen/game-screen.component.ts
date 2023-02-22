@@ -11,14 +11,12 @@ import { placePlayersAtTable } from './placePlayersAtTable';
   styleUrls: ['./game-screen.component.scss'],
 })
 export class GameScreenComponent {
-  @Input() room: Room<GameState>;
-
   constructor(public game: GameService) {}
 
   getAllPlayers() {
     return placePlayersAtTable(
-      [...this.room.state.players.values()],
-      this.room.sessionId,
+      [...this.game.room!.state.players.values()],
+      this.game.room!.sessionId,
       gameConfig.maxClients
     );
   }

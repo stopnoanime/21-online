@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import gameConfig from 'backend/src/game.config';
 import { GameState } from 'backend/src/rooms/schema/GameState';
 import * as Colyseus from 'colyseus.js';
@@ -32,35 +33,32 @@ export class GameService {
   private client: Colyseus.Client;
   public kickEvent = new Subject<void>();
 
-  constructor() {
+  constructor(private router: Router) {
     this.client = new Colyseus.Client(environment.gameServer);
-    this.reconnectRoom();
   }
 
   public async createRoom() {
-    this.updateRoom(await this.client.create('gameRoom'));
+    return await this.updateRoom(this.client.create('gameRoom'));
   }
 
   public async joinRoom(id: string) {
-    this.updateRoom(await this.client.joinById(id.toUpperCase()));
+    return await this.updateRoom(this.client.joinById(id.toUpperCase()));
   }
 
-  public async reconnectRoom() {
-    const previousRoomData = this.getRoomData();
+  public async reconnectRoom(roomId?: string, sessionId?: string) {
+    if (!roomId) return false;
 
-    if (!previousRoomData) return;
-
-    try {
-      this.updateRoom(
-        await this.client.reconnect(
-          previousRoomData.roomId,
-          previousRoomData.sessionId
-        )
+    //Try to reconnect
+    if (sessionId) {
+      const connected = await this.updateRoom(
+        this.client.reconnect(roomId, sessionId)
       );
-    } catch {
-      //Previous room data is invalid, clear it
-      this.clearRoomData();
+
+      if (connected) return true;
     }
+
+    //Reconnecting was not successful, try to connect, and return if it was successful
+    return await this.joinRoom(roomId);
   }
 
   public setReadyState(newState: boolean) {
@@ -84,33 +82,28 @@ export class GameService {
     this.room?.send('kick', id);
   }
 
-  private updateRoom(room: Colyseus.Room<GameState>) {
-    this._room = room;
+  private async updateRoom(room: Promise<Colyseus.Room<GameState>>) {
+    try {
+      this._room = await room;
+    } catch (error) {
+      //Was not able to connect
+      console.log(error);
+      return false;
+    }
 
-    this.saveRoomData(room);
     this._room.onLeave((code) => {
       this._room = undefined;
 
       if (code == gameConfig.kickCode) this.kickEvent.next();
+
+      this.router.navigateByUrl(``);
     });
-  }
 
-  private saveRoomData(room: Colyseus.Room<GameState>) {
-    localStorage.setItem('roomId', room.id);
-    localStorage.setItem('sessionId', room.sessionId);
-  }
+    this.router.navigate([`room/${this._room.id}`], {
+      queryParams: { session: this._room.sessionId },
+    });
 
-  private getRoomData() {
-    const roomId = localStorage.getItem('roomId');
-    const sessionId = localStorage.getItem('sessionId');
-
-    if (roomId && sessionId) return { roomId: roomId, sessionId: sessionId };
-
-    return null;
-  }
-
-  private clearRoomData() {
-    localStorage.removeItem('roomId');
-    localStorage.removeItem('sessionId');
+    // Connected
+    return true;
   }
 }

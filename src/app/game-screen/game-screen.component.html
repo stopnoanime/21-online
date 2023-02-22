@@ -4,7 +4,7 @@
       mat-mini-fab
       color="primary"
       matTooltip="Leave room."
-      (click)="room.leave()"
+      (click)="game.room!.leave()"
     >
       <mat-icon>logout</mat-icon>
     </button>
@@ -23,7 +23,7 @@
     <div class="player-holder row-start-1 col-start-1">
       <app-player
         [type]="'dealer'"
-        [dealerHand]="room.state.dealerHand"
+        [dealerHand]="game.room!.state.dealerHand"
       ></app-player>
 
       <app-player
@@ -41,7 +41,8 @@
 
     <div
       *ngIf="
-        room.state.roundState == 'idle' && room.state.nextRoundStartTimestamp
+        game.room!.state.roundState == 'idle' &&
+        game.room!.state.nextRoundStartTimestamp
       "
       class="row-start-1 col-start-1 z-10 p-1 px-3 rounded-full bg-neutral-800 enter-animation text-3xl font-medium"
     >
@@ -51,5 +52,5 @@
 
   <app-player-actions class="mt-6"></app-player-actions>
 
-  <span class="text-neutral-400"> Room ID: {{ room.id }} </span>
+  <span class="text-neutral-400"> Room ID: {{ game.room!.id }} </span>
 </div>
