@@ -11,6 +11,8 @@ import { placePlayersAtTable } from './placePlayersAtTable';
   styleUrls: ['./game-screen.component.scss'],
 })
 export class GameScreenComponent {
+  location = location;
+
   constructor(public game: GameService) {}
 
   getAllPlayers() {

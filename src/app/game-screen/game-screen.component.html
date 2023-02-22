@@ -3,17 +3,26 @@
     <button
       mat-mini-fab
       color="primary"
-      matTooltip="Leave room."
+      matTooltip="Leave room"
       (click)="game.room!.leave()"
     >
       <mat-icon>logout</mat-icon>
     </button>
 
     <button
+      mat-mini-fab
+      color="primary"
+      matTooltip="Copy room link to clipboard"
+      [cdkCopyToClipboard]="location.href.split('?')[0]"
+    >
+      <mat-icon>link</mat-icon>
+    </button>
+
+    <button
       *ngIf="game.player?.admin"
       mat-mini-fab
       color="primary"
-      matTooltip="You are the room's admin."
+      matTooltip="You are the room's admin"
     >
       <mat-icon>star</mat-icon>
     </button>

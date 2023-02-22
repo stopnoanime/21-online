@@ -20,6 +20,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { InputConstrainDirective } from './game-screen/player-action/input-constrain.directive';
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { ClipboardModule } from '@angular/cdk/clipboard';
 
 @NgModule({
   declarations: [
@@ -45,6 +46,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatDialogModule,
     MatIconModule,
     MatTooltipModule,
+    ClipboardModule,
   ],
   providers: [],
   bootstrap: [AppComponent],
