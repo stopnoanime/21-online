@@ -1,4 +1,11 @@
-import { Room, Client, Delayed, Protocol } from 'colyseus';
+import {
+  Room,
+  Client,
+  Delayed,
+  Protocol,
+  ServerError,
+  ErrorCode,
+} from 'colyseus';
 import { GameState, Player } from './schema/GameState';
 import { uniqueNamesGenerator, colors, animals } from 'unique-names-generator';
 import gameConfig from '../game.config';
@@ -13,7 +20,6 @@ export class GameRoom extends Room<GameState> {
 
   private delayedRoundStartRef: Delayed;
 
-  public maxClients = gameConfig.maxClients;
   public autoDispose = false;
 
   private LOBBY_CHANNEL = 'GameRoom';
@@ -123,6 +129,22 @@ export class GameRoom extends Room<GameState> {
         .find((c) => c.sessionId == id)
         .leave(Protocol.WS_CLOSE_CONSENTED);
     });
+  }
+
+  async onAuth(client: Client) {
+    //No more space at table
+    if (this.state.players.size == gameConfig.maxClients)
+      throw new ServerError(gameConfig.roomFullCode, 'room is full');
+
+    //We have to kick the oldest disconnected player to make space for new player
+    if (
+      this.state.players.size + Object.keys(this.reconnections).length ==
+      gameConfig.maxClients
+    ) {
+      Object.values(this.reconnections)[0].reject();
+    }
+
+    return true;
   }
 
   onJoin(client: Client) {

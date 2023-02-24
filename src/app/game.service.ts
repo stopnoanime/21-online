@@ -124,15 +124,8 @@ export class GameService {
   private convertRoomErrorToMessage(error: any): string {
     if (error instanceof ProgressEvent) return 'Unable to connect to server';
 
-    if (
-      error.constructor.name === 'MatchMakeError' &&
-      error.message.includes('locked')
-    )
-      return 'Room is full';
-    if (
-      error.constructor.name === 'MatchMakeError' &&
-      error.message.includes('not found')
-    )
+    if (error.code === gameConfig.roomFullCode) return 'Room is full';
+    if (error.code === Colyseus.ErrorCode.MATCHMAKE_INVALID_ROOM_ID)
       return 'Invalid room ID';
 
     return 'Internal server error';
