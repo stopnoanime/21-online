@@ -3,6 +3,17 @@
   [class.opacity-70]="type == 'player' && !player?.ready"
   [class.primary-border]="isPlayerTurn"
 >
+  <div
+    *ngIf="player?.disconnected"
+    class="col-start-1 row-start-1 py-1.5 px-3 pill-popup"
+  >
+    <mat-icon
+      class="text-yellow-400 align-middle mb-px"
+      matTooltip="Player is disconnected"
+      >warning</mat-icon
+    >
+  </div>
+
   <div class="flex flex-col col-start-1 row-start-1">
     <span class="text-lg whitespace-nowrap">{{
       type == "dealer" ? "Dealer" : player?.displayName || "No Player"
@@ -22,24 +33,13 @@
     ></app-timestamp-progress-bar>
   </div>
 
-  <div
-    *ngIf="player?.disconnected"
-    class="col-start-1 row-start-1 p-1 bg-neutral-800 opacity-90 rounded"
-  >
-    <mat-icon
-      class="text-yellow-400 align-middle"
-      matTooltip="Player is disconnected"
-      >warning</mat-icon
-    >
-  </div>
-
   <button
     *ngIf="game.player?.admin && player && !isCurrentPlayer"
     mat-mini-fab
     color="primary"
     matTooltip="Kick this player."
     [matTooltipPosition]="'above'"
-    class="mr-auto mb-auto -ml-6 -mt-6 col-start-1 row-start-1 scale-75 invisible group-hover:visible"
+    class="mr-auto mb-auto -ml-7 -mt-7 col-start-1 row-start-1 scale-75 invisible group-hover:visible"
     (click)="game.kick(player.sessionId)"
   >
     <mat-icon>close</mat-icon>
@@ -50,7 +50,7 @@
   <div class="grid place-items-center">
     <div
       *ngIf="player?.roundOutcome || dealerHand?.isBusted"
-      class="bg-black z-10 rounded-xl p-3 text-xl enter-animation col-start-1 row-start-1"
+      class="z-10 px-3 py-1 text-xl pill-popup col-start-1 row-start-1"
     >
       {{
         player

@@ -1,7 +1,7 @@
 <div class="grid place-items-center">
   <div class="text-sm row-start-1 col-start-1 p-3">{{ money }} $</div>
   <div
-    class="row-start-1 col-start-1 p-1 rounded bg-neutral-800 enter-animation text-lg font-medium"
+    class="row-start-1 col-start-1 py-1 px-2 pill-popup text-lg font-medium"
     *ngIf="diffValue | async"
     [class.text-red-600]="(diffValue | async)! < 0"
     [class.text-green-600]="(diffValue | async)! > 0"

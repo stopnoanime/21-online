@@ -15,6 +15,7 @@
         left: calc(50% * math.cos($angle * 1deg) + 50%);
         top: calc(50% * math.sin($angle * 1deg) + 50%);
         transform: translate(-50%, -50%);
+        z-index: 20;
 
         //Used for card enter/leave animations
         --card-translation-x: #{calc(-100% * math.cos($angle * 1deg))};
@@ -52,4 +53,9 @@
 
   aspect-ratio: var(--playing-table-aspect-ratio);
   height: var(--playing-table-height);
+}
+
+.table-font {
+  font-size: calc(var(--playing-table-height) * 0.1);
+  line-height: calc(var(--playing-table-height) * 0.1);
 }

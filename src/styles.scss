@@ -21,7 +21,8 @@ body {
   color-scheme: dark;
 }
 
-.enter-animation {
+.pill-popup {
+  @apply rounded-full bg-neutral-800;
   animation-duration: 1s;
   animation-name: enter-animation;
   animation-fill-mode: forwards;
@@ -32,6 +33,6 @@ body {
     opacity: 0.3;
   }
   100% {
-    opacity: 0.8;
+    opacity: 0.9;
   }
 }
