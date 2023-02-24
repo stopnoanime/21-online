@@ -21,6 +21,7 @@ import { InputConstrainDirective } from './game-screen/player-action/input-const
 import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ClipboardModule } from '@angular/cdk/clipboard';
+import { ReactiveFormsModule } from '@angular/forms';
 
 @NgModule({
   declarations: [
@@ -47,6 +48,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
     MatIconModule,
     MatTooltipModule,
     ClipboardModule,
+    ReactiveFormsModule,
   ],
   providers: [],
   bootstrap: [AppComponent],

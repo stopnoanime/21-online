@@ -16,18 +16,24 @@
 
     <span class="strike-block"> or </span>
 
-    <mat-form-field appearance="fill" class="-mb-4">
+    <mat-form-field class="-mb-4">
       <mat-label>Room ID</mat-label>
-      <input matInput #roomId />
+      <input matInput [formControl]="roomId" />
     </mat-form-field>
 
-    <button
-      mat-raised-button
-      color="primary"
-      (click)="game.joinRoom(roomId.value)"
-      [disabled]="game.joinInProgress"
+    <div
+      [matTooltip]="joinButtonInvalidTooltip"
+      [matTooltipDisabled]="!roomId.invalid"
     >
-      Join room
-    </button>
+      <button
+        mat-raised-button
+        color="primary"
+        class="w-full"
+        (click)="game.joinRoom(roomId.value!)"
+        [disabled]="roomId.invalid || game.joinInProgress"
+      >
+        Join room
+      </button>
+    </div>
   </div>
 </div>

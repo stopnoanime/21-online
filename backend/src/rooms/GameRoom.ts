@@ -30,7 +30,7 @@ export class GameRoom extends Room<GameState> {
   private generateRoomIdString(): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let result = '';
-    for (let i = 0; i < 4; i++)
+    for (let i = 0; i < gameConfig.roomIdLength; i++)
       result += chars.charAt(Math.floor(Math.random() * chars.length));
     return result;
   }
