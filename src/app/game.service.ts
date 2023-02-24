@@ -41,17 +41,11 @@ export class GameService {
   }
 
   public createRoom() {
-    return this.updateRoom(
-      () => this.client.create('gameRoom'),
-      'Unable to create room'
-    );
+    return this.updateRoom(() => this.client.create('gameRoom'), true);
   }
 
   public joinRoom(id: string) {
-    return this.updateRoom(
-      () => this.client.joinById(id.toUpperCase()),
-      `Unable to join room ${id}`
-    );
+    return this.updateRoom(() => this.client.joinById(id.toUpperCase()), true);
   }
 
   public async reconnectRoom(roomId?: string, sessionId?: string) {
@@ -93,7 +87,7 @@ export class GameService {
 
   private async updateRoom(
     room: () => Promise<Colyseus.Room<GameState>>,
-    errorMessage?: string
+    emitErrorEvent = false
   ) {
     if (this.joinInProgress) return false;
     this.joinInProgress = true;
@@ -102,7 +96,9 @@ export class GameService {
       this._room = await room();
     } catch (error) {
       //Was not able to connect
-      if (errorMessage) this.roomErrorEvent.next(errorMessage);
+
+      if (emitErrorEvent)
+        this.roomErrorEvent.next(this.convertRoomErrorToMessage(error));
 
       this.joinInProgress = false;
       return false;
@@ -123,5 +119,22 @@ export class GameService {
     // Connected
     this.joinInProgress = false;
     return true;
+  }
+
+  private convertRoomErrorToMessage(error: any): string {
+    if (error instanceof ProgressEvent) return 'Unable to connect to server';
+
+    if (
+      error.constructor.name === 'MatchMakeError' &&
+      error.message.includes('locked')
+    )
+      return 'Room is full';
+    if (
+      error.constructor.name === 'MatchMakeError' &&
+      error.message.includes('not found')
+    )
+      return 'Invalid room ID';
+
+    return 'Internal server error';
   }
 }
