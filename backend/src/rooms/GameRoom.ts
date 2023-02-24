@@ -78,11 +78,12 @@ export class GameRoom extends Room<GameState> {
       if (
         this.state.roundState != 'idle' || //Cant change bet during round
         this.state.players.get(client.sessionId).ready || //Cant change bet when ready
-        !Number.isInteger(newBet) || // new bet is invalid
-        newBet < gameConfig.minBet ||
-        newBet > gameConfig.maxBet // new bet is out of range
+        !Number.isInteger(newBet) // new bet is invalid
       )
         return;
+
+      //Constrain bet
+      newBet = Math.min(Math.max(newBet, gameConfig.minBet), gameConfig.maxBet);
 
       this.log(`Bet change: ${newBet}`, client);
 

@@ -68,6 +68,12 @@ export class GameService {
     this.room?.send('ready', newState);
   }
 
+  public changeBet(change: number) {
+    if (!this.player) return;
+
+    this.room?.send('bet', this.player?.bet + change);
+  }
+
   public setBet(newBet: number) {
     if (!newBet) return;
     this.room?.send('bet', newBet);

@@ -13,6 +13,7 @@ export default {
   minBet: 1,
   maxBet: 1000,
   initialPlayerMoney: 10000,
+  initialPlayerBet: 50,
 
   // Websocket Code when player is disconnected by server
   kickCode: 4000,

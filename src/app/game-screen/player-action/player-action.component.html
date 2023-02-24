@@ -2,15 +2,20 @@
   class="pill-menu"
   [attr.disabled]="game.roundInProgress || game.player?.ready ? true : null"
 >
-  <span> Current Bet: {{ game.player?.bet }} </span>
+  <span>
+    Current Bet:
+    <span class="inline-block text-center" style="width: 4ch">{{
+      game.player?.bet
+    }}</span>
+  </span>
 
-  <span>Set Bet:</span>
+  <span> Change Bet: </span>
+  <button (click)="game.changeBet(-50)">- 50</button>
+  <button (click)="game.changeBet(-10)">- 10</button>
+  <button (click)="game.changeBet(10)">+ 10</button>
+  <button (click)="game.changeBet(50)">+ 50</button>
 
-  <button (click)="game.setBet(5)">5</button>
-  <button (click)="game.setBet(10)">10</button>
-  <button (click)="game.setBet(50)">50</button>
-
-  <button (click)="game.setBet(+betInput.value)">Set Custom:</button>
+  <button (click)="game.setBet(+betInput.value)">Set Bet:</button>
   <input
     #betInput
     type="number"

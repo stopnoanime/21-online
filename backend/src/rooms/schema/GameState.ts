@@ -84,7 +84,7 @@ export class Player extends Schema {
   @type('string') sessionId: string;
   @type('string') displayName: string;
   @type('number') money: number = gameConfig.initialPlayerMoney;
-  @type('number') bet: number = 10;
+  @type('number') bet: number = gameConfig.initialPlayerBet;
   @type('boolean') ready = false;
   @type('boolean') disconnected = false;
   @type('boolean') admin: boolean;
