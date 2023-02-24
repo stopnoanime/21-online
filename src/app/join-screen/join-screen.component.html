@@ -5,7 +5,12 @@
   <span class="mat-headline-1">21 Online</span>
 
   <div class="flex flex-col gap-8">
-    <button mat-raised-button color="primary" (click)="game.createRoom()">
+    <button
+      mat-raised-button
+      color="primary"
+      (click)="game.createRoom()"
+      [disabled]="game.joinInProgress"
+    >
       Create room
     </button>
 
@@ -20,6 +25,7 @@
       mat-raised-button
       color="primary"
       (click)="game.joinRoom(roomId.value)"
+      [disabled]="game.joinInProgress"
     >
       Join room
     </button>

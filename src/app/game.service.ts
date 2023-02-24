@@ -10,6 +10,13 @@ import { environment } from '../environments/environment';
   providedIn: 'root',
 })
 export class GameService {
+  public kickEvent = new Subject<void>();
+  public roomErrorEvent = new Subject<string>();
+  public joinInProgress = false;
+
+  private _room?: Colyseus.Room<GameState>;
+  private client: Colyseus.Client;
+
   public get room() {
     return this._room;
   }
@@ -29,25 +36,20 @@ export class GameService {
     );
   }
 
-  private _room?: Colyseus.Room<GameState>;
-  private client: Colyseus.Client;
-  public kickEvent = new Subject<void>();
-  public roomErrorEvent = new Subject<string>();
-
   constructor(private router: Router) {
     this.client = new Colyseus.Client(environment.gameServer);
   }
 
-  public async createRoom() {
-    return await this.updateRoom(
-      this.client.create('gameRoom'),
+  public createRoom() {
+    return this.updateRoom(
+      () => this.client.create('gameRoom'),
       'Unable to create room'
     );
   }
 
-  public async joinRoom(id: string) {
-    return await this.updateRoom(
-      this.client.joinById(id.toUpperCase()),
+  public joinRoom(id: string) {
+    return this.updateRoom(
+      () => this.client.joinById(id.toUpperCase()),
       `Unable to join room ${id}`
     );
   }
@@ -57,7 +59,7 @@ export class GameService {
 
     //Try to reconnect
     if (sessionId) {
-      const connected = await this.updateRoom(
+      const connected = await this.updateRoom(() =>
         this.client.reconnect(roomId, sessionId)
       );
 
@@ -65,7 +67,7 @@ export class GameService {
     }
 
     //Reconnecting was not successful, try to connect, and return if it was successful
-    return await this.updateRoom(this.client.joinById(roomId));
+    return this.updateRoom(() => this.client.joinById(roomId));
   }
 
   public setReadyState(newState: boolean) {
@@ -90,14 +92,19 @@ export class GameService {
   }
 
   private async updateRoom(
-    room: Promise<Colyseus.Room<GameState>>,
+    room: () => Promise<Colyseus.Room<GameState>>,
     errorMessage?: string
   ) {
+    if (this.joinInProgress) return false;
+    this.joinInProgress = true;
+
     try {
-      this._room = await room;
+      this._room = await room();
     } catch (error) {
       //Was not able to connect
       if (errorMessage) this.roomErrorEvent.next(errorMessage);
+
+      this.joinInProgress = false;
       return false;
     }
 
@@ -114,6 +121,7 @@ export class GameService {
     });
 
     // Connected
+    this.joinInProgress = false;
     return true;
   }
 }
