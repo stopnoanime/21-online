@@ -22,6 +22,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ReactiveFormsModule } from '@angular/forms';
+import { NotifierModule } from 'angular-notifier';
 
 @NgModule({
   declarations: [
@@ -49,6 +50,14 @@ import { ReactiveFormsModule } from '@angular/forms';
     MatTooltipModule,
     ClipboardModule,
     ReactiveFormsModule,
+    NotifierModule.withConfig({
+      position: {
+        horizontal: { position: 'right' },
+        vertical: {
+          position: 'top',
+        },
+      },
+    }),
   ],
   providers: [],
   bootstrap: [AppComponent],

@@ -2,6 +2,10 @@
 @tailwind components;
 @tailwind utilities;
 
+@import "node_modules/angular-notifier/styles/core";
+@import "node_modules/angular-notifier/styles/themes/theme-material.scss";
+@import "node_modules/angular-notifier/styles/types/type-error.scss";
+
 html,
 body {
   height: 100%;
