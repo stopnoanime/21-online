@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { GameScreenComponent } from './game-screen/game-screen.component';
 import { GameGuardService } from './game-screen/game-guard.service';
 import { JoinScreenComponent } from './join-screen/join-screen.component';
+import { JoinGuardService } from './join-screen/join-guard.service';
 
 const routes: Routes = [
   {
@@ -10,7 +11,12 @@ const routes: Routes = [
     component: GameScreenComponent,
     canActivate: [GameGuardService],
   },
-  { path: '', component: JoinScreenComponent, pathMatch: 'full' },
+  {
+    path: '',
+    component: JoinScreenComponent,
+    pathMatch: 'full',
+    canActivate: [JoinGuardService],
+  },
   { path: '**', redirectTo: '' },
 ];
 
