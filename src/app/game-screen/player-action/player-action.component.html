@@ -2,14 +2,14 @@
   class="pill-menu"
   [attr.disabled]="game.roundInProgress || game.player?.ready ? true : null"
 >
-  <span>
+  <span class="whitespace-normal">
     Current Bet:
     <span class="inline-block text-center" style="width: 4ch">{{
       game.player?.bet
     }}</span>
   </span>
 
-  <span> Change Bet: </span>
+  <span class="whitespace-normal"> Change Bet: </span>
   <button (click)="game.changeBet(-50)">- 50</button>
   <button (click)="game.changeBet(-10)">- 10</button>
   <button (click)="game.changeBet(10)">+ 10</button>
@@ -36,6 +36,15 @@
   >
     {{ game.player?.ready ? "Not ready" : "Ready" }}
   </button>
+  <div class="h-9" style="flex-grow: 0" *ngIf="!game.roundInProgress">
+    <mat-checkbox
+      class="-mt-2.5 mr-4"
+      [checked]="game.player?.autoReady"
+      (change)="game.setAutoReadyState($event.checked)"
+      matTooltip="Automatically sets player as ready after every round"
+      >Auto Ready</mat-checkbox
+    >
+  </div>
 
   <button (click)="game.stay()" *ngIf="game.roundInProgress">Stay</button>
   <button (click)="game.hit()" *ngIf="game.roundInProgress">Hit</button>

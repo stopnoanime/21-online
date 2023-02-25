@@ -1,5 +1,5 @@
 .pill-menu {
-  @apply flex justify-center m-4;
+  @apply flex justify-center m-4 whitespace-nowrap;
   gap: 2px;
 
   &[disabled] {

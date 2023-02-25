@@ -74,6 +74,16 @@ export class GameRoom extends Room<GameState> {
       this.triggerNewRoundCheck();
     });
 
+    this.onMessage('autoReady', (client, state: boolean) => {
+      if (this.state.roundState != 'idle') return;
+
+      this.log(`Auto ready state change: ${state}`, client);
+
+      const player = this.state.players.get(client.sessionId);
+      player.ready = player.autoReady = state;
+      this.triggerNewRoundCheck();
+    });
+
     this.onMessage('bet', (client, newBet: number) => {
       if (
         this.state.roundState != 'idle' || //Cant change bet during round
@@ -395,10 +405,10 @@ export class GameRoom extends Room<GameState> {
     //Remove dealer cards
     this.state.dealerHand.clear();
 
-    //Remove all players cards, and make players not ready
+    //Remove all players cards, and set their ready state
     for (const player of this.state.players.values()) {
       player.hand.clear();
-      player.ready = false;
+      player.ready = player.autoReady;
       player.roundOutcome = '';
 
       //Remove players that are still disconnected
@@ -407,5 +417,6 @@ export class GameRoom extends Room<GameState> {
 
     this.log(`Starting idle phase`);
     this.state.roundState = 'idle';
+    this.triggerNewRoundCheck();
   }
 }

@@ -68,6 +68,10 @@ export class GameService {
     this.room?.send('ready', newState);
   }
 
+  public setAutoReadyState(newState: boolean) {
+    this.room?.send('autoReady', newState);
+  }
+
   public changeBet(change: number) {
     if (!this.player) return;
 

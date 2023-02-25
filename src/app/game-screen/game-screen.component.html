@@ -1,5 +1,5 @@
 <div class="grid place-items-center min-h-screen p-4 lg:p-8">
-  <div class="mr-auto flex gap-2">
+  <div class="flex gap-2 place-self-start">
     <button
       mat-mini-fab
       color="primary"
@@ -53,7 +53,7 @@
         game.room!.state.roundState == 'idle' &&
         game.room!.state.nextRoundStartTimestamp
       "
-      class="row-start-1 col-start-1 z-10 table-font px-3 lg:px-4 2xl:px-7 pill-popup scale-75"
+      class="row-start-1 col-start-1 z-10 table-font px-3 lg:px-4 2xl:px-7 pill-popup"
     >
       Starting round
     </div>
@@ -61,5 +61,5 @@
 
   <app-player-actions class="mt-6"></app-player-actions>
 
-  <span class="text-neutral-400"> Room ID: {{ game.room!.id }} </span>
+  <span class="text-neutral-400 self-end"> Room ID: {{ game.room!.id }} </span>
 </div>

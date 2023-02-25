@@ -23,6 +23,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NotifierModule } from 'angular-notifier';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   declarations: [
@@ -50,6 +51,7 @@ import { NotifierModule } from 'angular-notifier';
     MatTooltipModule,
     ClipboardModule,
     ReactiveFormsModule,
+    MatCheckboxModule,
     NotifierModule.withConfig({
       position: {
         horizontal: { position: 'right' },
