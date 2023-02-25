@@ -400,7 +400,10 @@ export class GameRoom extends Room<GameState> {
     }
 
     //Delay starting next phase
-    await this.delay(gameConfig.roundStateEndTime);
+    await this.delay(
+      gameConfig.roundStateEndTimeBase +
+        this.state.players.size * gameConfig.roundStateEndTimePlayer
+    );
 
     //Remove dealer cards
     this.state.dealerHand.clear();

@@ -4,11 +4,12 @@ export default {
 
   //All times are in ms
   inactivityTimeout: 30000,
-  delayedRoundStartTime: 3000,
+  delayedRoundStartTime: 2000,
   roundStateDealingTime: 1000,
   dealerCardDelay: 1000,
-  roundOutcomeDelay: 2000,
-  roundStateEndTime: 5000,
+  roundOutcomeDelay: 1000,
+  roundStateEndTimeBase: 2500,
+  roundStateEndTimePlayer: 500,
 
   minBet: 1,
   maxBet: 1000,
