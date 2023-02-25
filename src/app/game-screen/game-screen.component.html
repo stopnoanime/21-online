@@ -42,9 +42,10 @@
     </div>
 
     <div
-      class="row-start-1 col-start-1 z-10 text-amber-50 font-serif table-font"
+      class="row-start-1 col-start-1 z-10 text-amber-50 font-serif text-center"
     >
-      Blackjack pays 3 to 2
+      <span class="table-font">Blackjack pays 3 to 2</span><br />
+      <span class="table-font-sm">Dealer must stand on 17</span>
     </div>
 
     <div
@@ -52,7 +53,7 @@
         game.room!.state.roundState == 'idle' &&
         game.room!.state.nextRoundStartTimestamp
       "
-      class="row-start-1 col-start-1 z-10 table-font py-3 px-4 lg:px-7 pill-popup scale-90"
+      class="row-start-1 col-start-1 z-10 table-font px-3 lg:px-4 2xl:px-7 pill-popup scale-75"
     >
       Starting round
     </div>

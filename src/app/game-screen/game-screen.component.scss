@@ -56,6 +56,11 @@
 }
 
 .table-font {
-  font-size: calc(var(--playing-table-height) * 0.1);
-  line-height: calc(var(--playing-table-height) * 0.1);
+  font-size: calc(var(--playing-table-height) * 0.08);
+  line-height: calc(var(--playing-table-height) * 0.12);
+}
+
+.table-font-sm {
+  font-size: calc(var(--playing-table-height) * 0.04);
+  line-height: calc(var(--playing-table-height) * 0.05);
 }
