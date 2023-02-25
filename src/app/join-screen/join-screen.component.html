@@ -21,7 +21,11 @@
 
     <mat-form-field class="-mb-4" [hideRequiredMarker]="true">
       <mat-label>Room ID</mat-label>
-      <input matInput [formControl]="roomId" />
+      <input
+        matInput
+        [formControl]="roomId"
+        (keyup.enter)="roomId.invalid || game.joinRoom(roomId.value!)"
+      />
     </mat-form-field>
 
     <div
