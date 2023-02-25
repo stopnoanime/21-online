@@ -411,11 +411,13 @@ export class GameRoom extends Room<GameState> {
     //Remove all players cards, and set their ready state
     for (const player of this.state.players.values()) {
       player.hand.clear();
-      player.ready = player.autoReady;
+      player.ready = false;
       player.roundOutcome = '';
 
       //Remove players that are still disconnected
       if (player.disconnected) this.deletePlayer(player.sessionId);
+      //And for others, set their ready state
+      else player.ready = player.autoReady;
     }
 
     this.log(`Starting idle phase`);
