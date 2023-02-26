@@ -1,5 +1,9 @@
 <div class="grid place-items-center">
-  <div class="text-sm row-start-1 col-start-1 p-3">{{ money }} $</div>
+  <div
+    class="text-xs lg:text-sm row-start-1 col-start-1 p-1 lg:p-3 whitespace-nowrap"
+  >
+    {{ money }} $
+  </div>
   <div
     class="row-start-1 col-start-1 py-1 px-2 pill-popup text-lg font-medium"
     *ngIf="diffValue | async"

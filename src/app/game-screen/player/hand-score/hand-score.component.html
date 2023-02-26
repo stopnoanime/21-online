@@ -1,0 +1,9 @@
+<div class="text-center my-1 text-xs lg:text-sm whitespace-nowrap">
+  {{
+    !hand?.score
+      ? "&nbsp;"
+      : hand?.isBlackjack
+      ? "Blackjack"
+      : "Value: " + hand?.score
+  }}
+</div>

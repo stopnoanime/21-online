@@ -33,11 +33,13 @@
       <app-player
         [type]="'dealer'"
         [dealerHand]="game.room!.state.dealerHand"
+        [scoreBottom]="false"
       ></app-player>
 
       <app-player
-        *ngFor="let player of getAllPlayers()"
+        *ngFor="let player of getAllPlayers(); index as i"
         [player]="player"
+        [scoreBottom]="Math.abs(0.5 - (i + 1) / 8) <= 0.25"
       ></app-player>
     </div>
 

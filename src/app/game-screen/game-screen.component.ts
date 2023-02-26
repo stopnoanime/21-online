@@ -1,7 +1,5 @@
 import { Component, Input } from '@angular/core';
 import gameConfig from 'backend/src/game.config';
-import { GameState, Player } from 'backend/src/rooms/schema/GameState';
-import { Room } from 'colyseus.js';
 import { GameService } from '../game.service';
 import { placePlayersAtTable } from './placePlayersAtTable';
 
@@ -12,6 +10,7 @@ import { placePlayersAtTable } from './placePlayersAtTable';
 })
 export class GameScreenComponent {
   location = location;
+  Math = Math;
 
   constructor(public game: GameService) {}
 

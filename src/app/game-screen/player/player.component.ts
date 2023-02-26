@@ -10,6 +10,7 @@ export class PlayerComponent {
   @Input() player?: Player;
   @Input() dealerHand?: Hand;
   @Input() type: 'dealer' | 'player' = 'player';
+  @Input() scoreBottom = false;
 
   get hand() {
     return this.player?.hand || this.dealerHand;

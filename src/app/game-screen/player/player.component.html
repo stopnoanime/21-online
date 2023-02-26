@@ -15,7 +15,7 @@
   </div>
 
   <div class="flex flex-col col-start-1 row-start-1">
-    <span class="text-lg whitespace-nowrap">{{
+    <span class="text-xs lg:text-lg whitespace-nowrap">{{
       type == "dealer" ? "Dealer" : player?.displayName || "No Player"
     }}</span>
 
@@ -47,6 +47,12 @@
 </div>
 
 <div class="card-holder absolute z-10">
+  <app-hand-score
+    class="absolute left-1/2 -translate-x-1/2 bottom-full"
+    [hand]="hand"
+    *ngIf="!scoreBottom"
+  ></app-hand-score>
+
   <div class="grid place-items-center">
     <div
       *ngIf="player?.roundOutcome || dealerHand?.isBusted"
@@ -72,13 +78,9 @@
     </div>
   </div>
 
-  <div class="text-center mt-4" style="height: 1em">
-    {{
-      !hand?.score
-        ? ""
-        : hand?.isBlackjack
-        ? "Blackjack"
-        : "Cards value: " + hand?.score
-    }}
-  </div>
+  <app-hand-score
+    class="absolute left-1/2 -translate-x-1/2"
+    [hand]="hand"
+    *ngIf="scoreBottom"
+  ></app-hand-score>
 </div>

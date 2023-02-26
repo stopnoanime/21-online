@@ -24,6 +24,7 @@ import { ClipboardModule } from '@angular/cdk/clipboard';
 import { ReactiveFormsModule } from '@angular/forms';
 import { NotifierModule } from 'angular-notifier';
 import { MatCheckboxModule } from '@angular/material/checkbox';
+import { HandScoreComponent } from './game-screen/player/hand-score/hand-score.component';
 
 @NgModule({
   declarations: [
@@ -37,6 +38,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
     MoneyCounterComponent,
     KickDialogComponent,
     InputConstrainDirective,
+    HandScoreComponent,
   ],
   imports: [
     BrowserModule,
