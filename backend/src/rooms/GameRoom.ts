@@ -241,6 +241,10 @@ export class GameRoom extends Room<GameState> {
 
   private deletePlayer(id: string) {
     const player = this.state.players.get(id);
+
+    //If deleted player reconnects, they should not be ready
+    player.ready = false;
+
     this.state.players.delete(id);
 
     // Dispose room if there are no more players left
@@ -411,13 +415,11 @@ export class GameRoom extends Room<GameState> {
     //Remove all players cards, and set their ready state
     for (const player of this.state.players.values()) {
       player.hand.clear();
-      player.ready = false;
+      player.ready = player.autoReady;
       player.roundOutcome = '';
 
       //Remove players that are still disconnected
       if (player.disconnected) this.deletePlayer(player.sessionId);
-      //And for others, set their ready state
-      else player.ready = player.autoReady;
     }
 
     this.log(`Starting idle phase`);
