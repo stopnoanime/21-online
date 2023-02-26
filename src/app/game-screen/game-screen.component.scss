@@ -23,7 +23,7 @@
 
         //Sets the initial cards position
         ::ng-deep .card-holder {
-          @screen xl {
+          @screen lg {
             transform: translate(
               calc(
                 -50% * math.cos($angle * 1deg) - 100px * math.round(math.cos($angle *
