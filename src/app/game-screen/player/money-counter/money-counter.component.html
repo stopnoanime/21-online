@@ -1,11 +1,9 @@
-<div class="grid place-items-center">
-  <div
-    class="text-xs xl:text-sm row-start-1 col-start-1 p-1 xl:p-3 whitespace-nowrap"
-  >
+<div class="grid place-items-center text-xs xl:text-sm">
+  <div class="row-start-1 col-start-1 p-1 xl:p-3 whitespace-nowrap">
     {{ money }} $
   </div>
   <div
-    class="row-start-1 col-start-1 py-1 px-2 pill-popup text-lg font-medium"
+    class="row-start-1 col-start-1 py-1 px-2 pill-popup font-medium"
     *ngIf="diffValue | async"
     [class.text-red-600]="(diffValue | async)! < 0"
     [class.text-green-600]="(diffValue | async)! > 0"
