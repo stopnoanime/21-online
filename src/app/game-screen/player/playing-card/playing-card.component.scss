@@ -1,4 +1,8 @@
 ::ng-deep :root {
+  @screen 2xl {
+    --playing-card-width: calc(var(--playing-table-height) * 0.12);
+  }
+
   --playing-card-width: calc(var(--playing-table-height) * 0.1);
 }
 

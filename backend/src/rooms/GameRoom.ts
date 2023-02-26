@@ -142,7 +142,7 @@ export class GameRoom extends Room<GameState> {
     });
   }
 
-  async onAuth(client: Client) {
+  onAuth(client: Client) {
     //No more space at table
     if (this.state.players.size == gameConfig.maxClients)
       throw new ServerError(gameConfig.roomFullCode, 'room is full');
