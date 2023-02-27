@@ -1,5 +1,12 @@
 @use "sass:math";
 
+@mixin cardTransform($offset-x, $offset-y, $angle) {
+  transform: translate(
+    calc((-50% - $offset-x) * math.round(math.cos($angle * 1deg))),
+    calc((-50% - $offset-y) * math.sin($angle * 1deg))
+  );
+}
+
 /// Modified from https://css-tricks.com/snippets/sass/placing-items-circle/
 @mixin playingTable($players-count, $card-position) {
   position: relative;
@@ -23,32 +30,11 @@
 
         //Sets the initial cards position
         ::ng-deep .card-holder {
+          @include cardTransform(60px, 50px, $angle);
+
           @screen lg {
-            transform: translate(
-              calc(
-                -50% * math.cos($angle * 1deg) - 100px * math.round(math.cos($angle *
-                        1deg))
-              ),
-              calc(
-                -50% * math.sin($angle * 1deg) - 75px * math.round(math.sin($angle *
-                        1deg))
-              )
-            );
+            @include cardTransform(80px, 70px, $angle);
           }
-          transform: translate(
-            calc(
-              -50% *
-                math.cos($angle * 1deg) -
-                60px *
-                math.round(math.cos($angle * 1deg))
-            ),
-            calc(
-              -50% *
-                math.sin($angle * 1deg) -
-                50px *
-                math.round(math.sin($angle * 1deg))
-            )
-          );
         }
       }
 
@@ -61,7 +47,7 @@
   --playing-table-aspect-ratio: 2/1;
   --playing-table-height: clamp(
     250px,
-    100vh - 340px,
+    100vh - 300px,
     80vw / var(--playing-table-aspect-ratio)
   );
 }
