@@ -1,15 +1,8 @@
-import {
-  Room,
-  Client,
-  Delayed,
-  Protocol,
-  ServerError,
-  ErrorCode,
-} from 'colyseus';
+import { Room, Client, Delayed, Protocol, ServerError } from 'colyseus';
 import { GameState, Player } from './schema/GameState';
-import { uniqueNamesGenerator, colors, animals } from 'unique-names-generator';
 import gameConfig from '../game.config';
 import log from 'npmlog';
+import { generateUserName, generateRoomId } from './utility';
 
 export class GameRoom extends Room<GameState> {
   /** Current timeout skip reference */
@@ -33,19 +26,11 @@ export class GameRoom extends Room<GameState> {
     );
   }
 
-  private generateRoomIdString(): string {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    let result = '';
-    for (let i = 0; i < gameConfig.roomIdLength; i++)
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    return result;
-  }
-
-  private async generateRoomId(): Promise<string> {
+  private async registerRoomId(): Promise<string> {
     const currentIds = await this.presence.smembers(this.LOBBY_CHANNEL);
     let id;
 
-    do id = this.generateRoomIdString();
+    do id = generateRoomId();
     while (currentIds.includes(id));
 
     await this.presence.sadd(this.LOBBY_CHANNEL, id);
@@ -57,7 +42,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   async onCreate() {
-    this.roomId = await this.generateRoomId();
+    this.roomId = await this.registerRoomId();
     this.setPrivate();
     this.setState(new GameState({}));
     this.clock.start();
@@ -165,11 +150,7 @@ export class GameRoom extends Room<GameState> {
       client.sessionId,
       new Player({
         sessionId: client.sessionId,
-        displayName: uniqueNamesGenerator({
-          dictionaries: [colors, animals],
-          separator: ' ',
-          style: 'capital',
-        }),
+        displayName: generateUserName(),
         admin: this.state.players.size == 0,
       })
     );

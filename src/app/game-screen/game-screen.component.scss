@@ -37,7 +37,7 @@
 
         //Sets the initial cards position
         ::ng-deep .card-holder {
-          @include cardTransform(0.125, 0.1, $angle);
+          @include cardTransform(0.14, 0.1, $angle);
 
           @screen 2xl {
             @include cardTransform(0.1, 0.08, $angle);
@@ -55,7 +55,7 @@
   --playing-table-height: clamp(
     250px,
     100vh - 300px,
-    80vw / var(--playing-table-aspect-ratio)
+    85vw / var(--playing-table-aspect-ratio)
   );
 }
 
