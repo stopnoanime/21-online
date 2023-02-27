@@ -37,7 +37,11 @@
 
         //Sets the initial cards position
         ::ng-deep .card-holder {
-          @include cardTransform(0.1, 0.08, $angle);
+          @include cardTransform(0.125, 0.1, $angle);
+
+          @screen 2xl {
+            @include cardTransform(0.1, 0.08, $angle);
+          }
         }
       }
 
@@ -72,20 +76,35 @@
 
 ::ng-deep .table-font-xl {
   font-size: calc(var(--playing-table-height) * 0.04);
-  line-height: calc(var(--playing-table-height) * 0.05);
+  line-height: calc(var(--playing-table-height) * 0.06);
 }
 
 ::ng-deep .table-font-lg {
-  font-size: calc(var(--playing-table-height) * 0.03);
-  line-height: calc(var(--playing-table-height) * 0.045);
+  font-size: calc(var(--playing-table-height) * 0.04);
+  line-height: calc(var(--playing-table-height) * 0.06);
+
+  @screen 2xl {
+    font-size: calc(var(--playing-table-height) * 0.03);
+    line-height: calc(var(--playing-table-height) * 0.045);
+  }
 }
 
 ::ng-deep .table-font {
-  font-size: calc(var(--playing-table-height) * 0.024);
-  line-height: calc(var(--playing-table-height) * 0.03);
+  font-size: calc(var(--playing-table-height) * 0.036);
+  line-height: calc(var(--playing-table-height) * 0.042);
+
+  @screen 2xl {
+    font-size: calc(var(--playing-table-height) * 0.024);
+    line-height: calc(var(--playing-table-height) * 0.03);
+  }
 }
 
 ::ng-deep .table-font-sm {
-  font-size: calc(var(--playing-table-height) * 0.02);
-  line-height: calc(var(--playing-table-height) * 0.03);
+  font-size: calc(var(--playing-table-height) * 0.028);
+  line-height: calc(var(--playing-table-height) * 0.042);
+
+  @screen 2xl {
+    font-size: calc(var(--playing-table-height) * 0.02);
+    line-height: calc(var(--playing-table-height) * 0.03);
+  }
 }
