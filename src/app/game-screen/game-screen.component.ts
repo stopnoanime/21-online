@@ -14,6 +14,10 @@ export class GameScreenComponent {
 
   constructor(public game: GameService) {}
 
+  getPlayerPosition(index: number) {
+    return Math.abs(0.5 - (index + 1) / (gameConfig.maxClients + 1));
+  }
+
   getAllPlayers() {
     return placePlayersAtTable(
       [...this.game.room!.state.players.values()],
