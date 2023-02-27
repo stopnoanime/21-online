@@ -1,7 +1,7 @@
-<div class="text-center my-1 table-font-sm whitespace-nowrap">
+<div class="text-center my-1 table-font whitespace-nowrap">
   {{
     !hand?.score
-      ? "&nbsp;"
+      ? ""
       : hand?.isBlackjack
       ? "Blackjack"
       : "Value: " + hand?.score
