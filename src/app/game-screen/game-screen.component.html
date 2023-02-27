@@ -33,22 +33,24 @@
       <app-player
         [type]="'dealer'"
         [dealerHand]="game.room!.state.dealerHand"
-        [scoreBottom]="false"
+        [scoreBottom]="true"
       ></app-player>
 
       <app-player
         *ngFor="let player of getAllPlayers(); index as i"
         [style.z-index]="10 - Math.round(getPlayerPosition(i) * 10)"
         [player]="player"
-        [scoreBottom]="getPlayerPosition(i) <= 0.25"
+        [scoreBottom]="
+          getPlayerPosition(i) <= 0.25 && getPlayerPosition(i) != 0
+        "
       ></app-player>
     </div>
 
     <div
       class="row-start-1 col-start-1 z-10 text-amber-50 font-serif text-center"
     >
-      <span class="table-font">Blackjack pays 3 to 2</span><br />
-      <span class="table-font-sm">Dealer must stand on 17</span>
+      <span class="table-font-2xl">Blackjack pays 3 to 2</span><br />
+      <span class="table-font-xl">Dealer must stand on 17</span>
     </div>
 
     <div
@@ -56,7 +58,8 @@
         game.room!.state.roundState == 'idle' &&
         game.room!.state.nextRoundStartTimestamp
       "
-      class="row-start-1 col-start-1 z-10 table-font px-3 lg:px-4 2xl:px-7 pill-popup"
+      class="row-start-1 col-start-1 z-10 table-font-2xl pill-popup"
+      style="padding: 0 0.4em"
     >
       Starting round
     </div>

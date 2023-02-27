@@ -2,14 +2,21 @@
 
 @mixin cardTransform($offset-x, $offset-y, $angle) {
   transform: translate(
-    calc((-50% - $offset-x) * math.round(math.cos($angle * 1deg))),
-    calc((-50% - $offset-y) * math.sin($angle * 1deg))
+    calc(
+      (-50% - var(--playing-table-height) * $offset-x) *
+        math.round(math.cos($angle * 1deg))
+    ),
+    calc(
+      (-50% - var(--playing-table-height) * $offset-y) *
+        math.round(math.sin($angle * 1deg))
+    )
   );
 }
 
 /// Modified from https://css-tricks.com/snippets/sass/placing-items-circle/
 @mixin playingTable($players-count, $card-position) {
   position: relative;
+  border-radius: 100%;
 
   > * {
     position: absolute;
@@ -30,11 +37,7 @@
 
         //Sets the initial cards position
         ::ng-deep .card-holder {
-          @include cardTransform(60px, 50px, $angle);
-
-          @screen lg {
-            @include cardTransform(80px, 70px, $angle);
-          }
+          @include cardTransform(0.1, 0.08, $angle);
         }
       }
 
@@ -55,20 +58,34 @@
 .player-holder {
   //First argument should be gameConfig.maxClients + 1
   @include playingTable(8, 0.5);
-
-  border-radius: 100%;
   @apply bg-green-600;
 
   aspect-ratio: var(--playing-table-aspect-ratio);
   height: var(--playing-table-height);
 }
 
-.table-font {
+//Create font sizes that are relative to playing table size
+::ng-deep .table-font-2xl {
   font-size: calc(var(--playing-table-height) * 0.08);
   line-height: calc(var(--playing-table-height) * 0.12);
 }
 
-.table-font-sm {
+::ng-deep .table-font-xl {
   font-size: calc(var(--playing-table-height) * 0.04);
   line-height: calc(var(--playing-table-height) * 0.05);
+}
+
+::ng-deep .table-font-lg {
+  font-size: calc(var(--playing-table-height) * 0.03);
+  line-height: calc(var(--playing-table-height) * 0.045);
+}
+
+::ng-deep .table-font {
+  font-size: calc(var(--playing-table-height) * 0.024);
+  line-height: calc(var(--playing-table-height) * 0.03);
+}
+
+::ng-deep .table-font-sm {
+  font-size: calc(var(--playing-table-height) * 0.02);
+  line-height: calc(var(--playing-table-height) * 0.03);
 }

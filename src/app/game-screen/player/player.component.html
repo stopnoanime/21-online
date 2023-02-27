@@ -1,5 +1,5 @@
 <div
-  class="rounded-lg p-2 bg-neutral-600 grid place-items-center group z-10"
+  class="rounded-lg p-1.5 2xl:p-2 bg-neutral-600 grid place-items-center group z-10"
   [class.opacity-70]="type == 'player' && !player?.ready"
   [class.primary-border]="isPlayerTurn"
 >
@@ -15,7 +15,7 @@
   </div>
 
   <div class="flex flex-col col-start-1 row-start-1">
-    <span class="text-xs lg:text-lg whitespace-nowrap">{{
+    <span class="table-font whitespace-nowrap">{{
       type == "dealer" ? "Dealer" : player?.displayName || "No Player"
     }}</span>
 
@@ -56,7 +56,7 @@
   <div class="grid place-items-center">
     <div
       *ngIf="player?.roundOutcome || dealerHand?.isBusted"
-      class="z-10 px-3 py-1 text-xs lg:text-xl pill-popup col-start-1 row-start-1 whitespace-nowrap text-center"
+      class="z-10 px-3 table-font-lg pill-popup col-start-1 row-start-1 whitespace-nowrap text-center"
     >
       {{
         player
