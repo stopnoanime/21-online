@@ -37,10 +37,10 @@
 
         //Sets the initial cards position
         ::ng-deep .card-holder {
-          @include cardTransform(0.17, 0.1, $angle);
+          @include cardTransform(0.17, 0.12, $angle);
 
           @screen 2xl {
-            @include cardTransform(0.11, 0.08, $angle);
+            @include cardTransform(0.11, 0.09, $angle);
           }
         }
       }
