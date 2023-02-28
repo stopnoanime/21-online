@@ -31,12 +31,13 @@
   [attr.disabled]="game.roundInProgress && !game.playersTurn ? true : null"
 >
   <button
+    style="flex-grow: 100"
     (click)="game.setReadyState(!game.player?.ready)"
     *ngIf="!game.roundInProgress"
   >
     {{ game.player?.ready ? "Not ready" : "Ready" }}
   </button>
-  <div class="h-9" style="flex-grow: 0" *ngIf="!game.roundInProgress">
+  <div class="h-9" *ngIf="!game.roundInProgress">
     <mat-checkbox
       class="-mt-2.5 mr-4"
       [checked]="game.player?.autoReady"

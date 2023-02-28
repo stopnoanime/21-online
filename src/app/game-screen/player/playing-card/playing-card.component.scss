@@ -1,5 +1,5 @@
 ::ng-deep :root {
-  --playing-card-width: calc(var(--playing-table-height) * 0.15);
+  --playing-card-width: calc(var(--table-unit) * 0.15);
 }
 
 .card-container {

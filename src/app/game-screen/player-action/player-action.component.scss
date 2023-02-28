@@ -1,6 +1,5 @@
 .pill-menu {
-  @apply flex justify-center m-4 whitespace-nowrap;
-  gap: 2px;
+  @apply flex justify-center m-4 whitespace-nowrap gap-1 flex-wrap;
 
   &[disabled] {
     opacity: 0.6;
@@ -8,16 +7,24 @@
   }
 
   > * {
-    @apply p-2 font-medium px-3 flex-grow;
+    @apply p-2 font-medium px-3 flex-grow rounded-md text-center;
     background-color: var(--theme-primary-color);
     min-width: 40px;
   }
 
-  > *:last-child {
-    @apply rounded-r-full;
-  }
+  @screen sm {
+    gap: 2px;
 
-  > *:first-child {
-    @apply rounded-l-full;
+    > * {
+      border-radius: 0px;
+    }
+
+    > *:last-child {
+      @apply rounded-r-full;
+    }
+
+    > *:first-child {
+      @apply rounded-l-full;
+    }
   }
 }

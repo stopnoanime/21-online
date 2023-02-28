@@ -3,20 +3,39 @@
 @mixin cardTransform($offset-x, $offset-y, $angle) {
   transform: translate(
     calc(
-      (-50% - var(--playing-table-height) * $offset-x) *
+      (-50% - var(--table-unit) * $offset-x) *
         math.round(math.cos($angle * 1deg))
     ),
     calc(
-      (-50% - var(--playing-table-height) * $offset-y) *
+      (-50% - var(--table-unit) * $offset-y) *
         math.round(math.sin($angle * 1deg))
     )
   );
 }
 
-/// Modified from https://css-tricks.com/snippets/sass/placing-items-circle/
-@mixin playingTable($players-count, $card-position) {
+//First argument should be gameConfig.maxClients + 1
+@mixin playingTable(
+  $players-count,
+  $aspect-ratio,
+  $min-height,
+  $default-height,
+  $max-width
+) {
+  //Set global variables
+  @at-root ::ng-deep :root {
+    --playing-table-aspect-ratio: #{$aspect-ratio};
+    --table-unit: clamp(
+      #{$min-height},
+      #{$default-height},
+      #{$max-width} / var(--playing-table-aspect-ratio)
+    );
+  }
+
   position: relative;
   border-radius: 100%;
+
+  aspect-ratio: var(--playing-table-aspect-ratio);
+  height: var(--table-unit);
 
   > * {
     position: absolute;
@@ -29,7 +48,7 @@
         left: calc(50% * math.cos($angle * 1deg) + 50%);
         top: calc(50% * math.sin($angle * 1deg) + 50%);
         transform: translate(-50%, -50%);
-        z-index: 20;
+        z-index: 10;
 
         //Used for card enter/leave animations
         --card-translation-x: #{calc(-100% * math.cos($angle * 1deg))};
@@ -50,41 +69,72 @@
   }
 }
 
-::ng-deep :root {
-  --playing-table-aspect-ratio: 2/1;
-  --playing-table-height: clamp(
-    250px,
-    100vh - 300px,
-    85vw / var(--playing-table-aspect-ratio)
-  );
+@mixin playingTableMobile($players-count, $width) {
+  @at-root ::ng-deep :root {
+    // Table elements have fixed size
+    --table-unit: 310px;
+  }
+
+  position: relative;
+  height: $players-count * 90px;
+  width: $width;
+  border-radius: 32px;
+
+  > * {
+    position: absolute;
+
+    @for $i from 1 through $players-count {
+      &:nth-child(#{$i}) {
+        left: $i %2 * 100%;
+        top: calc(($i/$players-count - 1 / ($players-count * 2)) * 100%);
+        transform: translate(-50%, -50%);
+
+        //Used for card enter/leave animations
+        //--card-translation-x: -100%;
+        //--card-translation-y: 0%;
+
+        //Sets the initial cards position
+        ::ng-deep .card-holder {
+          @if $i % 2 == 0 {
+            transform: translateX(calc(50% + 70px));
+          } @else {
+            transform: translateX(calc(-50% - 70px));
+          }
+        }
+      }
+    }
+  }
 }
 
 .player-holder {
-  //First argument should be gameConfig.maxClients + 1
-  @include playingTable(8, 0.5);
   @apply bg-green-600;
 
-  aspect-ratio: var(--playing-table-aspect-ratio);
-  height: var(--playing-table-height);
+  @media (max-width: 639px) {
+    @include playingTableMobile(8, 75vw);
+  }
+
+  @screen sm {
+    @include playingTable(8, "2/1", 250px, "100vh - 300px", 85vw);
+  }
 }
 
 //Create font sizes that are relative to playing table size
 ::ng-deep .table-font-xl {
-  font-size: calc(var(--playing-table-height) * 0.08);
-  line-height: calc(var(--playing-table-height) * 0.12);
+  font-size: calc(var(--table-unit) * 0.08);
+  line-height: calc(var(--table-unit) * 0.12);
 }
 
 ::ng-deep .table-font-lg {
-  font-size: calc(var(--playing-table-height) * 0.04);
-  line-height: calc(var(--playing-table-height) * 0.06);
+  font-size: calc(var(--table-unit) * 0.04);
+  line-height: calc(var(--table-unit) * 0.06);
 }
 
 ::ng-deep .table-font {
-  font-size: calc(var(--playing-table-height) * 0.04);
-  line-height: calc(var(--playing-table-height) * 0.06);
+  font-size: calc(var(--table-unit) * 0.04);
+  line-height: calc(var(--table-unit) * 0.06);
 
   @screen 2xl {
-    font-size: calc(var(--playing-table-height) * 0.024);
-    line-height: calc(var(--playing-table-height) * 0.036);
+    font-size: calc(var(--table-unit) * 0.024);
+    line-height: calc(var(--table-unit) * 0.036);
   }
 }

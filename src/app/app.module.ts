@@ -25,6 +25,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { NotifierModule } from 'angular-notifier';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { HandScoreComponent } from './game-screen/player/hand-score/hand-score.component';
+import { LayoutModule } from '@angular/cdk/layout';
 
 @NgModule({
   declarations: [
@@ -54,6 +55,7 @@ import { HandScoreComponent } from './game-screen/player/hand-score/hand-score.c
     ClipboardModule,
     ReactiveFormsModule,
     MatCheckboxModule,
+    LayoutModule,
     NotifierModule.withConfig({
       position: {
         horizontal: { position: 'right' },
