@@ -1,5 +1,5 @@
 .pill-menu {
-  @apply flex justify-center m-4 whitespace-nowrap gap-1 flex-wrap;
+  @apply flex justify-center whitespace-nowrap gap-1 flex-wrap;
 
   &[disabled] {
     opacity: 0.6;
