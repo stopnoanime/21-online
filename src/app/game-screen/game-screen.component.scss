@@ -64,7 +64,7 @@
 }
 
 @mixin playingTableMobile($players-count, $width) {
-  $table-unit: 250px;
+  $table-unit: 210px;
   $player-row-height: $table-unit * 0.45;
   $non-player-row-height: $table-unit * 0.3;
 
@@ -87,26 +87,28 @@
           top: 0%;
           left: 50%;
           transform: translate(-50%, -50%);
+          --card-translation-y: 100%;
+          --card-translation-x: 0%;
         } @else if $i == $players-count {
           top: 100%;
           left: 50%;
           transform: translate(-50%, -50%);
+          --card-translation-y: -100%;
+          --card-translation-x: 0%;
         } @else {
           left: ($i - 1) %2 * 100%;
           top: calc($player-row-height + ($i - 2) * $non-player-row-height);
           transform: translate(-50%);
+          --card-translation-y: 0%;
+          --card-translation-x: #{100% - ($i - 1) %2 * 200%};
         }
-
-        //Used for card enter/leave animations
-        //--card-translation-x: -100%;
-        //--card-translation-y: 0%;
 
         //Sets the initial cards position
         ::ng-deep .card-holder {
           @if $i == 1 {
-            transform: translateY(calc(50% + 25px));
+            transform: translateY(calc(50% + 23px));
           } @else if $i == $players-count {
-            transform: translateY(calc(-50% - 48px));
+            transform: translateY(calc(-50% - 45px));
           } @else if $i % 2 == 0 {
             transform: translateX(calc(-50% - $table-unit * 0.2));
           } @else {

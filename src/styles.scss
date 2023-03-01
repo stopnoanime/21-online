@@ -24,12 +24,14 @@ body {
   color-scheme: dark;
 }
 
-.pill-popup {
-  @apply rounded-full bg-neutral-800;
-  padding: 0 0.4em;
-  animation-duration: 1s;
-  animation-name: enter-animation;
-  animation-fill-mode: forwards;
+@layer utilities {
+  .pill-popup {
+    @apply rounded-full bg-neutral-800;
+    padding: 0 0.4em;
+    animation-duration: 1s;
+    animation-name: enter-animation;
+    animation-fill-mode: forwards;
+  }
 }
 
 @keyframes enter-animation {
