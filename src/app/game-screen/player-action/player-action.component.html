@@ -17,6 +17,7 @@
 
   <button (click)="game.setBet(+betInput.value)">Set Bet:</button>
   <input
+    class="w-24"
     #betInput
     type="number"
     [min]="gameConfig.minBet"
