@@ -14,16 +14,10 @@
 }
 
 //First argument should be gameConfig.maxClients + 1
-@mixin playingTable(
-  $players-count,
-  $aspect-ratio,
-  $min-height,
-  $default-height,
-  $max-width
-) {
+@mixin playingTable($players-count, $min-height, $default-height, $max-width) {
   //Set global variables
   @at-root ::ng-deep :root {
-    --playing-table-aspect-ratio: #{$aspect-ratio};
+    --playing-table-aspect-ratio: 2/1;
     --table-unit: clamp(
       #{$min-height},
       #{$default-height},
@@ -70,13 +64,17 @@
 }
 
 @mixin playingTableMobile($players-count, $width) {
+  $table-unit: 250px;
+  $player-row-height: $table-unit * 0.45;
+  $non-player-row-height: $table-unit * 0.3;
+
   @at-root ::ng-deep :root {
-    // Table elements have fixed size
-    --table-unit: 310px;
+    --table-unit: #{$table-unit};
   }
 
+  height: ($players-count - 2) * $non-player-row-height + 2 * $player-row-height;
+
   position: relative;
-  height: $players-count * 90px;
   width: $width;
   border-radius: 32px;
 
@@ -85,9 +83,19 @@
 
     @for $i from 1 through $players-count {
       &:nth-child(#{$i}) {
-        left: $i %2 * 100%;
-        top: calc(($i/$players-count - 1 / ($players-count * 2)) * 100%);
-        transform: translate(-50%, -50%);
+        @if $i == 1 {
+          top: 0%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        } @else if $i == $players-count {
+          top: 100%;
+          left: 50%;
+          transform: translate(-50%, -50%);
+        } @else {
+          left: ($i - 1) %2 * 100%;
+          top: calc($player-row-height + ($i - 2) * $non-player-row-height);
+          transform: translate(-50%);
+        }
 
         //Used for card enter/leave animations
         //--card-translation-x: -100%;
@@ -95,10 +103,14 @@
 
         //Sets the initial cards position
         ::ng-deep .card-holder {
-          @if $i % 2 == 0 {
-            transform: translateX(calc(50% + 70px));
+          @if $i == 1 {
+            transform: translateY(calc(50% + 25px));
+          } @else if $i == $players-count {
+            transform: translateY(calc(-50% - 48px));
+          } @else if $i % 2 == 0 {
+            transform: translateX(calc(-50% - $table-unit * 0.2));
           } @else {
-            transform: translateX(calc(-50% - 70px));
+            transform: translateX(calc(50% + $table-unit * 0.2));
           }
         }
       }
@@ -114,7 +126,7 @@
   }
 
   @screen sm {
-    @include playingTable(8, "2/1", 250px, "100vh - 300px", 85vw);
+    @include playingTable(8, 250px, "100vh - 300px", 85vw);
   }
 }
 

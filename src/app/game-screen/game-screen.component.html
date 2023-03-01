@@ -28,7 +28,7 @@
     </button>
   </div>
 
-  <div class="grid place-items-center w-full py-4 sm:py-8">
+  <div class="grid place-items-center w-full py-8">
     <div class="player-holder row-start-1 col-start-1">
       <app-player
         [type]="'dealer'"
@@ -41,7 +41,7 @@
         [style.z-index]="10 - Math.round(getPlayerPosition(i) * 10)"
         [player]="player"
         [scoreBottom]="
-          (smallScreen$ | async) ||
+          smallScreen ||
           (getPlayerPosition(i) <= 0.25 && getPlayerPosition(i) != 0)
         "
       ></app-player>

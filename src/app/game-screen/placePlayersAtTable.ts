@@ -35,3 +35,28 @@ export function placePlayersAtTable(
 
   return players;
 }
+
+/**
+ * Given an array of players, positions them so player with playerId is at end of it, and empty space is filled with undefined
+ * @param players Array of players
+ * @param playerId Id of current player
+ * @param tableSize Table size
+ * @returns The properly positioned players
+ */
+export function placePlayersAtMobileTable(
+  players: (Player | undefined)[],
+  playerId: string,
+  tableSize: number
+) {
+  players = placePlayersAtTable(players, playerId, tableSize);
+
+  const a = [];
+  for (let i = 0; i < Math.floor(tableSize / 2); i++) {
+    a.push(players.shift());
+    a.push(players.pop());
+  }
+
+  a.push(players.pop());
+
+  return a;
+}

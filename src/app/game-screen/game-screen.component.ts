@@ -3,7 +3,10 @@ import { Component, Input } from '@angular/core';
 import gameConfig from 'backend/src/game.config';
 import { map, Observable } from 'rxjs';
 import { GameService } from '../game.service';
-import { placePlayersAtTable } from './placePlayersAtTable';
+import {
+  placePlayersAtMobileTable,
+  placePlayersAtTable,
+} from './placePlayersAtTable';
 
 @Component({
   selector: 'app-game-screen',
@@ -14,12 +17,13 @@ export class GameScreenComponent {
   location = location;
   Math = Math;
 
-  smallScreen$: Observable<boolean>;
+  smallScreen: boolean;
 
   constructor(public game: GameService, public breakpoint: BreakpointObserver) {
-    this.smallScreen$ = breakpoint
+    breakpoint
       .observe('(max-width: 639px)')
-      .pipe(map((x) => !!x.matches));
+      .pipe(map((x) => !!x.matches))
+      .subscribe((v) => (this.smallScreen = v));
   }
 
   getPlayerPosition(index: number) {
@@ -27,7 +31,7 @@ export class GameScreenComponent {
   }
 
   getAllPlayers() {
-    return placePlayersAtTable(
+    return (this.smallScreen ? placePlayersAtMobileTable : placePlayersAtTable)(
       [...this.game.room!.state.players.values()],
       this.game.room!.sessionId,
       gameConfig.maxClients
