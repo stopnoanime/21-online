@@ -123,7 +123,7 @@ export class GameRoom extends Room<GameState> {
 
       this.clients
         .find((c) => c.sessionId == id)
-        .leave(Protocol.WS_CLOSE_CONSENTED);
+        ?.leave(Protocol.WS_CLOSE_CONSENTED);
     });
   }
 
