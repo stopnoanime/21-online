@@ -248,21 +248,26 @@ export class GameRoom extends Room<GameState> {
     if (id == this.state.currentTurnPlayerId) this.turn();
   }
 
+  /** Offsets player order in round, used for making every round start at different player */
+  private roundIteratorOffset = 0;
+
   /** Iterator over players that only takes ready players into account */
   private *makeRoundIterator() {
-    const playerIterator = this.state.players.entries();
+    let players = [...this.state.players.values()].filter((p) => p.ready);
 
-    while (true) {
-      const newPlayer = playerIterator.next();
+    //Rotate players by offset
+    players = players.concat(
+      players.splice(0, this.roundIteratorOffset % players.length)
+    );
 
-      //Finish this iterator when base iterator finishes
-      if (newPlayer.done) return;
+    for (let i = 0; i < players.length; i++) {
+      const player = players[i];
 
-      //If grabbed player is not ready, go to next player
-      if (!newPlayer.value[1].ready) continue;
+      //If grabbed player is not ready (they left during round), go to next player
+      if (!player.ready) continue;
 
       //Otherwise yield the new player id
-      yield newPlayer.value[0] as string;
+      yield player.sessionId;
     }
   }
 
@@ -402,6 +407,9 @@ export class GameRoom extends Room<GameState> {
       //Remove players that are still disconnected
       if (player.disconnected) this.deletePlayer(player.sessionId);
     }
+
+    //Change starting player on next round
+    this.roundIteratorOffset++;
 
     this.log(`Starting idle phase`);
     this.state.roundState = 'idle';
