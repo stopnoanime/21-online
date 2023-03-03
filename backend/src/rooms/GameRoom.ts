@@ -18,6 +18,8 @@ export class GameRoom extends Room<GameState> {
   private LOBBY_CHANNEL = 'GameRoom';
 
   private log(msg: string, client?: Client | string) {
+    if (process.env.NODE_ENV != 'development') return;
+
     log.info(
       `Room ${this.roomId} ${
         client ? 'Client ' + ((<any>client).sessionId || client) : ''
@@ -324,7 +326,7 @@ export class GameRoom extends Room<GameState> {
     this.log('Turn', this.state.currentTurnPlayerId);
 
     //Skip round if player has blackjack
-    if (this.state.players.get(this.state.currentTurnPlayerId).hand.score == 21)
+    if (this.state.players.get(this.state.currentTurnPlayerId).hand.isBlackjack)
       this.turn();
     else this.setInactivitySkipTimeout();
   }

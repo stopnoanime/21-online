@@ -3,6 +3,10 @@ import { monitor } from '@colyseus/monitor';
 import { GameRoom } from './rooms/GameRoom';
 
 export default Arena({
+  options: {
+    greet: false,
+  },
+
   getId: () => 'Your Colyseus App',
 
   initializeGameServer: (gameServer) => {
