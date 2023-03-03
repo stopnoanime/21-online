@@ -1,3 +1,3 @@
 export const environment = {
-  gameServer: 'ws://some-domain.com:2567',
+  gameServer: 'ws://localhost:2567',
 };

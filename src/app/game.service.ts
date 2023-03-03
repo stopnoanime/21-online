@@ -13,6 +13,7 @@ export class GameService {
   public kickEvent = new Subject<void>();
   public roomErrorEvent = new Subject<string>();
   public joinInProgress = false;
+  public connectedBefore = false;
 
   private _room?: Colyseus.Room<GameState>;
   private client: Colyseus.Client;
@@ -64,6 +65,19 @@ export class GameService {
     return this.updateRoom(() => this.client.joinById(roomId));
   }
 
+  public async reconnectSavedRoom() {
+    const roomData = this.loadRoomData();
+
+    if (!roomData) return false;
+
+    //Try to reconnect
+    return this.updateRoom(
+      () => this.client.reconnect(roomData.roomId, roomData.sessionId),
+      false,
+      true
+    );
+  }
+
   public setReadyState(newState: boolean) {
     this.room?.send('ready', newState);
   }
@@ -97,27 +111,42 @@ export class GameService {
 
   private async updateRoom(
     room: () => Promise<Colyseus.Room<GameState>>,
-    emitErrorEvent = false
+    emitErrorEvent = false,
+    deleteRoomDataOnInvalidRoomId = false
   ) {
     if (this.joinInProgress) return false;
     this.joinInProgress = true;
 
     try {
       this._room = await room();
-    } catch (error) {
+    } catch (error: any) {
       //Was not able to connect
 
       if (emitErrorEvent)
         this.roomErrorEvent.next(this.convertRoomErrorToMessage(error));
 
+      if (
+        deleteRoomDataOnInvalidRoomId &&
+        error.code === Colyseus.ErrorCode.MATCHMAKE_INVALID_ROOM_ID
+      )
+        this.deleteRoomData();
+
       this.joinInProgress = false;
       return false;
     }
+
+    // Connected
+
+    this.connectedBefore = true;
+    this.saveRoomData(this._room);
 
     this._room.onLeave((code) => {
       this._room = undefined;
 
       if (code == gameConfig.kickCode) this.kickEvent.next();
+
+      //Player was kicked or they consented left, delete saved data
+      if (code == gameConfig.kickCode || code == 1000) this.deleteRoomData();
 
       this.router.navigateByUrl(``);
     });
@@ -126,9 +155,27 @@ export class GameService {
       queryParams: { session: this._room.sessionId },
     });
 
-    // Connected
     this.joinInProgress = false;
     return true;
+  }
+
+  private saveRoomData(room: Colyseus.Room) {
+    localStorage.setItem('roomId', room.id);
+    localStorage.setItem('sessionId', room.sessionId);
+  }
+
+  private loadRoomData() {
+    const roomId = localStorage.getItem('roomId');
+    const sessionId = localStorage.getItem('sessionId');
+
+    if (!roomId || !sessionId) return null;
+
+    return { roomId: roomId, sessionId: sessionId };
+  }
+
+  private deleteRoomData() {
+    localStorage.removeItem('roomId');
+    localStorage.removeItem('sessionId');
   }
 
   private convertRoomErrorToMessage(error: any): string {
