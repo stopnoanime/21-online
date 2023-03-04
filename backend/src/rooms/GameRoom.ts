@@ -2,7 +2,11 @@ import { Room, Client, Delayed, Protocol, ServerError } from 'colyseus';
 import { GameState, Player } from './schema/GameState';
 import gameConfig from '../game.config';
 import log from 'npmlog';
-import { generateUserName, generateRoomId } from './utility';
+import {
+  generateUserName,
+  generateRoomId,
+  computeRoundOutcome,
+} from './utility';
 
 export class GameRoom extends Room<GameState> {
   /** Current timeout skip reference */
@@ -251,7 +255,7 @@ export class GameRoom extends Room<GameState> {
   }
 
   /** Offsets player order in round, used for making every round start at different player */
-  private roundIteratorOffset = 0;
+  public roundIteratorOffset = 0;
 
   /** Iterator over players that only takes ready players into account */
   private *makeRoundIterator() {
@@ -369,25 +373,14 @@ export class GameRoom extends Room<GameState> {
       for (const playerId of this.makeRoundIterator()) {
         const player = this.state.players.get(playerId);
 
-        if (player.hand.isBlackjack && !this.state.dealerHand.isBlackjack) {
-          // Player wins 3:2
-          player.money += (5 / 2) * player.bet;
-          player.roundOutcome = 'win';
-        } else if (
-          this.state.dealerHand.isBusted || //dealer busted, player wins
-          player.hand.score > this.state.dealerHand.score // player has higher score than dealer, player wins
-        ) {
-          player.money += player.bet * 2;
-          player.roundOutcome = 'win';
-        } else if (
-          player.hand.score == this.state.dealerHand.score && //Score is the same
-          player.hand.isBlackjack == this.state.dealerHand.isBlackjack //And dealer does not have blackjack if player also doesn't have it
-        ) {
-          player.money += player.bet;
-          player.roundOutcome = 'draw';
-        } else {
-          player.roundOutcome = 'lose';
-        }
+        const outcome = computeRoundOutcome(
+          player.hand,
+          this.state.dealerHand,
+          player.bet
+        );
+
+        player.roundOutcome = outcome.outcome;
+        player.money += outcome.moneyChange;
       }
     }
 

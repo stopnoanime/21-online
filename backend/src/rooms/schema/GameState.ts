@@ -89,7 +89,7 @@ export class Player extends Schema {
   @type('boolean') autoReady = false;
   @type('boolean') disconnected = false;
   @type('boolean') admin: boolean;
-  @type('string') roundOutcome: 'bust' | 'win' | 'lose' | 'draw' | '';
+  @type('string') roundOutcome: roundOutcome;
   @type(Hand) hand = new Hand();
 }
 
@@ -102,3 +102,5 @@ export class GameState extends Schema {
   @type(Hand) dealerHand = new Hand();
   @type({ map: Player }) players = new MapSchema<Player>();
 }
+
+export type roundOutcome = 'bust' | 'win' | 'lose' | 'draw' | '';

@@ -1,27 +1,37 @@
 import { ColyseusTestServer, boot } from '@colyseus/testing';
 import { Room } from '@colyseus/core';
 import appConfig from '../src/arena.config';
-import { GameState } from '../src/rooms/schema/GameState';
 import gameConfig from '../src/game.config';
 import { RoomInternalState } from 'colyseus';
 import { jest } from '@jest/globals';
+import { GameRoom } from '../src/rooms/GameRoom';
 
 describe('test the Colyseus gameRoom', () => {
   let colyseus: ColyseusTestServer;
-  let room: Room<GameState>;
+  let room: GameRoom;
 
   beforeAll(async () => (colyseus = await boot(appConfig)));
   afterAll(async () => await colyseus.shutdown());
 
   beforeEach(async () => {
+    gameConfig.delayedRoundStartTime = 0;
+    gameConfig.roundStateDealingTime = 0;
+    gameConfig.inactivityTimeout = 0;
+    gameConfig.dealerCardDelay = 0;
+    gameConfig.roundOutcomeDelay = 0;
+    gameConfig.roundStateEndTimeBase = 0;
+    gameConfig.roundStateEndTimePlayer = 0;
+
     await colyseus.cleanup();
-    room = await colyseus.createRoom('gameRoom');
+    room = (await colyseus.createRoom('gameRoom')) as any;
   });
 
   it('connects client into room', async () => {
     const client = await colyseus.connectTo(room);
 
     expect(client.sessionId).toEqual(room.clients[0].sessionId);
+
+    expect(room.roomId.length).toEqual(gameConfig.roomIdLength);
   });
 
   it('creates player instance with proper properties', async () => {
@@ -46,7 +56,7 @@ describe('test the Colyseus gameRoom', () => {
     expect(player.hand).toBeTruthy();
   });
 
-  it('creates a username for client', async () => {
+  it('generates a username for client', async () => {
     const client = await colyseus.connectTo(room);
 
     const player = room.state.players.get(client.sessionId)!;
@@ -121,6 +131,19 @@ describe('test the Colyseus gameRoom', () => {
     expect(player.ready).toBe(true);
   });
 
+  it('changes player auto ready state', async () => {
+    const client = await colyseus.connectTo(room);
+
+    client.send('autoReady', true);
+
+    await room.waitForNextMessage();
+
+    const player = room.state.players.get(client.sessionId)!;
+
+    expect(player.autoReady).toBe(true);
+    expect(player.ready).toBe(true);
+  });
+
   it('changes player bet', async () => {
     const client = await colyseus.connectTo(room);
 
@@ -160,12 +183,10 @@ describe('test the Colyseus gameRoom', () => {
   });
 
   it('starts round, takes bet and deals cards', async () => {
-    gameConfig.delayedRoundStartTime = 0;
-
     const client = await colyseus.connectTo(room);
+    const player = room.state.players.get(client.sessionId)!;
 
     client.send('ready', true);
-
     await room.waitForNextMessage();
 
     expect(room.state.nextRoundStartTimestamp).toBeTruthy();
@@ -174,33 +195,48 @@ describe('test the Colyseus gameRoom', () => {
 
     expect(room.state.roundState).toBe('dealing');
 
-    const player = room.state.players.get(client.sessionId)!;
     expect(player.hand.cards.length).toBe(2);
     expect(player.money).toBe(
       gameConfig.initialPlayerMoney - gameConfig.initialPlayerBet
     );
 
     expect(room.state.dealerHand.cards.length).toBe(2);
+    expect(room.state.dealerHand.cards[0].visible).toBe(true);
+    expect(room.state.dealerHand.cards[1].visible).toBe(false);
+    expect(room.state.dealerHand.score).toBeFalsy();
   });
 
-  it('ends round and cleanups', async () => {
-    gameConfig.delayedRoundStartTime = 0;
-    gameConfig.roundStateDealingTime = 0;
-    gameConfig.inactivityTimeout = 0;
-    gameConfig.dealerCardDelay = 0;
-    gameConfig.roundOutcomeDelay = 0;
-    gameConfig.roundStateEndTimeBase = 0;
-    gameConfig.roundStateEndTimePlayer = 0;
+  it('calculates round outcomes and shows dealer cards', async () => {
+    gameConfig.roundStateEndTimeBase = 10000;
 
     const client = await colyseus.connectTo(room);
+    const player = room.state.players.get(client.sessionId)!;
 
     client.send('ready', true);
 
-    await new Promise((r) => setTimeout(r, 600));
+    await new Promise((r) => setTimeout(r, 700));
+
+    expect(room.state.roundState).toBe('end');
+
+    expect(room.state.dealerHand.cards[1].visible).toBe(true);
+    expect(room.state.dealerHand.score).toBeTruthy();
+
+    expect(player.roundOutcome).toBeTruthy();
+  });
+
+  it('ends round and cleanups', async () => {
+    const client = await colyseus.connectTo(room);
+    const player = room.state.players.get(client.sessionId)!;
+
+    client.send('ready', true);
+
+    await new Promise((r) => setTimeout(r, 700));
 
     expect(room.state.roundState).toBe('idle');
+    expect(room.roundIteratorOffset).toBe(1);
+    expect(room.state.currentTurnPlayerId).toBeFalsy();
+    expect(room.state.nextRoundStartTimestamp).toBeFalsy();
 
-    const player = room.state.players.get(client.sessionId)!;
     expect(player.ready).toBe(false);
     expect(player.roundOutcome).toBeFalsy();
     expect(player.hand.cards.length).toBe(0);
@@ -209,15 +245,12 @@ describe('test the Colyseus gameRoom', () => {
   });
 
   it('allows player to hit', async () => {
-    gameConfig.delayedRoundStartTime = 0;
-    gameConfig.roundStateDealingTime = 0;
     gameConfig.inactivityTimeout = 10000;
 
     const client = await colyseus.connectTo(room);
     const player = room.state.players.get(client.sessionId)!;
 
     client.send('ready', true);
-
     await room.waitForNextPatch();
 
     expect(room.state.roundState).toBe('dealing');
@@ -229,23 +262,19 @@ describe('test the Colyseus gameRoom', () => {
 
     expect(room.state.roundState).toBe('turns');
 
-    client.send('hit', true);
-
+    client.send('hit');
     await room.waitForNextMessage();
 
     expect(player.hand.cards.length).toBe(3);
   });
 
   it('allows player to stay', async () => {
-    gameConfig.delayedRoundStartTime = 0;
-    gameConfig.roundStateDealingTime = 0;
     gameConfig.inactivityTimeout = 10000;
 
     const client = await colyseus.connectTo(room);
     const player = room.state.players.get(client.sessionId)!;
 
     client.send('ready', true);
-
     await room.waitForNextPatch();
 
     expect(room.state.roundState).toBe('dealing');
@@ -257,11 +286,120 @@ describe('test the Colyseus gameRoom', () => {
 
     expect(room.state.roundState).toBe('turns');
 
-    client.send('stay', true);
-
+    client.send('stay');
     await room.waitForNextMessage();
 
     expect(player.hand.cards.length).toBe(2);
     expect(room.state.roundState).toBe('end');
+    expect(room.state.currentTurnPlayerId).toBeFalsy();
+  });
+
+  it('changes turns between players', async () => {
+    gameConfig.inactivityTimeout = 10000;
+
+    const client1 = await colyseus.connectTo(room);
+    const client2 = await colyseus.connectTo(room);
+
+    const player1 = room.state.players.get(client1.sessionId)!;
+    const player2 = room.state.players.get(client2.sessionId)!;
+
+    client1.send('ready', true);
+    client2.send('ready', true);
+
+    await room.waitForNextPatch();
+
+    expect(room.state.roundState).toBe('dealing');
+
+    //Make player never have blackjack so it is not skipped during tests
+    player1.hand.isBlackjack = false;
+    player2.hand.isBlackjack = false;
+
+    await room.waitForNextPatch();
+
+    expect(room.state.roundState).toBe('turns');
+    expect(room.state.currentTurnPlayerId).toBe(client1.sessionId);
+
+    client1.send('stay');
+    await room.waitForNextMessage();
+
+    expect(room.state.currentTurnPlayerId).toBe(client2.sessionId);
+  });
+
+  it('skips player on blackjack', async () => {
+    gameConfig.inactivityTimeout = 10000;
+
+    const client = await colyseus.connectTo(room);
+    const player = room.state.players.get(client.sessionId)!;
+
+    client.send('ready', true);
+    await room.waitForNextPatch();
+
+    expect(room.state.roundState).toBe('dealing');
+
+    player.hand.isBlackjack = true;
+    await room.waitForNextPatch();
+
+    expect(room.state.roundState).toBe('end');
+    expect(room.state.currentTurnPlayerId).toBeFalsy();
+  });
+
+  it('skips player on bust', async () => {
+    gameConfig.inactivityTimeout = 10000;
+
+    const client = await colyseus.connectTo(room);
+    const player = room.state.players.get(client.sessionId)!;
+
+    client.send('ready', true);
+    await room.waitForNextPatch();
+
+    expect(room.state.roundState).toBe('dealing');
+
+    player.hand.isBlackjack = false;
+    //Setting high value to one card ensures that on next hit the hand will bust
+    player.hand.cards[0].value!.value = '100';
+
+    await room.waitForNextPatch();
+
+    expect(room.state.roundState).toBe('turns');
+
+    client.send('hit');
+    await room.waitForNextMessage();
+
+    expect(player.hand.cards.length).toBe(3);
+    expect(player.ready).toBe(false);
+    expect(player.roundOutcome).toBe('bust');
+
+    expect(room.state.roundState).toBe('end');
+    expect(room.state.currentTurnPlayerId).toBeFalsy();
+  });
+
+  it('skips player on 21', async () => {
+    gameConfig.inactivityTimeout = 10000;
+
+    const client = await colyseus.connectTo(room);
+    const player = room.state.players.get(client.sessionId)!;
+
+    client.send('ready', true);
+    await room.waitForNextPatch();
+
+    expect(room.state.roundState).toBe('dealing');
+
+    player.hand.isBlackjack = false;
+
+    await room.waitForNextPatch();
+
+    expect(room.state.roundState).toBe('turns');
+
+    //Disable add card function so hitting will not change score
+    player.hand.addCard = jest.fn();
+    player.hand.score = 21;
+
+    client.send('hit');
+    await room.waitForNextMessage();
+
+    expect(player.ready).toBe(true);
+
+    expect(room.state.roundState).toBe('end');
+    expect(room.state.currentTurnPlayerId).toBeFalsy();
   });
 });
