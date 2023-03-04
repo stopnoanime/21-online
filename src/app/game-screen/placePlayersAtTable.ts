@@ -5,7 +5,7 @@ function rotateArray<Type>(a: Type[], n: number) {
 }
 
 /**
- * Given an array of players, positions them so player with playerId is in middle of it, and empty space is filled with undefined
+ * Given an array of players, positions them so player with playerId is in the middle of it, and empty space is filled with undefined
  * @param players Array of players
  * @param playerId Id of current player (the player that will be positioned at middle of table)
  * @param tableSize Table size

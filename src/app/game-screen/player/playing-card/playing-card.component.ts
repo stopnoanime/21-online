@@ -32,7 +32,7 @@ import {
         group([
           query('@hiddenVisible', animateChild()),
           animate(
-            '700ms',
+            '500ms',
             style({
               transform:
                 'translate(var(--card-translation-x),var(--card-translation-y))',

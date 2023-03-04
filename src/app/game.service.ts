@@ -49,6 +49,12 @@ export class GameService {
     return this.updateRoom(() => this.client.joinById(id.toUpperCase()), true);
   }
 
+  /**
+   * Given roomId and sessionId tries to reconnect to a room and returns if it was successful
+   * @param roomId The roomId
+   * @param sessionId The room sessionId
+   * @returns True if reconnection was successful, false otherwise
+   */
   public async reconnectRoom(roomId?: string, sessionId?: string) {
     if (!roomId) return false;
 
@@ -65,6 +71,10 @@ export class GameService {
     return this.updateRoom(() => this.client.joinById(roomId));
   }
 
+  /**
+   * Tries to reconnect to a room whose data was saved in localStorage and returns if it was successful
+   * @returns True if reconnection was successful, false otherwise
+   */
   public async reconnectSavedRoom() {
     const roomData = this.loadRoomData();
 
@@ -109,6 +119,13 @@ export class GameService {
     this.room?.send('kick', id);
   }
 
+  /**
+   * Tries to connect to given room and on success sets up lifecycle hooks
+   * @param room The room
+   * @param emitErrorEvent If true, on connection error a message is displayed to the user
+   * @param deleteRoomDataOnInvalidRoomId If true, on connection error the localStorage room data is deleted
+   * @returns If connecting was successful
+   */
   private async updateRoom(
     room: () => Promise<Colyseus.Room<GameState>>,
     emitErrorEvent = false,
@@ -159,11 +176,17 @@ export class GameService {
     return true;
   }
 
+  /**
+   * Saves room data to localStorage
+   */
   private saveRoomData(room: Colyseus.Room) {
     localStorage.setItem('roomId', room.id);
     localStorage.setItem('sessionId', room.sessionId);
   }
 
+  /**
+   * Loads room data from localStorage
+   */
   private loadRoomData() {
     const roomId = localStorage.getItem('roomId');
     const sessionId = localStorage.getItem('sessionId');
@@ -173,6 +196,9 @@ export class GameService {
     return { roomId: roomId, sessionId: sessionId };
   }
 
+  /**
+   * Deletes room data from localStorage
+   */
   private deleteRoomData() {
     localStorage.removeItem('roomId');
     localStorage.removeItem('sessionId');

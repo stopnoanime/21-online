@@ -26,6 +26,9 @@ export class GameScreenComponent {
       .subscribe((v) => (this.smallScreen = v));
   }
 
+  /**
+   * Returns the relative position (0.5 -> 0 (middle) -> 0.5) of player at table
+   */
   getPlayerPosition(index: number) {
     return Math.abs(0.5 - (index + 1) / (gameConfig.maxClients + 1));
   }

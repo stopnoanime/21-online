@@ -1,6 +1,9 @@
 import { Component, Input, OnChanges } from '@angular/core';
 import { interval, Subscription } from 'rxjs';
 
+/**
+ * Displays a progress bar that starts at 100%, and decreases to 0% at `time == endTimestamp`
+ */
 @Component({
   selector: 'app-timestamp-progress-bar',
   templateUrl: './timestamp-progress-bar.component.html',

@@ -3,6 +3,10 @@ import { animals, colors } from './namesDictionary';
 import { uniqueNamesGenerator } from 'unique-names-generator';
 import { Hand, roundOutcome } from './schema/GameState';
 
+/**
+ * Generates a random uppercase string with length of `gameConfig.roomIdLength`
+ * @returns the string
+ */
 export function generateRoomId(): string {
   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
   let result = '';
@@ -11,6 +15,10 @@ export function generateRoomId(): string {
   return result;
 }
 
+/**
+ * Generates a random username
+ * @returns the username
+ */
 export function generateUserName(): string {
   return uniqueNamesGenerator({
     dictionaries: [colors, animals],
@@ -19,6 +27,13 @@ export function generateUserName(): string {
   });
 }
 
+/**
+ * Given two hands and bet, calculates if player won/lost, and the amount they won
+ * @param playerHand The player's hand
+ * @param dealerHand The dealer's hand
+ * @param bet The player's bet
+ * @returns The outcome
+ */
 export function computeRoundOutcome(
   playerHand: Hand,
   dealerHand: Hand,

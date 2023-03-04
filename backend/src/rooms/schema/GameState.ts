@@ -6,6 +6,9 @@ import {
   getRandomArrayItem,
 } from './cardValues';
 
+/**
+ * Represents the value (suit and value) of a single card
+ */
 export class CardValue extends Schema {
   @type('string') suit: string;
   @type('string') value: string;
@@ -17,6 +20,9 @@ export class CardValue extends Schema {
   }
 }
 
+/**
+ * Represents a single card
+ */
 export class Card extends Schema {
   @type('boolean') visible: boolean;
 
@@ -38,6 +44,9 @@ export class Card extends Schema {
   }
 }
 
+/**
+ * Represents a set of cards
+ */
 export class Hand extends Schema {
   @type('number') score: number;
   @type('boolean') isBlackjack: boolean = false;

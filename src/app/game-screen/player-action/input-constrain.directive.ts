@@ -1,5 +1,8 @@
 import { Directive, ElementRef, HostListener } from '@angular/core';
 
+/**
+ * Limits number input value to `max`
+ */
 @Directive({
   selector: '[appInputConstrain]',
 })
