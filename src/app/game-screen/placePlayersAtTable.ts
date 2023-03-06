@@ -6,6 +6,10 @@ function rotateArray<Type>(a: Type[], n: number) {
 
 /**
  * Given an array of players, positions them so player with playerId is in the middle of it, and empty space is filled with undefined
+ *
+ * Example:
+ *
+ * `[playerId, 1, 2] to [undefined, 2, playerId, 1, undefined]`
  * @param players Array of players
  * @param playerId Id of current player (the player that will be positioned at middle of table)
  * @param tableSize Table size
@@ -38,6 +42,10 @@ export function placePlayersAtTable(
 
 /**
  * Given an array of players, positions them so player with playerId is at end of it, and empty space is filled with undefined
+ *
+ * Example:
+ *
+ * `[playerId, 1, 2] to [undefined, undefined, 2, 1, playerId]`
  * @param players Array of players
  * @param playerId Id of current player
  * @param tableSize Table size
