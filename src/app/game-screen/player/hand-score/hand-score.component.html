@@ -1,9 +1,6 @@
-<div class="text-center my-1 table-font whitespace-nowrap max-sm:pill-popup">
-  {{
-    !hand?.score
-      ? ""
-      : hand?.isBlackjack
-      ? "Blackjack"
-      : "Value: " + hand?.score
-  }}
+<div
+  *ngIf="hand?.score"
+  class="text-center my-1 table-font whitespace-nowrap max-sm:pill-popup"
+>
+  {{ hand?.isBlackjack ? "Blackjack" : "Value: " + hand?.score }}
 </div>

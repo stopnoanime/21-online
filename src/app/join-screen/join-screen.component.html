@@ -13,6 +13,7 @@
       color="primary"
       (click)="game.createRoom()"
       [disabled]="game.joinInProgress"
+      data-cy="create-btn"
     >
       Create room
     </button>
@@ -23,6 +24,7 @@
       <mat-label>Room ID</mat-label>
       <input
         matInput
+        data-cy="roomId-input"
         [formControl]="roomId"
         (keyup.enter)="roomId.invalid || game.joinRoom(roomId.value!)"
       />
@@ -38,6 +40,7 @@
         class="w-full"
         (click)="game.joinRoom(roomId.value!)"
         [disabled]="roomId.invalid || game.joinInProgress"
+        data-cy="join-btn"
       >
         Join room
       </button>

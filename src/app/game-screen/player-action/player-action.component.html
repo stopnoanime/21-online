@@ -5,9 +5,12 @@
   >
     <span class="whitespace-normal">
       Current Bet:
-      <span class="inline-block text-center" style="width: 4ch">{{
-        game.player?.bet
-      }}</span>
+      <span
+        class="inline-block text-center"
+        style="width: 4ch"
+        data-cy="bet-value"
+        >{{ game.player?.bet }}</span
+      >
     </span>
 
     <span class="whitespace-normal"> Change Bet: </span>
@@ -16,7 +19,9 @@
     <button (click)="game.changeBet(10)">+ 10</button>
     <button (click)="game.changeBet(50)">+ 50</button>
 
-    <button (click)="game.setBet(+betInput.value)">Set Bet:</button>
+    <button (click)="game.setBet(+betInput.value)" data-cy="setBet-btn">
+      Set Bet:
+    </button>
     <input
       class="w-24"
       #betInput
@@ -25,6 +30,7 @@
       [max]="gameConfig.maxBet"
       value="100"
       appInputConstrain
+      data-cy="bet-input"
     />
   </div>
 

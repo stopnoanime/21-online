@@ -60,6 +60,7 @@
         game.room!.state.nextRoundStartTimestamp
       "
       class="row-start-1 col-start-1 z-10 table-font-xl pill-popup"
+      data-cy="roundStart-popup"
     >
       Starting round
     </div>
@@ -67,5 +68,7 @@
 
   <app-player-actions class="sm:mt-6"></app-player-actions>
 
-  <span class="text-neutral-400 self-end"> Room ID: {{ game.room!.id }} </span>
+  <span class="text-neutral-400 self-end" data-cy="roomId-value">
+    Room ID: {{ game.room!.id }}
+  </span>
 </div>

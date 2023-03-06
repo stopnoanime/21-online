@@ -160,13 +160,20 @@ describe('test the Colyseus gameRoom', () => {
     const client1 = await colyseus.connectTo(room);
     const client2 = await colyseus.connectTo(room);
 
+    const onLeaveMock = jest.fn();
+    client2.onLeave(onLeaveMock);
+
     client1.send('kick', client2.sessionId);
 
     await room.waitForNextPatch();
 
-    const player2 = room.state.players.get(client2.sessionId);
+    //Player2 should be deleted
+    expect(room.state.players.size).toBe(1);
+    expect(room.state.players.get(client2.sessionId)).toBeFalsy();
 
-    expect(player2).toBeFalsy();
+    //And onLeave for client2 should be called with correct code
+    expect(onLeaveMock.mock.calls.length).toBe(1);
+    expect(onLeaveMock.mock.calls[0][0]).toBe(gameConfig.kickCode);
   });
 
   it('limits the number of clients', async () => {
