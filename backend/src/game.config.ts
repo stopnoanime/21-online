@@ -4,6 +4,7 @@ export default {
 
   //All times are in ms
   inactivityTimeout: 30000,
+  roomDeleteTimeout: 60000,
   delayedRoundStartTime: 2000,
   roundStateDealingTime: 1000,
   dealerCardDelay: 1000,

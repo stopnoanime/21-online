@@ -1,4 +1,3 @@
-import { client } from 'cypress/support/e2e';
 import gameConfig from 'backend/src/game.config';
 
 describe('21-online tests', () => {
@@ -15,7 +14,7 @@ describe('21-online tests', () => {
     cy.get('app-game-screen').should('exist');
   });
 
-  it('can join a room by ID', () => {
+  it('can join a room by ID and it displays room data', () => {
     cy.createRoom().then((r) => {
       cy.visit('/');
 
@@ -24,8 +23,9 @@ describe('21-online tests', () => {
 
       cy.get('app-game-screen').should('exist');
 
-      //Change url when joining room
+      //It changes url when joining room
       cy.location('pathname').should('equal', `/room/${r.id}`);
+      cy.location('search').should('include', '?session=');
 
       //Display room id at bottom of page
       cy.getBySel('roomId-value').should('contain', r.id);
@@ -55,27 +55,27 @@ describe('21-online tests', () => {
   });
 
   it('reconnects to room after reload', () => {
-    cy.createRoom().then((r) => {
-      cy.visit(`/room/${r.id}`);
+    cy.visit('/');
+    cy.getBySel('create-btn').click();
 
-      cy.get('app-game-screen').should('exist');
+    cy.get('app-game-screen').should('exist');
 
-      cy.reload();
+    cy.reload();
 
-      cy.get('app-game-screen').should('exist');
-    });
+    cy.get('app-game-screen').should('not.exist');
+    cy.get('app-game-screen').should('exist');
   });
 
   it('reconnects to room after going to main page', () => {
-    cy.createRoom().then((r) => {
-      cy.visit(`/room/${r.id}`);
+    cy.visit('/');
+    cy.getBySel('create-btn').click();
 
-      cy.get('app-game-screen').should('exist');
+    cy.get('app-game-screen').should('exist');
 
-      cy.visit(`/`);
+    cy.visit(`/`);
 
-      cy.get('app-game-screen').should('exist');
-    });
+    cy.get('app-game-screen').should('not.exist');
+    cy.get('app-game-screen').should('exist');
   });
 
   it('can exit room using button', () => {
@@ -144,11 +144,12 @@ describe('21-online tests', () => {
     cy.createRoom().then((r) => {
       cy.visit(`/room/${r.id}`);
 
-      //After player is connected, kick them, added wait to let room var synchronize
-      cy.get('app-game-screen')
-        .wait(250)
-        .then((_) => {
-          r.send('kick', [...r.state.players.keys()][1]);
+      //After player is connected, kick them
+      cy.location('search')
+        .should('include', '?session=')
+        .then((p) => p.split('=')[1])
+        .then((session) => {
+          r.send('kick', session);
 
           cy.get('app-kick-dialog');
         });
@@ -205,22 +206,28 @@ describe('21-online tests', () => {
     cy.get('app-card').should('have.length', 5);
   });
 
-  it('player can stay during round and it cleanups table after round', () => {
-    cy.startRoundWithoutBlackjack();
+  it(
+    'player can stay during round and it cleanups table after round',
+    {
+      defaultCommandTimeout: 10000, //End phase can last longer than 4s
+    },
+    () => {
+      cy.startRoundWithoutBlackjack();
 
-    cy.contains('Stay').click();
+      cy.contains('Stay').click();
 
-    cy.getBySel('roundOutcome');
+      cy.getBySel('roundOutcome');
 
-    // Cards should be cleaned up after round
-    cy.get('app-card').should('have.length', 0);
+      // Cards should be cleaned up after round
+      cy.get('app-card').should('have.length', 0);
 
-    // Turn progress bar should be at 0%
-    cy.getBySel('turn-progress-bar')
-      .invoke('attr', 'aria-valuenow')
-      .should('eq', '0');
+      // Turn progress bar should be at 0%
+      cy.getBySel('turn-progress-bar')
+        .invoke('attr', 'aria-valuenow')
+        .should('eq', '0');
 
-    // Ready state should be unset
-    cy.contains('Ready');
-  });
+      // Ready state should be unset
+      cy.contains('Ready');
+    }
+  );
 });

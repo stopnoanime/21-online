@@ -10,15 +10,14 @@ import {
 
 export class GameRoom extends Room<GameState> {
   /** Current timeout skip reference */
-  private inactivityTimeoutRef: Delayed;
+  public inactivityTimeoutRef?: Delayed;
+  public delayedRoundStartRef?: Delayed;
+  public delayedRoomDeleteRef?: Delayed;
 
   /** Iterator for all players that are playing in the current round */
   private roundPlayersIdIterator: IterableIterator<string>;
 
-  private delayedRoundStartRef: Delayed;
-
   public autoDispose = false;
-
   private LOBBY_CHANNEL = 'GameRoom';
 
   private log(msg: string, client?: Client | string) {
@@ -160,6 +159,8 @@ export class GameRoom extends Room<GameState> {
         admin: this.state.players.size == 0,
       })
     );
+
+    this.triggerRoomDeleteCheck();
     this.triggerNewRoundCheck();
   }
 
@@ -187,9 +188,10 @@ export class GameRoom extends Room<GameState> {
 
       player.disconnected = false;
 
-      //Add player back if they were removed earlier
+      //Add player back if they were removed
       if (!this.state.players.has(client.sessionId)) {
         this.state.players.set(client.sessionId, player.clone());
+        this.triggerRoomDeleteCheck();
         this.triggerNewRoundCheck();
       }
     } catch (error) {}
@@ -226,6 +228,24 @@ export class GameRoom extends Room<GameState> {
     }, gameConfig.delayedRoundStartTime);
   }
 
+  /**
+   * Deletes room after timeout if there are no players
+   */
+  private triggerRoomDeleteCheck() {
+    if (this.state.players.size == 0) {
+      this.log(`Setting delayed room delete`);
+
+      this.delayedRoomDeleteRef?.clear();
+      this.delayedRoomDeleteRef = this.clock.setTimeout(() => {
+        this.disconnect();
+      }, gameConfig.roomDeleteTimeout);
+    } else if (this.delayedRoomDeleteRef?.active) {
+      this.log('Cancelled room deletion');
+
+      this.delayedRoomDeleteRef?.clear();
+    }
+  }
+
   private deletePlayer(id: string) {
     const player = this.state.players.get(id);
 
@@ -234,24 +254,19 @@ export class GameRoom extends Room<GameState> {
 
     this.state.players.delete(id);
 
-    // Dispose room if there are no more players left
-    if (this.state.players.size == 0) {
-      this.disconnect();
-      return;
-    }
-
     //If deleted player was admin, assign random other player as admin
-    if (player.admin) {
+    if (player.admin && this.state.players.size > 0) {
       player.admin = false;
 
       const a = [...this.state.players.values()];
       a[Math.floor(Math.random() * a.length)].admin = true;
     }
 
-    this.triggerNewRoundCheck();
-
     //If player that was removed was the currently playing player, skip them
     if (id == this.state.currentTurnPlayerId) this.turn();
+
+    this.triggerRoomDeleteCheck();
+    this.triggerNewRoundCheck();
   }
 
   /** Offsets player order in round, used for making every round start at different player */

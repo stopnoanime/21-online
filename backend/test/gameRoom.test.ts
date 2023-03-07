@@ -1,10 +1,9 @@
 import { ColyseusTestServer, boot } from '@colyseus/testing';
-import { Room } from '@colyseus/core';
 import appConfig from '../src/arena.config';
 import gameConfig from '../src/game.config';
 import { RoomInternalState } from 'colyseus';
-import { jest } from '@jest/globals';
 import { GameRoom } from '../src/rooms/GameRoom';
+import { describe, expect, test, jest } from '@jest/globals';
 
 describe('test the Colyseus gameRoom', () => {
   let colyseus: ColyseusTestServer;
@@ -21,6 +20,7 @@ describe('test the Colyseus gameRoom', () => {
     gameConfig.roundOutcomeDelay = 0;
     gameConfig.roundStateEndTimeBase = 0;
     gameConfig.roundStateEndTimePlayer = 0;
+    gameConfig.roomDeleteTimeout = 0;
 
     await colyseus.cleanup();
     room = (await colyseus.createRoom('gameRoom')) as any;
@@ -114,9 +114,28 @@ describe('test the Colyseus gameRoom', () => {
     const client = await colyseus.connectTo(room);
     client.leave();
 
-    await room.waitForNextMessage();
+    await room.waitForNextPatch();
 
     expect(room.internalState).toBe(RoomInternalState.DISCONNECTING);
+  });
+
+  it('cancels room dispose when client connects', async () => {
+    gameConfig.roomDeleteTimeout = 100;
+
+    const client1 = await colyseus.connectTo(room);
+    client1.leave();
+
+    await room.waitForNextPatch();
+
+    //Timeout for room deletion should be set
+    expect(room.delayedRoomDeleteRef?.active).toBe(true);
+
+    //Another client connects
+    const client2 = await colyseus.connectTo(room);
+
+    //Timeout for room deletion should be unset
+    expect(room.delayedRoomDeleteRef?.active).toBe(false);
+    expect(room.internalState).toBe(RoomInternalState.CREATED);
   });
 
   it('changes player ready state', async () => {
@@ -159,21 +178,18 @@ describe('test the Colyseus gameRoom', () => {
   it('allows admin to kick other player', async () => {
     const client1 = await colyseus.connectTo(room);
     const client2 = await colyseus.connectTo(room);
+    const client2LeaveCode = new Promise<number>((res) => client2.onLeave(res));
 
-    const onLeaveMock = jest.fn();
-    client2.onLeave(onLeaveMock);
-
+    // Kick client2
     client1.send('kick', client2.sessionId);
 
-    await room.waitForNextPatch();
+    // Client2 should receive kick code
+    await expect(client2LeaveCode).resolves.toBe(gameConfig.kickCode);
 
-    //Player2 should be deleted
+    // Player2 should be deleted
+    await room.waitForNextPatch();
     expect(room.state.players.size).toBe(1);
     expect(room.state.players.get(client2.sessionId)).toBeFalsy();
-
-    //And onLeave for client2 should be called with correct code
-    expect(onLeaveMock.mock.calls.length).toBe(1);
-    expect(onLeaveMock.mock.calls[0][0]).toBe(gameConfig.kickCode);
   });
 
   it('limits the number of clients', async () => {
