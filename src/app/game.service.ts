@@ -26,6 +26,10 @@ export class GameService {
     return !!this._room && this._room.state.roundState != 'idle';
   }
 
+  public get roundEndTimestamp() {
+    return this._room?.state.currentTurnTimeoutTimestamp || 0;
+  }
+
   public get player() {
     return this._room?.state.players.get(this._room.sessionId);
   }

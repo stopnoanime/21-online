@@ -8,7 +8,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { PlayingCardComponent } from './game-screen/player/playing-card/playing-card.component';
-import { TimestampProgressSpinnerBar } from './game-screen/player/timestamp-progress-bar/timestamp-progress-bar.component';
+import { TimestampProgressBar } from './game-screen/player/timestamp-progress-bar/timestamp-progress-bar.component';
 import { PlayerActionsComponent } from './game-screen/player-action/player-action.component';
 import { GameScreenComponent } from './game-screen/game-screen.component';
 import { JoinScreenComponent } from './join-screen/join-screen.component';
@@ -31,7 +31,7 @@ import { LayoutModule } from '@angular/cdk/layout';
   declarations: [
     AppComponent,
     PlayingCardComponent,
-    TimestampProgressSpinnerBar,
+    TimestampProgressBar,
     PlayerActionsComponent,
     GameScreenComponent,
     JoinScreenComponent,

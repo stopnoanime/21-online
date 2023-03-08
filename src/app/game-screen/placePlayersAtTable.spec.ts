@@ -24,7 +24,7 @@ describe('placePlayersAtTable', () => {
     ]);
   });
 
-  it('should place players when there is as many of them as tableSize', () => {
+  it('should sort players when there is as many of them as tableSize', () => {
     const unsortedPlayers = [
       { sessionId: '1' },
       { sessionId: '2' },

@@ -44,6 +44,13 @@
           smallScreen ||
           (getPlayerPosition(i) <= 0.25 && getPlayerPosition(i) != 0)
         "
+        (kick)="game.kick($event)"
+        [isPlayerTurn]="
+          game.room!.state.currentTurnPlayerId === player?.sessionId
+        "
+        [clientIsPlayer]="game.room!.sessionId === player?.sessionId"
+        [endTimestamp]="game.roundEndTimestamp"
+        [clientIsAdmin]="game.player?.admin"
       ></app-player>
     </div>
 
@@ -66,7 +73,21 @@
     </div>
   </div>
 
-  <app-player-actions class="sm:mt-6"></app-player-actions>
+  <app-player-actions
+    class="sm:mt-6"
+    [betMenuDisabled]="game.roundInProgress || game.player?.ready"
+    [currentBet]="game.player?.bet || 0"
+    (changeBet)="game.changeBet($event)"
+    (setBet)="game.setBet($event)"
+    [readyMenuHidden]="game.roundInProgress"
+    [ready]="game.player?.ready"
+    (readyChange)="game.setReadyState($event)"
+    [autoReady]="game.player?.autoReady"
+    (autoReadyChange)="game.setAutoReadyState($event)"
+    [stayHitMenuDisabled]="!game.playersTurn"
+    (stay)="game.stay()"
+    (hit)="game.hit()"
+  ></app-player-actions>
 
   <span class="text-neutral-400 self-end" data-cy="roomId-value">
     Room ID: {{ game.room!.id }}

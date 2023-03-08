@@ -12,6 +12,7 @@ describe('21-online tests', () => {
     cy.getBySel('create-btn').click();
 
     cy.get('app-game-screen').should('exist');
+    cy.get('app-player-actions').should('exist');
   });
 
   it('can join a room by ID and it displays room data', () => {
@@ -37,6 +38,18 @@ describe('21-online tests', () => {
       cy.visit(`/room/${r.id}`);
 
       cy.get('app-game-screen').should('exist');
+    });
+  });
+
+  it('copies room URL to clipboard on click', () => {
+    cy.createRoom().then((r) => {
+      cy.visit(`/room/${r.id}`);
+
+      cy.contains('button', 'link').click();
+
+      cy.url().then((u) => {
+        cy.getClipboard().should('eq', u.split('?')[0]);
+      });
     });
   });
 
@@ -97,6 +110,22 @@ describe('21-online tests', () => {
 
     cy.location('pathname').should('equal', '/');
     cy.get('app-game-screen').should('not.exist');
+  });
+
+  it('shows if player is admin', () => {
+    cy.visit('/');
+    cy.getBySel('create-btn').click();
+
+    cy.contains('button', 'star').should('exist');
+
+    //Second player should not be admin
+    cy.createRoom().then((r) => {
+      cy.visit(`/room/${r.id}`);
+
+      //wait for game screen to load before checking for admin star existence
+      cy.get('app-game-screen').should('exist');
+      cy.contains('button', 'star').should('not.exist');
+    });
   });
 
   it('renders player', () => {
@@ -230,4 +259,24 @@ describe('21-online tests', () => {
       cy.contains('Ready');
     }
   );
+
+  it('shows when other players disconnected', () => {
+    cy.createRoom().then((r) => {
+      cy.visit(`/room/${r.id}`);
+
+      cy.contains('Ready').click();
+      r.send('ready', true);
+
+      //Wait until cards are dealt -> round is started
+      cy.get('app-card')
+        .should('have.length', 6)
+        .then((_) => {
+          //Leave other client
+          r.leave(false);
+
+          //Check if disconnected popup was shown
+          cy.contains('mat-icon', 'warning').should('exist');
+        });
+    });
+  });
 });

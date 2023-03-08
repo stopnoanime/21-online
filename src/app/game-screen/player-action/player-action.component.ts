@@ -1,5 +1,4 @@
-import { Component } from '@angular/core';
-import { GameService } from 'src/app/game.service';
+import { Component, EventEmitter, Input, Output } from '@angular/core';
 import gameConfig from 'backend/src/game.config';
 
 @Component({
@@ -8,7 +7,21 @@ import gameConfig from 'backend/src/game.config';
   styleUrls: ['./player-action.component.scss'],
 })
 export class PlayerActionsComponent {
-  gameConfig = gameConfig;
+  @Input() betMenuDisabled? = false;
+  @Input() currentBet = 0;
+  @Output() changeBet = new EventEmitter<number>();
+  @Output() setBet = new EventEmitter<number>();
 
-  constructor(public game: GameService) {}
+  /** If true stayHitMenu is shown instead of ready menu */
+  @Input() readyMenuHidden = false;
+  @Input() ready? = false;
+  @Output() readyChange = new EventEmitter<boolean>();
+  @Input() autoReady? = false;
+  @Output() autoReadyChange = new EventEmitter<boolean>();
+
+  @Input() stayHitMenuDisabled = false;
+  @Output() stay = new EventEmitter();
+  @Output() hit = new EventEmitter();
+
+  gameConfig = gameConfig;
 }

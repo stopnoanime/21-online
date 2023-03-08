@@ -31,22 +31,18 @@
     <app-timestamp-progress-bar
       *ngIf="player"
       class="scale-y-150"
-      [endTimestamp]="
-        isPlayerTurn ? game.room!.state.currentTurnTimeoutTimestamp : 0
-      "
+      [endTimestamp]="isPlayerTurn ? endTimestamp : 0"
     ></app-timestamp-progress-bar>
   </div>
 
   <button
-    *ngIf="
-      game.player?.admin && player && !isCurrentPlayer && !player.disconnected
-    "
+    *ngIf="player && clientIsAdmin && !clientIsPlayer && !player.disconnected"
     mat-mini-fab
     color="primary"
     matTooltip="Kick this player."
     [matTooltipPosition]="'above'"
     class="mr-auto mb-auto -ml-7 -mt-7 col-start-1 row-start-1 invisible group-hover:visible scale-50 sm:scale-75"
-    (click)="game.kick(player.sessionId)"
+    (click)="kick.next(player.sessionId)"
   >
     <mat-icon>close</mat-icon>
   </button>
@@ -67,7 +63,7 @@
     >
       {{
         player
-          ? isCurrentPlayer
+          ? clientIsPlayer
             ? roundOutcomeToDisplayMessageCurrentPlayer[player.roundOutcome]
             : roundOutcomeToDisplayMessage[player.roundOutcome]
           : "Busted"

@@ -1,25 +1,22 @@
 <div class="flex flex-col-reverse sm:flex-col gap-4 m-4">
-  <div
-    class="pill-menu"
-    [attr.disabled]="game.roundInProgress || game.player?.ready ? true : null"
-  >
+  <div class="pill-menu" [attr.disabled]="betMenuDisabled ? true : null">
     <span class="whitespace-normal">
       Current Bet:
       <span
         class="inline-block text-center"
         style="width: 4ch"
         data-cy="bet-value"
-        >{{ game.player?.bet }}</span
+        >{{ currentBet }}</span
       >
     </span>
 
     <span class="whitespace-normal"> Change Bet: </span>
-    <button (click)="game.changeBet(-50)">- 50</button>
-    <button (click)="game.changeBet(-10)">- 10</button>
-    <button (click)="game.changeBet(10)">+ 10</button>
-    <button (click)="game.changeBet(50)">+ 50</button>
+    <button (click)="changeBet.emit(-50)">- 50</button>
+    <button (click)="changeBet.emit(-10)">- 10</button>
+    <button (click)="changeBet.emit(10)">+ 10</button>
+    <button (click)="changeBet.emit(50)">+ 50</button>
 
-    <button (click)="game.setBet(+betInput.value)" data-cy="setBet-btn">
+    <button (click)="setBet.emit(+betInput.value)" data-cy="setBet-btn">
       Set Bet:
     </button>
     <input
@@ -34,28 +31,27 @@
     />
   </div>
 
-  <div
-    class="pill-menu"
-    [attr.disabled]="game.roundInProgress && !game.playersTurn ? true : null"
-  >
-    <button
-      style="flex-grow: 100"
-      (click)="game.setReadyState(!game.player?.ready)"
-      *ngIf="!game.roundInProgress"
-    >
-      {{ game.player?.ready ? "Not ready" : "Ready" }}
+  <div class="pill-menu" *ngIf="!readyMenuHidden">
+    <button style="flex-grow: 100" (click)="readyChange.emit(!ready)">
+      {{ ready ? "Not ready" : "Ready" }}
     </button>
-    <div class="h-9" *ngIf="!game.roundInProgress">
+    <div class="h-9">
       <mat-checkbox
         class="-mt-2.5 mr-4"
-        [checked]="game.player?.autoReady"
-        (change)="game.setAutoReadyState($event.checked)"
+        [checked]="autoReady"
+        (change)="autoReadyChange.emit($event.checked)"
         matTooltip="Automatically sets player as ready after every round"
         >Auto Ready</mat-checkbox
       >
     </div>
+  </div>
 
-    <button (click)="game.stay()" *ngIf="game.roundInProgress">Stay</button>
-    <button (click)="game.hit()" *ngIf="game.roundInProgress">Hit</button>
+  <div
+    class="pill-menu"
+    *ngIf="readyMenuHidden"
+    [attr.disabled]="stayHitMenuDisabled ? true : null"
+  >
+    <button (click)="stay.emit()">Stay</button>
+    <button (click)="hit.emit()">Hit</button>
   </div>
 </div>

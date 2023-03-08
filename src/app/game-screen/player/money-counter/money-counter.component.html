@@ -5,6 +5,7 @@
     *ngIf="diffValue | async"
     [class.text-red-600]="(diffValue | async)! < 0"
     [class.text-green-600]="(diffValue | async)! > 0"
+    data-test="money-popup"
   >
     {{ ((diffValue | async)! > 0 ? "+" : "") + (diffValue | async) }} $
   </div>

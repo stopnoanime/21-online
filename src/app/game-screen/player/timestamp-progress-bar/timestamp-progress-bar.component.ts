@@ -9,7 +9,7 @@ import { interval, Subscription } from 'rxjs';
   templateUrl: './timestamp-progress-bar.component.html',
   styleUrls: ['./timestamp-progress-bar.component.scss'],
 })
-export class TimestampProgressSpinnerBar implements OnChanges {
+export class TimestampProgressBar implements OnChanges {
   @Input() endTimestamp: number;
   value: number = 0;
 

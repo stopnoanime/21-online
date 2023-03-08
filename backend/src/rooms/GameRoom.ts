@@ -56,7 +56,7 @@ export class GameRoom extends Room<GameState> {
 
     this.onMessage('ready', (client, state: boolean) => {
       //Cant change ready state during round
-      if (this.state.roundState != 'idle') return;
+      if (this.state.roundState != 'idle' || typeof state != 'boolean') return;
 
       this.log(`Ready state change: ${state}`, client);
 
@@ -65,7 +65,7 @@ export class GameRoom extends Room<GameState> {
     });
 
     this.onMessage('autoReady', (client, state: boolean) => {
-      if (this.state.roundState != 'idle') return;
+      if (this.state.roundState != 'idle' || typeof state != 'boolean') return;
 
       this.log(`Auto ready state change: ${state}`, client);
 

@@ -28,6 +28,7 @@ declare global {
       createRoom: () => Chainable<Colyseus.Room>;
       joinRoom: (id: string) => Chainable<Colyseus.Room>;
       startRoundWithoutBlackjack: () => Chainable;
+      getClipboard: () => Chainable<string>;
     }
   }
 }
@@ -42,6 +43,10 @@ Cypress.Commands.add('createRoom', () => {
 
 Cypress.Commands.add('joinRoom', (id: string) => {
   return cy.wrap(client.joinById(id));
+});
+
+Cypress.Commands.add('getClipboard', () => {
+  return cy.window().then((w) => w.navigator.clipboard.readText());
 });
 
 Cypress.Commands.add('startRoundWithoutBlackjack', () => {
