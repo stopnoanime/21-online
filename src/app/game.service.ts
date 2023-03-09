@@ -16,7 +16,7 @@ export class GameService {
   public connectedBefore = false;
 
   private _room?: Colyseus.Room<GameState>;
-  private client: Colyseus.Client;
+  public client: Colyseus.Client;
 
   public get room() {
     return this._room;
@@ -130,7 +130,7 @@ export class GameService {
    * @param deleteRoomDataOnInvalidRoomId If true, on connection error the localStorage room data is deleted
    * @returns If connecting was successful
    */
-  private async updateRoom(
+  public async updateRoom(
     room: () => Promise<Colyseus.Room<GameState>>,
     emitErrorEvent = false,
     deleteRoomDataOnInvalidRoomId = false
@@ -148,7 +148,7 @@ export class GameService {
 
       if (
         deleteRoomDataOnInvalidRoomId &&
-        error.code === Colyseus.ErrorCode.MATCHMAKE_INVALID_ROOM_ID
+        error?.code === Colyseus.ErrorCode.MATCHMAKE_INVALID_ROOM_ID
       )
         this.deleteRoomData();
 
@@ -169,10 +169,10 @@ export class GameService {
       //Player was kicked or they consented left, delete saved data
       if (code == gameConfig.kickCode || code == 1000) this.deleteRoomData();
 
-      this.router.navigateByUrl(``);
+      this.router.navigate(['/']);
     });
 
-    this.router.navigate([`room/${this._room.id}`], {
+    this.router.navigate(['/room', this._room.id], {
       queryParams: { session: this._room.sessionId },
     });
 
@@ -211,8 +211,8 @@ export class GameService {
   private convertRoomErrorToMessage(error: any): string {
     if (error instanceof ProgressEvent) return 'Unable to connect to server';
 
-    if (error.code === gameConfig.roomFullCode) return 'Room is full';
-    if (error.code === Colyseus.ErrorCode.MATCHMAKE_INVALID_ROOM_ID)
+    if (error?.code === gameConfig.roomFullCode) return 'Room is full';
+    if (error?.code === Colyseus.ErrorCode.MATCHMAKE_INVALID_ROOM_ID)
       return 'Invalid room ID';
 
     return 'Internal server error';

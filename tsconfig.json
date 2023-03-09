@@ -37,6 +37,6 @@
     "node_modules/cypress"
   ],
   "exclude": [
-      "node_modules/cypress"
+    "node_modules/cypress"
   ]
 }
