@@ -1,24 +1,18 @@
 {
   "private": true,
-  "name": "my-app",
+  "name": "21-online-backend",
   "version": "1.0.0",
-  "description": "npm init template for bootstrapping an empty Colyseus project",
   "main": "lib/index.js",
   "scripts": {
     "start": "ts-node-dev --respawn --transpile-only src/index.ts",
-    "loadtest": "colyseus-loadtest loadtest/example.ts --room my_room --numClients 2",
+    "start-prod": "node ./lib/index.js",
     "build": "npm run clean && tsc && node node_modules/copyfiles/copyfiles package.json ./lib && node node_modules/copyfiles/copyfiles arena.env ./lib",
     "clean": "node node_modules/rimraf/bin lib",
     "test": "jest 'test'"
   },
-  "author": "",
-  "license": "UNLICENSED",
-  "bugs": {
-    "url": "https://github.com/colyseus/create-colyseus/issues"
-  },
-  "homepage": "https://github.com/colyseus/create-colyseus#readme",
+  "author": "stopnoanime",
+  "homepage": "https://github.com/stopnoanime/21-online",
   "devDependencies": {
-    "@colyseus/loadtest": "^0.14.4",
     "@colyseus/testing": "^0.14.21",
     "@jest/globals": "^29.4.3",
     "@types/cors": "^2.8.6",

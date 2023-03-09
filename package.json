@@ -1,6 +1,8 @@
 {
   "name": "21-online",
   "version": "0.0.0",
+  "author": "stopnoanime",
+  "homepage": "https://github.com/stopnoanime/21-online",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

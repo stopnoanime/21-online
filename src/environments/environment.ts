@@ -1,3 +1,3 @@
 export const environment = {
-  gameServer: 'ws://localhost:2567',
+  gameServer: 'wss://21-online-backend.fly.dev',
 };

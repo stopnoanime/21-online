@@ -21,7 +21,7 @@ export class GameRoom extends Room<GameState> {
   private LOBBY_CHANNEL = 'GameRoom';
 
   private log(msg: string, client?: Client | string) {
-    if (process.env.NODE_ENV != 'development') return;
+    if (process.env.ROOM_LOG_DISABLE == 'true') return;
 
     log.info(
       `Room ${this.roomId} ${
