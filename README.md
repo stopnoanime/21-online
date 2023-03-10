@@ -1,27 +1,37 @@
-# 21Online
+# 21 Online
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 15.1.2.
+![Game screenshot](screenshot.png)
 
-## Development server
+21 Online is an online multiplayer Blackjack game. You can play it [here](https://stopnoanime.github.io/21-online/).
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+# Architecture
+The game's frontend is made with Angular. The backend is made using Node.js and the [Colyseus](https://github.com/colyseus/colyseus) framework.
+The frontend is deployed on Github Pages. The backend is deployed on [Fly.io](https://fly.io/).
 
-## Code scaffolding
+# Tests
+The whole app is tested in multiple ways:
+- e2e testing - Frontend and Backend are tested together using Cypress
+- Frontend unit tests - Frontend components and logic are tested using Jasmine
+- Backend unit tests - Backend logic is tested using Jest
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+# Folder structure
+    .
+    ├── src                     # Angular frontend
+    ├── cypress                 # Cypress e2e tests
+    ├── backend                 # Colyseus backend
+    │   ├── src                 # Backend sources
+    │   └── unit                # Backend Jest tests
+    │   └── ...
+    └── ...
 
-## Build
+# Local development
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
-
-## Running unit tests
-
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
-
-## Running end-to-end tests
-
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
-
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
+```
+$ npm start                     # starts frontend
+$ npm test                      # runs frontend unit tests
+$ npm run e2e                   # runs e2e tests
+$ npm run deploy                # deploys frontend to gh-pages
+$ npm run backend-start         # starts backend
+$ cd backend && npm test        # runs backend unit tests
+$ cd backend && npm run deploy  # deploys backend to fly.io               
+```

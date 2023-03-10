@@ -8,7 +8,8 @@
     "start-prod": "node ./lib/index.js",
     "build": "npm run clean && tsc && node node_modules/copyfiles/copyfiles package.json ./lib && node node_modules/copyfiles/copyfiles arena.env ./lib",
     "clean": "node node_modules/rimraf/bin lib",
-    "test": "jest 'test'"
+    "test": "jest 'test'",
+    "deploy": "fly deploy"
   },
   "author": "stopnoanime",
   "homepage": "https://github.com/stopnoanime/21-online",
