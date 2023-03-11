@@ -9,11 +9,13 @@
     "build": "npm run clean && tsc && node node_modules/copyfiles/copyfiles package.json ./lib && node node_modules/copyfiles/copyfiles arena.env ./lib",
     "clean": "node node_modules/rimraf/bin lib",
     "test": "jest 'test'",
+    "loadtest": "colyseus-loadtest test/loadtest.ts --room gameRoom --numClients 100 --endpoint ws://localhost:2567",
     "deploy": "fly deploy"
   },
   "author": "stopnoanime",
   "homepage": "https://github.com/stopnoanime/21-online",
   "devDependencies": {
+    "@colyseus/loadtest": "^0.14.8",
     "@colyseus/testing": "^0.14.21",
     "@jest/globals": "^29.4.3",
     "@types/cors": "^2.8.6",

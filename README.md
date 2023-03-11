@@ -20,18 +20,19 @@ The whole app is tested in multiple ways:
     ├── cypress                 # Cypress e2e tests
     ├── backend                 # Colyseus backend
     │   ├── src                 # Backend sources
-    │   └── unit                # Backend Jest tests
+    │   └── tests               # Backend Jest tests
     │   └── ...
     └── ...
 
 ## Local development
 
 ```
-$ npm start                     # starts frontend
-$ npm test                      # runs frontend unit tests
-$ npm run e2e                   # runs e2e tests
-$ npm run deploy                # deploys frontend to gh-pages
-$ npm run backend-start         # starts backend
-$ cd backend && npm test        # runs backend unit tests
-$ cd backend && npm run deploy  # deploys backend to fly.io               
+$ npm start                         # starts frontend
+$ npm test                          # runs frontend unit tests
+$ npm run e2e                       # runs e2e tests
+$ npm run deploy                    # deploys frontend to gh-pages
+$ npm run backend-start             # starts backend
+$ cd backend && npm test            # runs backend unit tests
+$ cd backend && npm run deploy      # deploys backend to fly.io               
+$ cd backend && npm run loadtest    # runs backend loadtests          
 ```
