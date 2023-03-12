@@ -54,6 +54,13 @@ export class GameRoom extends Room<GameState> {
 
     this.log('Created');
 
+    //Send ping messages to all clients
+    this.clock.setInterval(() => {
+      this.broadcast('ping');
+    }, gameConfig.pingInterval);
+
+    // Client message listeners:
+
     this.onMessage('ready', (client, state: boolean) => {
       //Cant change ready state during round
       if (this.state.roundState != 'idle' || typeof state != 'boolean') return;

@@ -20,4 +20,5 @@ export default {
   // Websocket Code when player is disconnected by server
   kickCode: 4000,
   roomFullCode: 4444,
+  pingInterval: 5000,
 };

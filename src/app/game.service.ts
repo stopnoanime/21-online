@@ -16,6 +16,7 @@ export class GameService {
   public connectedBefore = false;
 
   private _room?: Colyseus.Room<GameState>;
+  public pingTimeout?: number;
   public client: Colyseus.Client;
 
   public get room() {
@@ -163,14 +164,22 @@ export class GameService {
 
     this._room.onLeave((code) => {
       this._room = undefined;
+      window.clearTimeout(this.pingTimeout);
 
       if (code == gameConfig.kickCode) this.kickEvent.next();
 
-      //Player was kicked or they consented left, delete saved data
+      // Player was kicked or they consented left, delete saved data
       if (code == gameConfig.kickCode || code == 1000) this.deleteRoomData();
+
+      // Abnormal websocket shutdown
+      if (code == 1006) this.roomErrorEvent.next('Lost connection to server');
 
       this.router.navigate(['/']);
     });
+
+    // Setup connection lost popup
+    this.ping();
+    this._room.onMessage('ping', () => this.ping());
 
     this.router.navigate(['/room', this._room.id], {
       queryParams: { session: this._room.sessionId },
@@ -180,6 +189,14 @@ export class GameService {
     return true;
   }
 
+  private ping() {
+    window.clearTimeout(this.pingTimeout);
+
+    this.pingTimeout = window.setTimeout(() => {
+      this.roomErrorEvent.next('No connection to server');
+      this.ping();
+    }, gameConfig.pingInterval * 2);
+  }
   /**
    * Saves room data to localStorage
    */
@@ -209,7 +226,7 @@ export class GameService {
   }
 
   private convertRoomErrorToMessage(error: any): string {
-    if (error instanceof ProgressEvent) return 'Unable to connect to server';
+    if (error instanceof ProgressEvent) return `Can't connect to server`;
 
     if (error?.code === gameConfig.roomFullCode) return 'Room is full';
     if (error?.code === Colyseus.ErrorCode.MATCHMAKE_INVALID_ROOM_ID)

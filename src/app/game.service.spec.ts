@@ -38,11 +38,13 @@ describe('GameService', () => {
 
   it('updates room and callbacks', async () => {
     let onLeaveCb: ((c: number) => void) | undefined;
+    let onMessageCb: (() => void) | undefined;
     const fakeRoom = {
       id: 'id',
       sessionId: 'sessionId',
       onLeaveCb: null,
       onLeave: (cb: any) => (onLeaveCb = cb),
+      onMessage: (m: string, cb: any) => (onMessageCb = cb),
     } as any as Room<GameState>;
     let kickEventTriggered = false;
     service.kickEvent.subscribe(() => (kickEventTriggered = true));
@@ -52,6 +54,15 @@ describe('GameService', () => {
 
     expect(service.room === fakeRoom);
     expect(onLeaveCb).toBeTruthy();
+    expect(onMessageCb).toBeTruthy();
+
+    //There should be a ping timeout set
+    expect(service.pingTimeout).toBeDefined();
+
+    //New timeout should be set when client receives ping
+    const oldPingId = service.pingTimeout;
+    onMessageCb!();
+    expect(oldPingId).not.toBe(service.pingTimeout);
 
     // Room data should have been saved in localStorage
     expect(localStore['roomId']).toBe(fakeRoom.id);
@@ -128,6 +139,7 @@ describe('GameService', () => {
       id: 'id',
       sessionId: 'sessionId',
       onLeave: () => null,
+      onMessage: () => null,
       state: {
         roundState: 'idle',
         players: new Map([['sessionId', player]]),

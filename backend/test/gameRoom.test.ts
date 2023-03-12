@@ -21,6 +21,7 @@ describe('test the Colyseus gameRoom', () => {
     gameConfig.roundStateEndTimeBase = 0;
     gameConfig.roundStateEndTimePlayer = 0;
     gameConfig.roomDeleteTimeout = 0;
+    gameConfig.pingInterval = 1000;
 
     await colyseus.cleanup();
     room = (await colyseus.createRoom('gameRoom')) as any;
@@ -32,6 +33,14 @@ describe('test the Colyseus gameRoom', () => {
     expect(client.sessionId).toEqual(room.clients[0].sessionId);
 
     expect(room.roomId.length).toEqual(gameConfig.roomIdLength);
+  });
+
+  it('sends ping to clients', async () => {
+    const client = await colyseus.connectTo(room);
+    const clientGotPing = new Promise((res) => client.onMessage('ping', res));
+
+    // Client should receive ping
+    await expect(clientGotPing).resolves.toBeUndefined();
   });
 
   it('creates player instance with proper properties', async () => {

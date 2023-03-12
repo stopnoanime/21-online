@@ -4,6 +4,7 @@ export function onJoin(this: Room) {
   console.log(this.sessionId, 'joined.');
 
   this.send('autoReady', true);
+  this.onMessage('ping', () => null);
 }
 
 export function onLeave(this: Room) {
