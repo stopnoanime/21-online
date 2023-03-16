@@ -22,14 +22,14 @@ describe('TimestampProgressBar', () => {
 
     fixture = TestBed.createComponent(TimestampProgressBar);
     debugElement = fixture.debugElement;
-
-    fixture.componentInstance.endTimestamp = 0;
-    fixture.detectChanges();
-
     bar = debugElement.query(By.css('mat-progress-bar'));
   });
 
   it('should show 0% after initialization', () => {
+    fixture.componentInstance.endTimestamp = 0;
+    fixture.componentInstance.ngOnChanges();
+
+    fixture.detectChanges();
     expect(bar.attributes['aria-valuenow']).toBe('0');
   });
 

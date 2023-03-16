@@ -17,13 +17,12 @@ export class GameScreenComponent {
   location = location;
   Math = Math;
 
-  smallScreen: boolean;
+  smallScreen$: Observable<boolean>;
 
   constructor(public game: GameService, public breakpoint: BreakpointObserver) {
-    breakpoint
-      .observe('(max-width: 639px)')
-      .pipe(map((x) => !!x.matches))
-      .subscribe((v) => (this.smallScreen = v));
+    this.smallScreen$ = breakpoint
+      .observe('(min-width: 640px)')
+      .pipe(map((x) => !x.matches));
   }
 
   /**
@@ -33,8 +32,8 @@ export class GameScreenComponent {
     return Math.abs(0.5 - (index + 1) / (gameConfig.maxClients + 1));
   }
 
-  getAllPlayers() {
-    return (this.smallScreen ? placePlayersAtMobileTable : placePlayersAtTable)(
+  getAllPlayers(smallScreen: boolean | null) {
+    return (smallScreen ? placePlayersAtMobileTable : placePlayersAtTable)(
       [...this.game.room!.state.players.values()],
       this.game.room!.sessionId,
       gameConfig.maxClients

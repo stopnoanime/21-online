@@ -14,7 +14,7 @@
     "prettier": "npx prettier --write .",
     "prepare": "husky install",
     "e2e": "npm run backend-start & ng e2e",
-    "cypress:run": "npm start & npm run backend-start & cypress run"
+    "cypress:run": "npm start & NODE_ENV=test npm run backend-start & cypress run"
   },
   "lint-staged": {
     "**/*": "prettier --write --ignore-unknown"

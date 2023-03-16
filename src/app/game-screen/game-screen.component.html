@@ -37,11 +37,11 @@
       ></app-player>
 
       <app-player
-        *ngFor="let player of getAllPlayers(); index as i"
+        *ngFor="let player of getAllPlayers(smallScreen$ | async); index as i"
         [style.z-index]="10 - Math.round(getPlayerPosition(i) * 10)"
         [player]="player"
         [scoreBottom]="
-          smallScreen ||
+          (smallScreen$ | async) ||
           (getPlayerPosition(i) <= 0.25 && getPlayerPosition(i) != 0)
         "
         (kick)="game.kick($event)"
